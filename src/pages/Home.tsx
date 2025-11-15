@@ -1,6 +1,12 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Leaf, Users, Heart, BookOpen, Zap, TrendingUp, Check, ArrowRight} from "lucide-react";
+import {
+  Heart,
+  BookOpen,
+  Zap,
+  TrendingUp,
+  Check,
+} from "lucide-react";
 
 // Data untuk Testimoni
 const testimonials = [
@@ -42,8 +48,27 @@ const FeatureCard = ({ icon: Icon, title, description, delay }) => (
 );
 
 const Home = () => {
+  // Definisi animasi untuk Filosofi
+  const cardVariants = {
+    initial: { opacity: 0, scale: 0.8, y: 50 },
+    animate: {
+      opacity: 1,
+      scale: 1,
+      y: 0,
+      transition: { duration: 0.8, ease: "easeOut" },
+    },
+  };
+
+  const tagVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
+  };
+
   return (
-    // Struktur Anda sudah benar. Setiap Section menggunakan container di dalamnya.
     <div>
       {/* 1. Hero Section */}
       <section className="relative bg-gradient-to-br from-green-50 via-white to-sky-50 py-20 sm:py-32 overflow-hidden px-10">
@@ -87,20 +112,29 @@ const Home = () => {
             >
               <div className="md:-mt-16 xl:ml-36 lg:ml-20 relative w-full aspect-square max-w-lg mx-auto">
                 <div className="absolute inset-0 bg-primary/25 rounded-full blur-3xl"></div>
-                {/* === GAMBAR UTAMA BUMI ANDA === */}
-                <img
-                  src="/public/img/Green Earth.png" // Path gambar bumi Anda
-                  alt="Ilustrasi Bumi atau Lingkungan"
-                  className="w-full h-full object-contain drop-shadow-2xl"
-                />
-                {/* ============================== */}
 
-                {/* === Tambahan Gambar Bulat Kecil - Posisi Disesuaikan Lagi (Lebih Keluar) === */}
-                {/* Bulat kecil di kiri atas */}
+                {/* === GAMBAR UTAMA BUMI === */}
+                <motion.div
+                  className="absolute inset-0 w-full h-full"
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    duration: 15,
+                    ease: "linear",
+                    repeat: Infinity,
+                  }}
+                >
+                  <img
+                    src="/public/img/Green Earth.png"
+                    alt="Ilustrasi Bumi atau Lingkungan"
+                    className="w-full h-full object-contain drop-shadow-2xl"
+                  />
+                </motion.div>
+
+                {/* === Bulat Kecil === */}
                 <motion.img
-                  src="/public/img/wind-power.png" // Ganti dengan path gambar bulat kecil Anda
+                  src="/public/img/wind-power.png"
                   alt="Small decorative dot"
-                  className="bg-white p-2 shadow-lg absolute w-12 h-12 rounded-full top-[8%] left-[8%] -translate-x-1/2 -translate-y-1/2 object-cover" // Disesuaikan
+                  className="bg-white p-2 shadow-lg absolute w-12 h-12 rounded-full top-[8%] left-[8%] -translate-x-1/2 -translate-y-1/2 object-cover"
                   animate={{ y: [0, -10, 0] }}
                   transition={{
                     repeat: Infinity,
@@ -109,11 +143,10 @@ const Home = () => {
                   }}
                 />
 
-                {/* Bulat kecil di kanan atas */}
                 <motion.img
-                  src="/public/img/forest.png" // Ganti dengan path gambar bulat kecil Anda
+                  src="/public/img/forest.png"
                   alt="Small decorative dot"
-                  className="bg-white p-2 shadow-lg absolute w-12 h-12 rounded-full top-[8%] right-[8%] translate-x-1/2 -translate-y-1/2 object-cover" // Disesuaikan
+                  className="bg-white p-2 shadow-lg absolute w-12 h-12 rounded-full top-[8%] right-[8%] translate-x-1/2 -translate-y-1/2 object-cover"
                   animate={{ y: [0, -10, 0] }}
                   transition={{
                     repeat: Infinity,
@@ -123,11 +156,10 @@ const Home = () => {
                   }}
                 />
 
-                {/* Bulat kecil di kiri bawah */}
                 <motion.img
-                  src="/public/img/wind.png" // Ganti dengan path gambar bulat kecil Anda
+                  src="/public/img/wind.png"
                   alt="Small decorative dot"
-                  className="bg-white p-2 shadow-lg absolute w-12 h-12 rounded-full bottom-[8%] left-[8%] -translate-x-1/2 translate-y-1/2 object-cover" // Disesuaikan
+                  className="bg-white p-2 shadow-lg absolute w-12 h-12 rounded-full bottom-[8%] left-[8%] -translate-x-1/2 translate-y-1/2 object-cover"
                   animate={{ y: [0, 10, 0] }}
                   transition={{
                     repeat: Infinity,
@@ -137,11 +169,10 @@ const Home = () => {
                   }}
                 />
 
-                {/* Bulat kecil di kanan bawah */}
                 <motion.img
-                  src="/public/img/solar-panels.png" // Ganti dengan path gambar bulat kecil Anda
+                  src="/public/img/solar-panels.png"
                   alt="Small decorative dot"
-                  className="bg-white p-2 shadow-lg absolute w-12 h-12 rounded-full bottom-[8%] right-[8%] translate-x-1/2 translate-y-1/2 object-cover" // Disesuaikan
+                  className="bg-white p-2 shadow-lg absolute w-12 h-12 rounded-full bottom-[8%] right-[8%] translate-x-1/2 translate-y-1/2 object-cover"
                   animate={{ y: [0, 10, 0] }}
                   transition={{
                     repeat: Infinity,
@@ -150,17 +181,87 @@ const Home = () => {
                     delay: 0.3,
                   }}
                 />
-                {/* ================================== */}
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* 2. Mengapa AksiHijau? */}
+      {/* 2. Filosofi AksiHijau */}
+      <section className="px-10 py-20 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            variants={cardVariants}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, amount: 0.5 }}
+            className="max-w-4xl mx-auto bg-green-50/50 p-6 sm:p-12 rounded-3xl border border-green-200 shadow-xl"
+            style={{
+              boxShadow:
+                "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
+              backgroundImage:
+                "linear-gradient(to bottom right, #f0fdf4, #ecfeff)",
+            }}
+          >
+            <div className="relative text-center">
+              <p className="text-xl sm:text-2xl text-gray-700 font-medium leading-relaxed my-8">
+                <span className="text-primary font-bold">" Kelestarian Lingkungan</span>{" "}
+                adalah perjalanan, bukan tujuan. AksiHijau berkomitmen menjadi
+                pendamping digitalmu yang andal, aman, dan tanpa penghakiman.
+                Kami percaya setiap individu berhak mendapatkan dukungan terbaik
+                untuk mencapai{" "}
+                <span className="text-primary font-bold">
+                  Bumi yang Lestari. "
+                </span>
+              </p>
+            </div>
+          </motion.div>
 
+          {/* Tag */}
+          <div className="flex justify-center flex-wrap gap-4 mt-8">
+            <motion.div
+              variants={tagVariants}
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true, amount: 0.1 }}
+              transition={{ delay: 0.8 }}
+            >
+              <div className="bg-white border border-gray-100 px-4 py-2 rounded-full shadow-sm text-sm font-semibold text-gray-700 flex items-center">
+                <Check className="w-4 h-4 text-green-500 mr-2" /> 100% Dampak
+                Nyata
+              </div>
+            </motion.div>
 
-      {/* 3. Tiga Fitur Utama (Konten Baru) */}
+            <motion.div
+              variants={tagVariants}
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true, amount: 0.1 }}
+              transition={{ delay: 1 }}
+            >
+              <div className="bg-white border border-gray-100 px-4 py-2 rounded-full shadow-sm text-sm font-semibold text-gray-700 flex items-center">
+                <Zap className="w-4 h-4 text-yellow-500 mr-2" /> Teknologi AI
+                Canggih
+              </div>
+            </motion.div>
+
+            <motion.div
+              variants={tagVariants}
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true, amount: 0.1 }}
+              transition={{ delay: 1.2 }}
+            >
+              <div className="bg-white border border-gray-100 px-4 py-2 rounded-full shadow-sm text-sm font-semibold text-gray-700 flex items-center">
+                <Heart className="w-4 h-4 text-red-500 mr-2" /> Komunitas
+                Suportif
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. Fitur Utama */}
       <section className="px-10 py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -202,7 +303,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 4. Testimoni (Konten Baru) */}
+      {/* 4. Testimoni */}
       <section className="px-10 py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
