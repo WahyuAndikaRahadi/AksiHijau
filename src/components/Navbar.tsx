@@ -28,8 +28,8 @@ const Navbar = () => {
   
   return (
     <nav
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-lg' : 'bg-white/95 backdrop-blur-sm shadow-sm'
+      className={`sticky top-0 z-50 transition-all duration-300 lg:px-16 md:px-4 ${
+        isScrolled ? 'bg-white shadow-lg' : 'bg-white/30 backdrop-blur-sm shadow-sm'
       }`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
