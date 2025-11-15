@@ -8,6 +8,8 @@ import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import WasteDetection from './pages/WasteDetection';
+import CommunityEvents from './pages/CommunityEvents';
+import AdminDashboard from './pages/dashboardAdmin';
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/cam" element={<WasteDetection />} />
+            <Route path="/community-events" element={<CommunityEvents />} />
+             <Route path="/dashboard-admin" element={<AdminDashboard />} />
           </Routes>
         </main>
         <Footer />
