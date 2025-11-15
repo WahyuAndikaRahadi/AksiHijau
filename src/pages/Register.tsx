@@ -3,17 +3,71 @@ import { Link } from 'react-router-dom';
 import { Mail, Lock, User, Leaf } from 'lucide-react';
 import { useState } from 'react';
 
+// Ganti dengan Base URL API Anda yang sebenarnya (misalnya, URL Vercel)
+const API_BASE_URL = 'http://localhost:5000/auth'; // Contoh: 'https://aksi-hijau-api.vercel.app/auth'
+
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    username: '', // Diubah dari 'name' menjadi 'username' agar sesuai dengan backend
     email: '',
     password: '',
     confirmPassword: '',
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Register submitted:', formData);
+    setError(null);
+    setSuccess(null);
+    setLoading(true);
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Konfirmasi password tidak cocok dengan password.');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Backend Anda mengharapkan 'username', 'email', dan 'password'
+        body: JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Jika status kode 4xx atau 5xx
+        setError(data.error || 'Pendaftaran gagal. Coba lagi.');
+        setLoading(false);
+        return;
+      }
+
+      // Jika pendaftaran berhasil (status 201)
+      setSuccess('Pendaftaran berhasil! Silakan login.');
+      // Kosongkan form setelah berhasil
+      setFormData({
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+      });
+
+    } catch (err) {
+      console.error('Error saat proses registrasi:', err);
+      setError('Terjadi kesalahan jaringan atau server. Coba lagi nanti.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,6 +86,7 @@ const Register = () => {
         className="max-w-md w-full"
       >
         <div className="bg-white rounded-2xl shadow-xl p-8">
+          {/* ... (Header dan Logo tetap sama) ... */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
@@ -45,15 +100,26 @@ const Register = () => {
               Buat akun dan mulai aksi nyata untuk bumi
             </p>
           </div>
-
+          {/* --- Notifikasi Error/Success --- */}
+          {error && (
+            <div className="p-3 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="p-3 mb-4 text-sm text-green-700 bg-green-100 rounded-lg" role="alert">
+              {success}
+            </div>
+          )}
+          {/* ------------------------------- */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.5 }}
             >
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Nama Lengkap
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                Nama Pengguna
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -61,13 +127,13 @@ const Register = () => {
                 </div>
                 <input
                   type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
+                  id="username"
+                  name="username"
+                  value={formData.username}
                   onChange={handleChange}
                   required
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
-                  placeholder="Nama Anda"
+                  placeholder="Nama Pengguna"
                 />
               </div>
             </motion.div>
@@ -117,11 +183,11 @@ const Register = () => {
                   onChange={handleChange}
                   required
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
-                  placeholder="••••••••"
+                  placeholder="Minimal 6 karakter"
                 />
               </div>
             </motion.div>
-
+            
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -142,72 +208,39 @@ const Register = () => {
                   onChange={handleChange}
                   required
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
-                  placeholder="••••••••"
+                  placeholder="Ulangi password"
                 />
               </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-              className="flex items-start"
-            >
-              <div className="flex items-center h-5">
-                <input
-                  id="terms"
-                  name="terms"
-                  type="checkbox"
-                  required
-                  className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-                />
-              </div>
-              <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
-                Saya setuju dengan{' '}
-                <a href="#" className="text-primary hover:text-green-600 transition-colors duration-300">
-                  Syarat & Ketentuan
-                </a>{' '}
-                dan{' '}
-                <a href="#" className="text-primary hover:text-green-600 transition-colors duration-300">
-                  Kebijakan Privasi
-                </a>
-              </label>
             </motion.div>
 
             <motion.button
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
               type="submit"
-              className="w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-green-600 transition-all duration-300 hover:shadow-lg font-semibold"
+              disabled={loading}
+              className={`w-full px-6 py-3 text-white rounded-lg transition-all duration-300 hover:shadow-lg font-semibold ${
+                loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary hover:bg-green-600'
+              }`}
             >
-              Daftar Sekarang
+              {loading ? 'Mendaftarkan...' : 'Daftar Akun'}
             </motion.button>
           </form>
 
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.5 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
             className="mt-6 text-center"
           >
             <p className="text-gray-600">
               Sudah punya akun?{' '}
               <Link to="/login" className="text-primary hover:text-green-600 font-semibold transition-colors duration-300">
-                Masuk di sini
+                Masuk
               </Link>
             </p>
           </motion.div>
         </div>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.5 }}
-          className="text-center text-gray-600 mt-6"
-        >
-          Bergabunglah dengan 50,000+ Eco Heroes lainnya
-        </motion.p>
       </motion.div>
     </div>
   );

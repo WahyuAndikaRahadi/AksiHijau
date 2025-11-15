@@ -1,17 +1,75 @@
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Leaf } from 'lucide-react';
 import { useState } from 'react';
 
+// Ganti dengan Base URL API Anda yang sebenarnya (misalnya, URL Vercel)
+const API_BASE_URL = 'http://localhost:5000/auth'; // Contoh: 'https://aksi-hijau-api.vercel.app/auth'
+
 const Login = () => {
+  // Hook useNavigate untuk pengalihan
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login submitted:', formData);
+    setError(null);
+    setSuccess(null);
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Gagal masuk. Cek kembali email dan password Anda.');
+        setLoading(false);
+        return;
+      }
+
+      // --- Logika Login Berhasil dan Pengalihan ---
+      const { token, user } = data;
+      
+      // 1. Simpan Token
+      localStorage.setItem('token', token);
+      
+      setSuccess('Login berhasil! Mengalihkan...');
+      
+      console.log('Login Sukses, Token Disimpan:', token);
+      
+      // 2. Lakukan pengalihan kondisional
+      if (user?.is_admin) {
+        // Jika admin, arahkan ke halaman admin
+        navigate('/dashboard-admin');
+      } else {
+        // Jika user biasa, arahkan ke halaman utama
+        navigate('/');
+      }
+
+    } catch (err) {
+      console.error('Error saat proses login:', err);
+      setError('Terjadi kesalahan jaringan atau server. Coba lagi nanti.');
+    } finally {
+      // Set loading menjadi false (meskipun navigasi sudah terjadi)
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,6 +88,7 @@ const Login = () => {
         className="max-w-md w-full"
       >
         <div className="bg-white rounded-2xl shadow-xl p-8">
+          {/* Header dan Logo */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
@@ -43,6 +102,18 @@ const Login = () => {
               Masuk ke akun AksiHijau Anda
             </p>
           </div>
+          {/* --- Notifikasi Error/Success --- */}
+          {error && (
+            <div className="p-3 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="p-3 mb-4 text-sm text-green-700 bg-green-100 rounded-lg" role="alert">
+              {success}
+            </div>
+          )}
+          {/* ------------------------------- */}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <motion.div
@@ -122,9 +193,12 @@ const Login = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.5 }}
               type="submit"
-              className="w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-green-600 transition-all duration-300 hover:shadow-lg font-semibold"
+              disabled={loading}
+              className={`w-full px-6 py-3 text-white rounded-lg transition-all duration-300 hover:shadow-lg font-semibold ${
+                loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary hover:bg-green-600'
+              }`}
             >
-              Masuk
+              {loading ? 'Memproses...' : 'Masuk'}
             </motion.button>
           </form>
 
