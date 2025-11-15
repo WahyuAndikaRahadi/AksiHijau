@@ -1,10 +1,49 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Leaf, Globe, Users, Heart } from 'lucide-react';
+import { Leaf, Globe, Users, Heart, BookOpen, Zap, TrendingUp } from 'lucide-react';
+
+// Data untuk Testimoni
+const testimonials = [
+  {
+    quote: "Sejak bergabung, saya lebih teredukasi tentang cara hidup berkelanjutan. Program penanaman pohonnya luar biasa!",
+    name: "Rina S.",
+    title: "Anggota Komunitas",
+  },
+  {
+    quote: "AksiHijau membuat aksi lingkungan menjadi mudah dan menyenangkan. Dampak nyata dari kegiatan kami terasa sekali.",
+    name: "Bima T.",
+    title: "Relawan Aktif",
+  },
+  {
+    quote: "Aplikasi ini inspiratif! Saya termotivasi untuk mengurangi jejak karbon saya berkat tantangan mingguan.",
+    name: "Dewi P.",
+    title: "Eco Hero",
+  },
+];
+
+// Komponen Card Fitur Utama
+const FeatureCard = ({ icon: Icon, title, description, delay }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, amount: 0.3 }}
+    transition={{ delay, duration: 0.6 }}
+    className="bg-white p-8 rounded-xl shadow-lg border border-gray-100 transform hover:scale-[1.02] transition-transform duration-500 ease-in-out"
+  >
+    <div className="p-3 bg-primary/10 rounded-xl w-fit mb-4">
+      <Icon className="w-8 h-8 text-primary" />
+    </div>
+    <h3 className="text-2xl font-bold text-gray-900 mb-3">{title}</h3>
+    <p className="text-gray-600 leading-relaxed">{description}</p>
+  </motion.div>
+);
+
 
 const Home = () => {
   return (
-    <div>
+    // Struktur Anda sudah benar. Setiap Section menggunakan container di dalamnya.
+    <div> 
+      {/* 1. Hero Section */}
       <section className="relative bg-gradient-to-br from-green-50 via-white to-sky-50 py-20 sm:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
 
@@ -52,6 +91,7 @@ const Home = () => {
         </div>
       </section>
 
+      {/* 2. Mengapa AksiHijau? */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -104,19 +144,103 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="py-20 bg-gradient-to-br from-primary/10 to-sky-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* 3. Tiga Fitur Utama (Konten Baru) */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Fitur Utama AksiHijau
+            </h2>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              Kami menyediakan alat dan sumber daya untuk memberdayakan setiap individu dalam perjalanan hijau mereka.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <FeatureCard
+              icon={BookOpen}
+              title="Pusat Edukasi Interaktif"
+              description="Akses modul pembelajaran, infografis, dan webinar tentang isu lingkungan, dari daur ulang hingga energi terbarukan."
+              delay={0}
+            />
+            <FeatureCard
+              icon={Zap}
+              title="Tantangan Hijau Harian"
+              description="Ikuti tantangan seru untuk mengadopsi kebiasaan ramah lingkungan. Lacak kemajuan Anda dan dapatkan lencana Eco Hero!"
+              delay={0.2}
+            />
+            <FeatureCard
+              icon={TrendingUp}
+              title="Lacak Jejak Karbon"
+              description="Hitung dan visualisasikan jejak karbon pribadi Anda. Dapatkan saran yang dipersonalisasi untuk mengurangi emisi."
+              delay={0.4}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* 4. Testimoni (Konten Baru) */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Apa Kata Eco Heroes Kami?
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Kisah nyata dari orang-orang yang telah membuat perbedaan bersama AksiHijau.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ delay: index * 0.2, duration: 0.5 }}
+                className="bg-primary/5 p-8 rounded-xl shadow-md flex flex-col justify-between h-full"
+              >
+                <blockquote className="italic text-gray-700 mb-6">
+                  "{testimonial.quote}"
+                </blockquote>
+                <div>
+                  <p className="font-semibold text-gray-900">{testimonial.name}</p>
+                  <p className="text-sm text-primary">{testimonial.title}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 5. CTA Akhir */}
+      <section className="py-20 bg-gradient-to-br from-primary/10 to-sky-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center"
           >
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
               Siap Menjadi Eco Hero?
             </h2>
             <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-              Daftar sekarang dan mulai perjalanan Anda untuk membuat perbedaan nyata bagi planet kita
+              Daftar sekarang dan mulai perjalanan Anda untuk membuat perbedaan nyata bagi planet kita.
             </p>
             <Link
               to="/register"
