@@ -157,8 +157,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 2. Filosofi AksiHijau? */}
-      
+      {/* 2. Mengapa AksiHijau? */}
 
 
       {/* 3. Tiga Fitur Utama (Konten Baru) */}
