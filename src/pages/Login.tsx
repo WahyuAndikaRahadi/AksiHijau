@@ -50,11 +50,15 @@ const Login = () => {
       // 1. Simpan Token
       localStorage.setItem('token', token);
       
+      // 2. SIMPAN DATA USER LENGKAP ke localStorage
+      // Ini penting agar Navbar bisa mengambil 'username'
+      localStorage.setItem('currentUser', JSON.stringify(user)); 
+      
       setSuccess('Login berhasil! Mengalihkan...');
       
       console.log('Login Sukses, Token Disimpan:', token);
       
-      // 2. Lakukan pengalihan kondisional
+      // 3. Lakukan pengalihan kondisional
       if (user?.is_admin) {
         // Jika admin, arahkan ke halaman admin
         navigate('/dashboard-admin');
