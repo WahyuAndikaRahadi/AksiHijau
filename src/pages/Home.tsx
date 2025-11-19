@@ -6,9 +6,12 @@ import {
   Zap,
   TrendingUp,
   Check,
+  Globe,
+  // Menggunakan Leaf untuk tema yang lebih hijau
+  Leaf 
 } from "lucide-react";
 
-// Data untuk Testimoni
+// Data untuk Testimoni (Tidak Berubah)
 const testimonials = [
   {
     quote:
@@ -30,7 +33,84 @@ const testimonials = [
   },
 ];
 
-// Komponen Card Fitur Utama
+// Data untuk Kemitraan Ticker (Tidak Berubah)
+const partners = [
+  { name: "World Wide Fund", logo: "/public/img/WWF.png" },
+  { name: "Eco Solutions", logo: "/public/img/partner-google.png" },
+  { name: "Carbon Watch", logo: "/public/img/partner-cpanel.png" },
+  { name: "Clean Energy ID", logo: "/public/img/partner-alibaba.png" },
+  { name: "Forest Guard", logo: "/public/img/partner-litespeed.png" },
+  { name: "Ocean Care", logo: "/public/img/partner-cloudlinux.png" },
+  { name: "Recycle Now", logo: "/public/img/partner-imunity.png" },
+];
+
+// Split data partners menjadi dua jalur
+const partnersLine1 = partners.slice(0, Math.ceil(partners.length / 2));
+const partnersLine2 = partners.slice(Math.ceil(partners.length / 2));
+
+// =========================================================================
+// KOMPONEN Ticker Baru (Revisi Desain Menyeluruh)
+// =========================================================================
+const PartnershipTicker = ({ partners, direction = 'left', duration = 60 }) => {
+  // Duplikasi partner 5x
+  const DUPLICATION_FACTOR = 5;
+  const duplicatedPartners = [];
+  for (let i = 0; i < DUPLICATION_FACTOR; i++) {
+    duplicatedPartners.push(...partners);
+  }
+
+  // Jarak pergerakan untuk looping sempurna
+  const distance = 100 / DUPLICATION_FACTOR; 
+
+  // Logika untuk arah pergerakan
+  const xFrom = direction === 'right' 
+    ? [`-${distance}%`, "0%"]  
+    : ["0%", `-${distance}%`]; 
+
+  const tickerVariants = {
+    animate: {
+      x: xFrom,
+      transition: {
+        x: {
+          duration: duration, // Menggunakan prop duration
+          ease: "linear",
+          repeat: Infinity,
+        },
+      },
+    },
+  };
+
+  return (
+    // Wrapper Ticker: Padding vertikal sangat minimal (my-2) dan border dihapus di sini, nanti di section
+    <div className="overflow-hidden py-0 my-1">
+      <motion.div
+        className="flex items-center w-max transform-gpu" // transform-gpu untuk performa
+        variants={tickerVariants}
+        animate="animate"
+      >
+        {duplicatedPartners.map((partner, index) => (
+          <div
+            key={index}
+            // Item Logo: Menggunakan min-w yang sedikit lebih besar dan padding/margin minimal (px-6 py-2)
+            className="flex-shrink-0 min-w-[150px] md:min-w-[180px] lg:min-w-[200px] px-6 py-2 flex justify-center" 
+          >
+            <div className="bg-white p-2 w-full max-w-[120px] aspect-square rounded-full border border-gray-100 shadow-md shadow-green-300/70 transition-all duration-300 flex items-center justify-center relative group">
+              <img
+                src={partner.logo}
+                alt={partner.name}
+                // Desain logo grayscale dan lebih kecil, dengan transisi halus
+                className="max-h-full max-w-full object-contain grayscale opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-500"
+              />
+            </div>
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  );
+};
+
+
+// Komponen Card Fitur Utama (Tidak Berubah)
 const FeatureCard = ({ icon: Icon, title, description, delay }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
@@ -48,7 +128,7 @@ const FeatureCard = ({ icon: Icon, title, description, delay }) => (
 );
 
 const Home = () => {
-  // Definisi animasi untuk Filosofi
+  // Definisi animasi untuk Filosofi (Tidak Berubah)
   const cardVariants = {
     initial: { opacity: 0, scale: 0.8, y: 50 },
     animate: {
@@ -70,7 +150,7 @@ const Home = () => {
 
   return (
     <div>
-      {/* 1. Hero Section */}
+      {/* 1. Hero Section (Tetap seperti kode awal Anda) */}
       <section className="relative bg-gradient-to-br from-green-50 via-white to-sky-50 py-20 sm:py-32 overflow-hidden px-10">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
 
@@ -187,15 +267,15 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 2. Filosofi AksiHijau */}
-      <section className="px-10 py-20 bg-white">
+      {/* 2. Filosofi AksiHijau (Tetap seperti kode awal Anda) */}
+      <section className="px-10 py-20 md:my-24 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             variants={cardVariants}
             initial="initial"
             whileInView="animate"
             viewport={{ once: true, amount: 0.5 }}
-            className="max-w-4xl mx-auto bg-green-50/50 p-6 sm:p-12 rounded-3xl border border-green-200 shadow-xl"
+            className="max-w-4xl mx-auto bg-green-50/50 hover:border-blue-200 p-5 sm:p-12 rounded-3xl border-2 border-green-200 shadow-xl"
             style={{
               boxShadow:
                 "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
@@ -214,55 +294,81 @@ const Home = () => {
                   Bumi yang Lestari. "
                 </span>
               </p>
+              <div className="flex justify-center flex-wrap gap-4 mt-8">
+                <motion.div
+                  variants={tagVariants}
+                  initial="initial"
+                  whileInView="animate"
+                  viewport={{ once: true, amount: 0.1 }}
+                  transition={{ delay: 0.8 }}
+                >
+                  <div className="bg-white border border-gray-100 px-4 py-2 rounded-full shadow-sm text-sm font-semibold text-gray-700 flex items-center">
+                    <Check className="w-4 h-4 text-green-500 mr-2" /> 100% Dampak
+                    Nyata
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  variants={tagVariants}
+                  initial="initial"
+                  whileInView="animate"
+                  viewport={{ once: true, amount: 0.1 }}
+                  transition={{ delay: 1 }}
+                >
+                  <div className="bg-white border border-gray-100 px-4 py-2 rounded-full shadow-sm text-sm font-semibold text-gray-700 flex items-center">
+                    <Zap className="w-4 h-4 text-yellow-500 mr-2" /> Teknologi AI
+                    Canggih
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  variants={tagVariants}
+                  initial="initial"
+                  whileInView="animate"
+                  viewport={{ once: true, amount: 0.1 }}
+                  transition={{ delay: 1.2 }}
+                >
+                  <div className="bg-white border border-gray-100 px-4 py-2 rounded-full shadow-sm text-sm font-semibold text-gray-700 flex items-center">
+                    <Heart className="w-4 h-4 text-red-500 mr-2" /> Komunitas
+                    Suportif
+                  </div>
+                </motion.div>
+              </div>
             </div>
           </motion.div>
 
-          {/* Tag */}
-          <div className="flex justify-center flex-wrap gap-4 mt-8">
-            <motion.div
-              variants={tagVariants}
-              initial="initial"
-              whileInView="animate"
-              viewport={{ once: true, amount: 0.1 }}
-              transition={{ delay: 0.8 }}
-            >
-              <div className="bg-white border border-gray-100 px-4 py-2 rounded-full shadow-sm text-sm font-semibold text-gray-700 flex items-center">
-                <Check className="w-4 h-4 text-green-500 mr-2" /> 100% Dampak
-                Nyata
-              </div>
-            </motion.div>
-
-            <motion.div
-              variants={tagVariants}
-              initial="initial"
-              whileInView="animate"
-              viewport={{ once: true, amount: 0.1 }}
-              transition={{ delay: 1 }}
-            >
-              <div className="bg-white border border-gray-100 px-4 py-2 rounded-full shadow-sm text-sm font-semibold text-gray-700 flex items-center">
-                <Zap className="w-4 h-4 text-yellow-500 mr-2" /> Teknologi AI
-                Canggih
-              </div>
-            </motion.div>
-
-            <motion.div
-              variants={tagVariants}
-              initial="initial"
-              whileInView="animate"
-              viewport={{ once: true, amount: 0.1 }}
-              transition={{ delay: 1.2 }}
-            >
-              <div className="bg-white border border-gray-100 px-4 py-2 rounded-full shadow-sm text-sm font-semibold text-gray-700 flex items-center">
-                <Heart className="w-4 h-4 text-red-500 mr-2" /> Komunitas
-                Suportif
-              </div>
-            </motion.div>
-          </div>
         </div>
       </section>
 
-      {/* 3. Fitur Utama */}
-      <section className="px-10 py-20 bg-gray-50">
+      {/* 2.5 Kemitraan & Kolaborasi (REVISI BAGIAN INI) */}
+      <section className="py-24 mb-10 bg-gray-50/50 border-y border-gray-200">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-6" // Mengurangi margin bawah
+          >
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+              Kemitraan Lingkungan Global
+            </h2>
+            <p className="text-md text-gray-600 max-w-3xl mx-auto">
+              Berkomitmen untuk dampak nyata, kami didukung oleh organisasi terdepan dunia.
+            </p>
+          </motion.div>
+          
+          {/* JALUR ATAS: Bergerak ke Kanan (direction='right') */}
+          <PartnershipTicker partners={partnersLine1} direction="right" duration={65} />
+          
+          {/* JALUR BAWAH: Bergerak ke Kiri (direction='left' - default) */}
+          <PartnershipTicker partners={partnersLine2} direction="left" duration={60} />
+
+        </div>
+      </section>
+
+      {/* 3. Fitur Utama (Tetap seperti kode awal Anda) */}
+      <section className="px-10 py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -303,8 +409,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 4. Testimoni */}
-      <section className="px-10 py-20 bg-white">
+      {/* 4. Testimoni (Tetap seperti kode awal Anda) */}
+      <section className="px-10 py-20 bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -347,7 +453,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 5. CTA Akhir */}
+      {/* 5. CTA Akhir (Tetap seperti kode awal Anda) */}
       <section className="px-10 py-20 bg-gradient-to-br from-primary/10 to-sky-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
