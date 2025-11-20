@@ -12,10 +12,6 @@ import {
   Filler,
 } from 'chart.js';
 import {
-  Target,
-  Eye,
-  Award,
-  TrendingUp,
   BookOpen,
   Users,
   Sprout,
@@ -27,6 +23,12 @@ import {
   AlertTriangle,
   HeartPulse,
   Sparkles,
+  Lightbulb,
+  // Ikon baru untuk bagian Solusi
+  Zap,        // Mewakili Energi/Listrik
+  RefreshCw,  // Mewakili Daur Ulang
+  Megaphone,  // Mewakili Suara/Aksi
+  ShieldCheck // Mewakili Kesadaran
 } from 'lucide-react';
 
 // Registrasi komponen Chart.js
@@ -42,56 +44,34 @@ ChartJS.register(
 );
 
 const About = () => {
-  // Data untuk bagian "Apa yang Kami Lakukan?"
-  const whatWeDo = [
-    {
-      icon: BookOpen,
-      title: 'Edukasi Terpercaya',
-      description:
-        'Menyediakan artikel, panduan, dan data terverifikasi untuk meningkatkan kesadaran tentang krisis iklim.',
-    },
-    {
-      icon: Sprout,
-      title: 'Aksi Nyata',
-      description:
-        'Menghubungkan pengguna dengan program penanaman pohon, kampanye daur ulang, dan tantangan gaya hidup hijau.',
-    },
-    {
-      icon: Users,
-      title: 'Komunitas Peduli',
-      description:
-        'Membangun platform bagi para pejuang lingkungan untuk berkolaborasi, berbagi ide, dan menginspirasi perubahan.',
-    },
-  ];
+  // --- DATA YANG TIDAK DIPAKAI (VALUES & WHATWEDO) SUDAH DIHAPUS ---
 
-  // Data untuk nilai-nilai
-  const values = [
+  // Data Solusi (Timeline)
+  const solutions = [
     {
-      icon: Target,
-      title: 'Visi',
-      description:
-        'Dunia yang berkelanjutan di mana setiap individu berperan aktif dalam melindungi lingkungan.',
+      icon: ShieldCheck,
+      title: "Sadar Akan Jejak Karbon",
+      description: "Kenali dampak dari aktivitas harianmu terhadap lingkungan dan mulai hitung jejak karbon pribadimu."
     },
     {
-      icon: Eye,
-      title: 'Transparansi',
-      description: 'Informasi akurat dan terpercaya tentang isu lingkungan dan solusinya.',
+      icon: Zap,
+      title: "Efisiensi Energi Sehari-hari",
+      description: "Mulai dari mematikan lampu tak terpakai, beralih ke LED, hingga mengurangi penggunaan AC berlebihan."
     },
     {
-      icon: TrendingUp,
-      title: 'Dampak Nyata',
-      description: 'Mengukur dan melaporkan dampak positif dari setiap aksi yang dilakukan.',
+      icon: RefreshCw,
+      title: "Terapkan 3R Secara Berkala",
+      description: "Reduce, Reuse, Recycle. Gunakan barang berulang kali dan pilah sampah organik serta anorganik."
     },
     {
-      icon: Award,
-      title: 'Kolaborasi',
-      description: 'Membangun jaringan global untuk aksi kolektif yang lebih besar.',
-    },
+      icon: Megaphone,
+      title: "Ambil Aksi dan Suarakan",
+      description: "Ingat, menjaga bumi butuh konsistensi. Ajak orang terdekatmu dan mulai langkah pertamamu sekarang."
+    }
   ];
 
   // ============================================================
   // DATA & OPTIONS UNTUK CHART SAMPAH INDONESIA
-  // (contoh: timbulan sampah nasional per tahun, satuan juta ton)
   // ============================================================
   const chartData = {
     labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
@@ -207,112 +187,68 @@ const About = () => {
           </p>
         </motion.div>
 
-        {/* MISI KAMI */}
+        {/* BAGIAN MISI KAMI */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
+            className="space-y-6"
           >
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Misi Kami</h2>
-            <p className="text-lg text-gray-600 mb-4 leading-relaxed">
-              AksiHijau adalah platform edukasi dan aksi perubahan iklim yang memungkinkan setiap
-              orang untuk berkontribusi dalam menyelamatkan planet kita. Kami percaya bahwa
-              perubahan dimulai dari tindakan kecil yang konsisten.
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900">
+              Aksi Iklim untuk <span className="text-primary">Semua</span>
+            </h2>
+            <p className="text-lg text-gray-600 leading-relaxed">
+              Di Indonesia, masih banyak kebingungan dan rasa kewalahan seputar krisis iklim yang
+              membuat orang enggan untuk memulai. <strong>AksiHijau hadir untuk mengubah itu.</strong>
             </p>
             <p className="text-lg text-gray-600 leading-relaxed">
-              Melalui edukasi, kolaborasi, dan aksi nyata, kami membangun komunitas global yang
-              peduli dan siap menghadapi tantangan lingkungan masa depan.
+              Kami menyediakan platform yang mudah diakses, terverifikasi, dan gratis untuk
+              membantu siapa saja yang membutuhkan tempat untuk belajar, memahami dampaknya, dan
+              mendapatkan panduan aksi yang suportif.
             </p>
+            {/* Note Box */}
+            <div className="bg-emerald-50 border-l-4 border-primary text-emerald-800 p-4 rounded-r-lg">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <Lightbulb className="w-5 h-5 text-primary" />
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm leading-relaxed">
+                    <strong>Catatan Penting:</strong> AksiHijau adalah alat pendukung edukasi dan
+                    aksi. Kami bukan pengganti data riset ilmiah primer. Untuk aksi korporat atau
+                    kebijakan, kami sangat menyarankan untuk berkonsultasi dengan para ahli
+                    lingkungan berlisensi.
+                  </p>
+                </div>
+              </div>
+            </div>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="relative"
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="grid grid-cols-2 gap-6"
           >
-            <div className="aspect-video bg-gradient-to-br from-primary/20 to-sky-100 rounded-2xl flex items-center justify-center p-8">
-              <div className="text-center">
-                <Sprout className="w-64 h-64 text-primary mx-auto mb-4" />
-                <p className="text-2xl font-bold text-gray-800">Tumbuh Bersama Alam</p>
-                <p className="text-gray-600">Satu Aksi, Satu Perubahan.</p>
-              </div>
-            </div>
+            {/* Card 1-4 */}
+            {[BookOpen, Sprout, Users, Leaf].map((Icon, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
+                className="bg-white rounded-2xl shadow-lg p-8 flex items-center justify-center aspect-square transition-all duration-300 hover:shadow-blue-300 hover:border-blue-300 border-2 border-green-300 shadow-green-300"
+              >
+                <Icon className="w-16 h-16 text-primary" />
+              </motion.div>
+            ))}
           </motion.div>
         </div>
 
-        {/* APA YANG KAMI LAKUKAN */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-24"
-        >
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Apa yang Kami Lakukan?</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Kami fokus pada tiga pilar utama untuk menciptakan dampak yang berkelanjutan.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {whatWeDo.map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="bg-white p-6 rounded-xl shadow-lg text-center"
-              >
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h3>
-                <p className="text-gray-600 leading-relaxed">{item.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* NILAI-NILAI KAMI */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-20"
-        >
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Nilai-Nilai Kami</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Prinsip yang menjadi pedoman kami dalam setiap langkah.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="bg-white p-8 rounded-xl shadow-lg text-center transform hover:scale-105 transition-transform duration-300"
-              >
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <item.icon className="w-8 h-8 text-primary" />
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.description}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+        {/* --- BAGIAN YANG DIHAPUS (What We Do & Values) SUDAH HILANG --- */}
 
         {/* KESEHATAN LINGKUNGAN */}
         <motion.div
@@ -605,6 +541,86 @@ const About = () => {
           </div>
         </motion.div>
 
+        {/* ===================================================================== */}
+        {/* === BAGIAN BARU: SOLUSI NYATA (TIMELINE) - FIX RESPONSIVE === */}
+        {/* ===================================================================== */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="my-24 w-full bg-gradient-to-r from-green-700 to-green-500 rounded-3xl p-8 md:p-12 shadow-2xl relative"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+            {/* Kolom Kiri: Ilustrasi */}
+            {/* order-2 di mobile (bawah), order-1 di lg (kiri) */}
+            <div className="relative z-10 order-2 lg:order-1">
+              <div className="bg-emerald-100 rounded-2xl p-6 aspect-[4/3] flex items-center justify-center relative shadow-inner ">
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+
+                {/* Main Illustration Icon */}
+                <div className="relative z-10 text-center">
+                  <img
+                    src="/public/img/premium-vector.png"
+                    alt="Ilustrasi Gotong Royong Lingkungan"
+                    // PERBAIKAN: lg:-mt-40 (Hanya nembus ke atas saat layar besar)
+                    className="w-full h-full object-cover rounded-xl z-20 transition-opacity duration-300 mix-blend-multiply lg:-mt-40"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'block';
+                    }}
+                  />
+                  {/* Fallback jika gambar tidak load */}
+                  <div className="hidden">
+                    <Users className="w-32 h-32 text-emerald-600 mx-auto mb-4" />
+                    <p className="text-emerald-800 font-bold text-lg">Kolaborasi Hijau</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Kolom Kanan: Content & Timeline */}
+            {/* order-1 di mobile (atas), order-2 di lg (kanan) */}
+            <div className="order-1 lg:order-2 text-white">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Solusi Nyata untuk Pulihkan Bumi
+              </h2>
+              <p className="text-white mb-10 text-lg leading-relaxed font-bold">
+                Setelah memahami urgensi krisis iklim, berikut langkah-langkah praktis yang bisa membantumu menjaga dan memulihkan lingkungan bersama AksiHijau:
+              </p>
+
+              {/* Timeline Steps */}
+              <div className="relative flex flex-col gap-8">
+                {/* Garis Vertikal Penghubung */}
+                <div className="absolute left-8 top-4 bottom-4 w-0.5 bg-white md:left-8"></div>
+
+                {solutions.map((step, index) => (
+                  <div key={index} className="relative flex items-start group">
+                    {/* Icon Box */}
+                    <div className="flex-shrink-0 w-16 h-16 bg-white rounded-xl flex items-center justify-center shadow-lg z-10 mr-5 transition-transform duration-300 group-hover:scale-110">
+                      <step.icon className="w-8 h-8 text-emerald-600" />
+                    </div>
+
+                    {/* Text Content */}
+                    <div className="pt-1">
+                      <h3 className="text-xl font-bold text-white mb-1 transition-colors">
+                        {step.title}
+                      </h3>
+                      <p className="text-white font-bold text-sm leading-relaxed font-poppins">
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </motion.div>
+
         {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -612,16 +628,6 @@ const About = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <div className="bg-gradient-to-r from-primary to-green-500 text-white rounded-2xl p-12 text-center shadow-2xl">
-            <h2 className="text-3xl font-bold mb-4">Siap Bergabung dengan Gerakan?</h2>
-            <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-              Jadilah bagian dari perubahan. Mulai perjalanan hijau Anda bersama kami hari ini.
-            </p>
-            <button className="bg-white text-primary font-bold py-3 px-8 rounded-full text-lg hover:bg-gray-100 transition-colors duration-300 flex items-center justify-center mx-auto shadow-md">
-              Gabung Sekarang
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </button>
-          </div>
         </motion.div>
       </div>
     </div>
