@@ -39,13 +39,14 @@ const Contact = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Bagian Form (Kiri) */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
-            <div className="bg-white rounded-xl p-8 shadow-lg">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            <div className="bg-white rounded-xl p-8 shadow-lg border-2 border-green-400 h-full">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 ">
                 Kirim Pesan
               </h2>
 
@@ -65,7 +66,7 @@ const Contact = () => {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300"
                     placeholder="Masukkan nama Anda"
                   />
                 </motion.div>
@@ -85,7 +86,7 @@ const Contact = () => {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300"
                     placeholder="email@example.com"
                   />
                 </motion.div>
@@ -105,7 +106,7 @@ const Contact = () => {
                     onChange={handleChange}
                     required
                     rows={6}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 resize-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300 resize-none"
                     placeholder="Tulis pesan Anda di sini..."
                   />
                 </motion.div>
@@ -115,7 +116,7 @@ const Contact = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6, duration: 0.6 }}
                   type="submit"
-                  className="w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-green-600 transition-all duration-300 hover:shadow-lg font-semibold flex items-center justify-center gap-2"
+                  className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 hover:shadow-lg font-semibold flex items-center justify-center gap-2"
                 >
                   <Send className="w-5 h-5" />
                   Kirim Pesan
@@ -124,26 +125,28 @@ const Contact = () => {
             </div>
           </motion.div>
 
+          {/* Bagian Info Kontak (Kanan) */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
             className="space-y-8"
           >
-            <div className="bg-white rounded-xl p-8 shadow-lg">
+            <div className="bg-white rounded-xl p-8 shadow-lg border-2 border-green-400 h-full flex flex-col">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 Informasi Kontak
               </h2>
 
-              <div className="space-y-6">
+              <div className="space-y-8 flex-grow">
+                {/* Email */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3, duration: 0.6 }}
                   className="flex items-start gap-4"
                 >
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-6 h-6 text-primary" />
+                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Mail className="w-6 h-6 text-green-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
@@ -152,14 +155,15 @@ const Contact = () => {
                   </div>
                 </motion.div>
 
+                {/* Telepon */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4, duration: 0.6 }}
                   className="flex items-start gap-4"
                 >
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-6 h-6 text-primary" />
+                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Phone className="w-6 h-6 text-green-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Telepon</h3>
@@ -168,42 +172,43 @@ const Contact = () => {
                   </div>
                 </motion.div>
 
+                {/* Alamat & Peta */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5, duration: 0.6 }}
-                  className="flex items-start gap-4"
+                  className="flex flex-col gap-4"
                 >
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-6 h-6 text-primary" />
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-6 h-6 text-green-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-1">Alamat</h3>
+                      <p className="text-gray-600">
+                        Jl. Dr. KRT Radjiman Widyodiningrat No.32, RT.07/RW.7, Rawa Badung, Kec. Cakung, Kota Jakarta Timur, Daerah Khusus Ibukota Jakarta 13930
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Alamat</h3>
-                    <p className="text-gray-600">
-                      Jl. Lingkungan Hijau No. 123<br />
-                      Jakarta Selatan, DKI Jakarta<br />
-                      Indonesia 12345
-                    </p>
+
+                  {/* --- AREA PETA GOOGLE MAPS --- */}
+                  <div className="mt-4 w-full h-64 bg-gray-200 rounded-lg overflow-hidden border border-gray-300">
+                    <iframe
+                      title="Lokasi Kantor"
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.4342287584636!2d106.92306417402486!3d-6.206312860792983!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e698bcabb1368d7%3A0xea46dd080cc5e54c!2sSMK%20NEGERI%2069%20JAKARTA!5e0!3m2!1sid!2sid!4v1763522726687!5m2!1sid!2sid"
+                      width={"100%"}
+                      height="100%"
+                      style={{ border: 0 }}
+                      allowFullScreen={true}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    ></iframe>
                   </div>
+                  {/* --- AKHIR AREA PETA --- */}
+
                 </motion.div>
               </div>
             </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="bg-gradient-to-br from-primary/10 to-sky-50 rounded-xl p-8"
-            >
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
-                Jam Operasional
-              </h3>
-              <div className="space-y-2 text-gray-700">
-                <p><span className="font-medium">Senin - Jumat:</span> 09:00 - 18:00 WIB</p>
-                <p><span className="font-medium">Sabtu:</span> 09:00 - 15:00 WIB</p>
-                <p><span className="font-medium">Minggu:</span> Tutup</p>
-              </div>
-            </motion.div>
           </motion.div>
         </div>
       </div>
