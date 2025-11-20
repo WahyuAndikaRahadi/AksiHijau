@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import WasteDetection from './pages/WasteDetection';
 import CommunityEvents from './pages/CommunityEvents';
 import AdminDashboard from './pages/dashboardAdmin';
+import SocialCommunity from './pages/SocialCommunity';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/cam" element={<WasteDetection />} />
             <Route path="/community-events" element={<CommunityEvents />} />
+            <Route path="/community-social" element={<SocialCommunity />} />
              <Route path="/dashboard-admin" element={<AdminDashboard />} />
           </Routes>
         </main>
