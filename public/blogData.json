@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "title": "Mendaur Ulang Sampah Plastik Menjadi Karya Seni yang Bernilai",
+    "slug": "daur-ulang-sampah-plastik",
+    "category": "Daur Ulang",
+    "author": "Tim Lestari Bumi",
+    "date": "2023-10-25",
+    "bannerImage": "/images/blog/blog1-banner.jpg",
+    "description": "Pelajari cara mengubah botol dan kantong plastik bekas menjadi dekorasi rumah yang unik dan fungsional. Sebuah langkah kecil untuk mengurangi limbah.",
+    "detailDescription": "Sampah plastik adalah masalah lingkungan global yang serius. Namun, dengan sedikit kreativitas, kita dapat mengubah limbah ini menjadi sesuatu yang indah dan berguna. Proses daur ulang sederhana di rumah ini tidak hanya membantu planet, tetapi juga memberikan kepuasan tersendiri. Kami akan membahas langkah-langkah pembuatan pot bunga dari botol plastik, hingga kerajinan mozaik dari tutup botol. Setiap karya yang Anda ciptakan adalah pernyataan cinta terhadap bumi.",
+    "galleryImages": [
+      "/images/blog/blog1-gallery1.jpg",
+      "/images/blog/blog1-gallery2.jpg",
+      "/images/blog/blog1-gallery3.jpg",
+      "/images/blog/blog1-gallery4.jpg"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Komposting di Apartemen: Solusi Sampah Organik Bagi Warga Kota",
+    "slug": "komposting-di-apartemen",
+    "category": "Zero Waste",
+    "author": "Siti Aisyah",
+    "date": "2023-11-10",
+    "bannerImage": "/images/blog/blog2-banner.jpg",
+    "description": "Tidak perlu halaman luas untuk membuat kompos! Temukan metode komposting yang cocok untuk ruang terbatas seperti balkon apartemen Anda.",
+    "detailDescription": "Banyak yang berpikir komposting hanya bisa dilakukan di rumah dengan halaman belakang. Artikel ini membantah mitos tersebut dengan memperkenalkan metode komposting Bokashi atau Vermikomposting (cacing) yang minim bau dan ruang. Anda akan belajar memilih wadah yang tepat, bahan yang boleh dan tidak boleh dimasukkan, serta cara memanen 'emas hitam' (kompos) Anda untuk menyuburkan tanaman hias.",
+    "galleryImages": [
+      "/images/blog/blog2-gallery1.jpg",
+      "/images/blog/blog2-gallery2.jpg"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Mengenal Perbedaan Sampah Anorganik dan B3 (Bahan Berbahaya Beracun)",
+    "slug": "sampah-anorganik-dan-b3",
+    "category": "Edukasi",
+    "author": "Dr. Eko Wibowo",
+    "date": "2023-12-01",
+    "bannerImage": "/images/blog/blog3-banner.jpg",
+    "description": "Edukasi tentang cara memilah dan membuang sampah berbahaya seperti baterai, lampu, dan kemasan pestisida dengan benar untuk mencegah pencemaran.",
+    "detailDescription": "Tidak semua sampah non-organik sama. Sampah B3 (Bahan Berbahaya dan Beracun) memerlukan penanganan khusus karena dapat mencemari air dan tanah serta membahayakan kesehatan. Kami mengulas identifikasi umum sampah B3 rumah tangga (baterai, cat, elektronik bekas) dan prosedur pembuangan yang benar sesuai regulasi, mendorong pembaca untuk mencari titik pengumpulan khusus.",
+    "galleryImages": [
+      "/images/blog/blog3-gallery1.jpg",
+      "/images/blog/blog3-gallery2.jpg",
+      "/images/blog/blog3-gallery3.jpg"
+    ]
+  }
+]

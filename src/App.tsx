@@ -11,6 +11,9 @@ import WasteDetection from './pages/WasteDetection';
 import CommunityEvents from './pages/CommunityEvents';
 import AdminDashboard from './pages/dashboardAdmin';
 import SocialCommunity from './pages/SocialCommunity';
+// Import komponen Blog yang baru
+import BlogList from './pages/BlogList'; // Pastikan path sesuai
+import BlogPost from './pages/BlogPost'; // Pastikan path sesuai
 
 function App() {
   return (
@@ -28,7 +31,13 @@ function App() {
             <Route path="/cam" element={<WasteDetection />} />
             <Route path="/community-events" element={<CommunityEvents />} />
             <Route path="/community-social" element={<SocialCommunity />} />
-             <Route path="/dashboard-admin" element={<AdminDashboard />} />
+            <Route path="/dashboard-admin" element={<AdminDashboard />} />
+            
+            {/* RUTE BLOG BARU */}
+            <Route path="/blog" element={<BlogList />} />
+            <Route path="/blog/:slug" element={<BlogPost />} /> 
+            {/* Menggunakan :slug untuk URL yang lebih SEO friendly */}
+
           </Routes>
         </main>
         <Footer />
