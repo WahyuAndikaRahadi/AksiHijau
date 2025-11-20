@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Leaf, Menu, X, LogOut, User as UserIcon, ChevronDown } from 'lucide-react'; 
+import { Leaf, Menu, X, LogOut, User as UserIcon, ChevronDown, BookOpen, Newspaper } from 'lucide-react'; 
 import { useState, useEffect, useCallback } from 'react';
 import {motion} from 'framer-motion'
 
@@ -10,26 +10,41 @@ const Navbar = () => {
   // States
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false); 
-  // isDropdownOpen kini digunakan untuk desktop DAN mobile
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); 
+  // State untuk dropdown 'Insight'
+  const [isInsightDropdownOpen, setIsInsightDropdownOpen] = useState(false); 
+  // State untuk dropdown 'Community'
+  const [isCommunityDropdownOpen, setIsCommunityDropdownOpen] = useState(false); 
+  
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false); // State untuk hak akses admin
+  const [isAdmin, setIsAdmin] = useState(false);
   const [userName, setUserName] = useState('User');
 
   // Navigasi Statis
   const baseNavLinks = [
     { path: '/', label: 'Home' },
     { path: '/about', label: 'About' },
+    // DROPDOWN BARU: WAWASAN / INSIGHT
+    { 
+      label: 'Artikel', 
+      isDropdown: true,
+      id: 'insight', // ID untuk identifikasi dropdown
+      path: '/wawasan', 
+      dropdownLinks: [
+        { path: '/news', label: 'News & Update', icon: Newspaper }, // Tambahkan ikon untuk visual
+        { path: '/blog', label: 'Blog & Artikel', icon: BookOpen }, 
+      ] 
+    },
+    // DROPDOWN LAMA: COMMUNITY
     { 
       label: 'Community', 
       isDropdown: true,
-      path: '/community', // Path umum, tidak digunakan untuk Link, hanya untuk identifikasi
+      id: 'community', // ID untuk identifikasi dropdown
+      path: '/community', 
       dropdownLinks: [
         { path: '/community-events', label: 'Community Events' },
         { path: '/community-social', label: 'Social Community' },
       ] 
     },
-    { path: '/news', 'label': 'News' },
     { path: '/contact', label: 'Contact' },
   ];
   
@@ -42,11 +57,7 @@ const Navbar = () => {
       setIsAuthenticated(true);
       try {
         const user = userString ? JSON.parse(userString) : {};
-        
-        // Cek status Admin
         setIsAdmin(user.is_admin === true); 
-        
-        // Ambil Username
         setUserName(user.username || user.email?.split('@')[0] || 'User');
       } catch (e) {
         setUserName('User');
@@ -72,7 +83,7 @@ const Navbar = () => {
 
   // Efek Scroll
   useEffect(() => {
-    checkAuthStatus(); // Panggil saat mount
+    checkAuthStatus();
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
@@ -83,72 +94,105 @@ const Navbar = () => {
   // Efek Perubahan Rute & Reset Menu/Dropdown
   useEffect(() => {
     setIsMenuOpen(false);
-    // Tutup dropdown HANYA jika rute berpindah ke luar dari dropdown itu sendiri
-    if (!baseNavLinks.find(link => link.isDropdown)?.dropdownLinks.some(subLink => location.pathname === subLink.path || location.pathname === '/dashboard-admin')) {
-         setIsDropdownOpen(false);
-    }
+    // Tutup dropdown spesifik berdasarkan rute saat berpindah
+    const isInsightRoute = baseNavLinks
+      .find(link => link.id === 'insight')?.dropdownLinks.some(subLink => location.pathname === subLink.path);
+    const isCommunityRoute = baseNavLinks
+      .find(link => link.id === 'community')?.dropdownLinks.some(subLink => location.pathname === subLink.path || location.pathname === '/dashboard-admin');
+    
+    // Hanya tutup dropdown jika rute TIDAK termasuk dalam dropdown tersebut
+    if (!isInsightRoute) setIsInsightDropdownOpen(false);
+    if (!isCommunityRoute) setIsCommunityDropdownOpen(false);
+    
     checkAuthStatus();
   }, [location.pathname, checkAuthStatus]);
   
-  // Menutup dropdown saat klik di luar
+  // Menutup dropdown saat klik di luar (HANYA DESKTOP)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      const dropdownButton = document.getElementById('community-dropdown-button');
-      const dropdownMenu = document.getElementById('community-dropdown-menu');
-      
-      // Jika yang diklik bukan tombol atau menu dropdown, tutup dropdown
-      if (
-        isDropdownOpen &&
-        dropdownButton &&
-        dropdownMenu &&
-        !dropdownButton.contains(event.target as Node) &&
-        !dropdownMenu.contains(event.target as Node)
-      ) {
-        // Hanya tutup di desktop
+        const buttons = [
+            document.getElementById('insight-dropdown-button'),
+            document.getElementById('community-dropdown-button')
+        ];
+        const menus = [
+            document.getElementById('insight-dropdown-menu'),
+            document.getElementById('community-dropdown-menu')
+        ];
+
         if (window.innerWidth >= 768) { 
-            setIsDropdownOpen(false);
+            let clickInsideAnyDropdown = false;
+            
+            // Cek jika klik berada di dalam tombol atau menu dropdown mana pun
+            buttons.forEach((button, index) => {
+                if (
+                    (button && button.contains(event.target as Node)) ||
+                    (menus[index] && menus[index]!.contains(event.target as Node))
+                ) {
+                    clickInsideAnyDropdown = true;
+                }
+            });
+
+            // Jika klik di luar semua dropdown, tutup semua
+            if (!clickInsideAnyDropdown) {
+                setIsInsightDropdownOpen(false);
+                setIsCommunityDropdownOpen(false);
+            }
         }
-      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isDropdownOpen]);
+  }, []);
 
+  // Fungsi untuk mengecek apakah rute saat ini aktif di dalam dropdown tertentu
+  const isDropdownActive = (id: 'insight' | 'community') => {
+    const links = baseNavLinks.find(link => link.id === id)?.dropdownLinks || [];
+    const isBaseActive = links.some(subLink => location.pathname === subLink.path);
 
-  // Tentukan apakah salah satu link di dalam dropdown Community aktif (termasuk Admin Dashboard)
-  const isCommunityActive = baseNavLinks
-    .find(link => link.isDropdown)?.dropdownLinks
-    .some(subLink => location.pathname === subLink.path || location.pathname === '/dashboard-admin');
+    if (id === 'community' && isAdmin && location.pathname === '/dashboard-admin') {
+        return true; // Admin Dashboard juga membuat Community aktif
+    }
+    return isBaseActive;
+  }
 
 
   // Tentukan daftar tautan lengkap (termasuk Admin jika ada)
-  // LOGIKA BARU: ADMIN DASHBOARD DIMASUKKAN KE DALAM DROPDOWN COMMUNITY
   const finalNavLinks = baseNavLinks.map(link => {
-    // Cari objek Community (dropdown)
-    if (link.isDropdown && link.label === 'Community') {
+    if (link.isDropdown && link.id === 'community') {
       let updatedDropdownLinks = [...link.dropdownLinks];
 
-      // Jika user adalah Admin, tambahkan link Admin Dashboard
       if (isAdmin) {
-        // Tambahkan link Admin Dashboard di posisi pertama dropdown
         updatedDropdownLinks.unshift({ 
           path: '/dashboard-admin', 
           label: 'Admin Dashboard', 
-          isAdmin: true // Flag untuk styling khusus
+          isAdmin: true,
+          icon: UserIcon // Menggunakan UserIcon sebagai ikon admin
         });
       }
 
-      // Kembalikan objek link Community yang sudah diperbarui
-      return {
-        ...link,
-        dropdownLinks: updatedDropdownLinks
-      };
+      return { ...link, dropdownLinks: updatedDropdownLinks };
     }
-    return link; // Kembalikan link lainnya apa adanya
+    return link;
   });
+  
+  // Fungsi untuk mendapatkan state dropdown berdasarkan ID
+  const getDropdownState = (id: 'insight' | 'community') => {
+      return id === 'insight' ? isInsightDropdownOpen : isCommunityDropdownOpen;
+  }
+
+  // Fungsi untuk toggle state dropdown berdasarkan ID
+  const toggleDropdown = (id: 'insight' | 'community') => {
+      if (id === 'insight') {
+          setIsInsightDropdownOpen(prev => !prev);
+          setIsCommunityDropdownOpen(false); // Tutup dropdown lain
+      } else {
+          setIsCommunityDropdownOpen(prev => !prev);
+          setIsInsightDropdownOpen(false); // Tutup dropdown lain
+      }
+  }
+
 
   // --- Komponen Aksi Desktop (Login/Register atau Nama/Logout) ---
   const DesktopActions = () => {
@@ -207,57 +251,67 @@ const Navbar = () => {
           {/* Navigasi Desktop */}
           <div className="hidden md:flex items-center space-x-8">
             {finalNavLinks.map((link) => {
-              // Jika ini adalah link Dropdown (Community)
-              if (link.isDropdown) {
+              // Jika ini adalah link Dropdown (Insight atau Community)
+              if (link.isDropdown && link.id) {
+                const isActive = isDropdownActive(link.id as 'insight' | 'community');
+                const isOpen = getDropdownState(link.id as 'insight' | 'community');
+
                 return (
                   <div 
                     key={link.label}
                     className="relative"
                   >
                     <button
-                      id="community-dropdown-button"
-                      onClick={() => setIsDropdownOpen(prev => !prev)} // Toggle dengan klik
+                      id={`${link.id}-dropdown-button`}
+                      onClick={() => toggleDropdown(link.id as 'insight' | 'community')}
                       className={`flex items-center space-x-1 text-gray-700 hover:text-primary transition-colors duration-300 font-medium ${
-                        isCommunityActive || isDropdownOpen ? 'text-primary' : ''
+                        isActive || isOpen ? 'text-primary' : ''
                       }`}
-                      aria-expanded={isDropdownOpen}
+                      aria-expanded={isOpen}
                     >
                       <span>{link.label}</span>
-                      <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
-                      {(isCommunityActive) && (
+                      <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`} />
+                      {(isActive) && (
                         <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full transition-all" />
                       )}
                     </button>
                     
                     {/* Isi Dropdown */}
                     <motion.div
-                      id="community-dropdown-menu"
+                      id={`${link.id}-dropdown-menu`}
                       initial={{ opacity: 0, y: -10 }}
-                      animate={isDropdownOpen ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+                      animate={isOpen ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
                       transition={{ duration: 0.2 }}
-                      className={`absolute left-0 mt-3 w-48 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden ${isDropdownOpen ? 'block' : 'hidden'}`}
-                      // Hanya matikan event pointer jika tertutup untuk mencegah interaksi tak sengaja
-                      style={{ pointerEvents: isDropdownOpen ? 'auto' : 'none' }} 
+                      className={`absolute left-0 mt-3 w-56 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden ${isOpen ? 'block' : 'hidden'}`}
+                      style={{ pointerEvents: isOpen ? 'auto' : 'none' }} 
                     >
-                      {link.dropdownLinks.map(subLink => (
-                        <Link
-                          key={subLink.path}
-                          to={subLink.path}
-                          className={`flex items-center space-x-2 px-4 py-2 text-sm transition-colors duration-200 
-                            ${subLink.isAdmin 
-                              ? 'text-red-600 hover:bg-red-50 hover:text-red-700 font-semibold' 
-                              : 'text-gray-700 hover:bg-primary/10 hover:text-primary'}
-                            ${location.pathname === subLink.path 
-                              ? (subLink.isAdmin ? 'bg-red-100 text-red-700 font-bold' : 'bg-primary/10 text-primary font-semibold') 
-                              : ''}
-                          `}
-                          // Tutup dropdown setelah klik link
-                          onClick={() => setIsDropdownOpen(false)} 
-                        >
-                            {subLink.isAdmin}
-                            <span>{subLink.label}</span>
-                        </Link>
-                      ))}
+                      {link.dropdownLinks.map(subLink => {
+                          // Menggunakan ikon dari subLink atau default UserIcon jika Admin
+                          const IconComponent = subLink.icon || (subLink.isAdmin ? UserIcon : null); 
+                          
+                          return (
+                            <Link
+                              key={subLink.path}
+                              to={subLink.path}
+                              className={`flex items-center space-x-3 px-4 py-2 text-sm transition-colors duration-200 
+                                ${subLink.isAdmin 
+                                  ? 'text-red-600 hover:bg-red-50 hover:text-red-700 font-semibold' 
+                                  : 'text-gray-700 hover:bg-primary/10 hover:text-primary'}
+                                ${location.pathname === subLink.path 
+                                  ? (subLink.isAdmin ? 'bg-red-100 text-red-700 font-bold' : 'bg-primary/10 text-primary font-semibold') 
+                                  : ''}
+                              `}
+                              onClick={() => {
+                                  // Tutup kedua dropdown setelah klik link di desktop
+                                  setIsInsightDropdownOpen(false);
+                                  setIsCommunityDropdownOpen(false);
+                              }} 
+                            >
+                                {IconComponent && <IconComponent className="w-4 h-4" />}
+                                <span>{subLink.label}</span>
+                            </Link>
+                          );
+                      })}
                     </motion.div>
                   </div>
                 );
@@ -275,7 +329,7 @@ const Navbar = () => {
                     {link.label}
                     {location.pathname === link.path && (
                       <span
-                        className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full transition-all"
+                        className="absolute -bottom-1 left-0 w-full h-0.5 bg-primary rounded-full transition-all"
                       />
                     )}
                   </Link>
@@ -314,43 +368,54 @@ const Navbar = () => {
       >
         <div className="flex flex-col space-y-2 p-4">
           {finalNavLinks.map((link) => {
-             // Jika ini adalah link Dropdown (Community)
-             if (link.isDropdown) {
+             // Jika ini adalah link Dropdown
+             if (link.isDropdown && link.id) {
+              const isActive = isDropdownActive(link.id as 'insight' | 'community');
+              const isOpen = getDropdownState(link.id as 'insight' | 'community');
+              
               return (
                 <div key={link.label} className="w-full">
                   {/* Klik di mobile untuk toggle dropdown */}
                   <button
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)} 
+                    onClick={() => toggleDropdown(link.id as 'insight' | 'community')} 
                     className={`flex items-center justify-between w-full py-2 px-3 rounded-md text-base font-medium transition-colors duration-200 ${
-                      isCommunityActive || isDropdownOpen
+                      isActive || isOpen
                         ? 'bg-primary/10 text-primary'
                         : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >
                     <span>{link.label}</span>
-                    <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : 'rotate-0'}`} />
+                    <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`} />
                   </button>
                   {/* Isi Dropdown Mobile */}
-                  <div className={`transition-all duration-300 overflow-hidden ${isDropdownOpen ? 'max-h-40 pt-1' : 'max-h-0'}`}>
-                    {link.dropdownLinks.map(subLink => (
-                      <Link
-                        key={subLink.path}
-                        to={subLink.path}
-                        className={`flex items-center space-x-2 py-2 pl-8 pr-3 text-sm rounded-md transition-colors duration-200 
-                          ${subLink.isAdmin 
-                            ? 'text-red-700 bg-red-50 hover:bg-red-100 font-bold' 
-                            : 'text-gray-600 hover:bg-gray-100'}
-                          ${location.pathname === subLink.path 
-                            ? (subLink.isAdmin ? 'bg-red-100 text-red-700 font-bold' : 'bg-primary/20 text-primary font-semibold') 
-                            : ''}
-                        `}
-                        // Tutup menu mobile dan dropdown saat link diklik
-                        onClick={() => { setIsMenuOpen(false); setIsDropdownOpen(false); }} 
-                      >
-                        {subLink.isAdmin}
-                        <span>{subLink.label}</span>
-                      </Link>
-                    ))}
+                  <div className={`transition-all duration-300 overflow-hidden ${isOpen ? 'max-h-40 pt-1' : 'max-h-0'}`}>
+                    {link.dropdownLinks.map(subLink => {
+                       const IconComponent = subLink.icon || (subLink.isAdmin ? UserIcon : null); 
+                       
+                       return (
+                        <Link
+                          key={subLink.path}
+                          to={subLink.path}
+                          className={`flex items-center space-x-3 py-2 pl-8 pr-3 text-sm rounded-md transition-colors duration-200 
+                            ${subLink.isAdmin 
+                              ? 'text-red-700 bg-red-50 hover:bg-red-100 font-bold' 
+                              : 'text-gray-600 hover:bg-gray-100'}
+                            ${location.pathname === subLink.path 
+                              ? (subLink.isAdmin ? 'bg-red-100 text-red-700 font-bold' : 'bg-primary/20 text-primary font-semibold') 
+                              : ''}
+                          `}
+                          // Tutup menu mobile dan semua dropdown saat link diklik
+                          onClick={() => { 
+                            setIsMenuOpen(false); 
+                            setIsInsightDropdownOpen(false);
+                            setIsCommunityDropdownOpen(false);
+                          }} 
+                        >
+                          {IconComponent && <IconComponent className="w-4 h-4" />}
+                          <span>{subLink.label}</span>
+                        </Link>
+                       );
+                    })}
                   </div>
                 </div>
               );
