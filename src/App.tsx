@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -11,13 +12,26 @@ import WasteDetection from './pages/WasteDetection';
 import CommunityEvents from './pages/CommunityEvents';
 import AdminDashboard from './pages/dashboardAdmin';
 import SocialCommunity from './pages/SocialCommunity';
-// Import komponen Blog yang baru
-import BlogList from './pages/BlogList'; // Pastikan path sesuai
-import BlogPost from './pages/BlogPost'; // Pastikan path sesuai
+import BlogList from './pages/BlogList';
+import BlogPost from './pages/BlogPost';
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }, [pathname]);
+
+  return null;
+};
 
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <div className="min-h-screen bg-white flex flex-col">
         <Navbar />
         <main className="flex-grow">
@@ -33,10 +47,8 @@ function App() {
             <Route path="/community-social" element={<SocialCommunity />} />
             <Route path="/dashboard-admin" element={<AdminDashboard />} />
             
-            {/* RUTE BLOG BARU */}
             <Route path="/blog" element={<BlogList />} />
             <Route path="/blog/:slug" element={<BlogPost />} /> 
-            {/* Menggunakan :slug untuk URL yang lebih SEO friendly */}
 
           </Routes>
         </main>
