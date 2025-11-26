@@ -425,7 +425,7 @@ const Navbar = () => {
               <div key={link.path}>
                 <Link
                   to={link.path}
-                  className={`block py-2 px-3 rounded-md text-base font-medium transition-colors duration-200 text-center ${
+                  className={`block py-2 px-3 rounded-md text-base font-medium transition-colors duration-200 ${
                     location.pathname === link.path
                       ? 'bg-primary/10 text-primary'
                       : 'text-gray-700 hover:bg-gray-50'

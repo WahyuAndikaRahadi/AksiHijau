@@ -2,18 +2,13 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
   Heart,
-  BookOpen,
   Zap,
-  TrendingUp,
   Check,
   DollarSign,
   Users,
   Clock,
-  MessageSquare,
   Camera,
-  Group,
   Bot,
-  MonitorCheck,
   Plus,
   Minus,
 } from "lucide-react";
