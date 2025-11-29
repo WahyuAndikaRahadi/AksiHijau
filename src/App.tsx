@@ -14,6 +14,7 @@ import AdminDashboard from './pages/dashboardAdmin';
 import SocialCommunity from './pages/SocialCommunity';
 import BlogList from './pages/BlogList';
 import BlogPost from './pages/BlogPost';
+import EcoBot from './pages/EcoBot';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -43,6 +44,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/cam" element={<WasteDetection />} />
+           <Route path="/ai" element={<EcoBot />} />
             <Route path="/community-events" element={<CommunityEvents />} />
             <Route path="/community-social" element={<SocialCommunity />} />
             <Route path="/dashboard-admin" element={<AdminDashboard />} />
