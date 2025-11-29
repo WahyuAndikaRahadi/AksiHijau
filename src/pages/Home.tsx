@@ -282,7 +282,7 @@ const Home = () => {
       icon: Bot,
       title: "Konsultasi AI Interaktif",
       description: "Dapatkan jawaban cerdas dan teredukasi tentang cara hidup berkelanjutan dan langkah-langkah ramah lingkungan.",
-      link: "/ai-chat",
+      link: "/ai",
     },
     {
       icon: Camera,
@@ -418,13 +418,13 @@ const Home = () => {
 
       {/* 2. Filosofi AksiHijau */}
       <section className="px-10 py-20 md:my-24 bg-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-2 sm:px-6 lg:px-8">
           <motion.div
             variants={cardVariants}
             initial="initial"
             whileInView="animate"
             viewport={{ once: true, amount: 0.5 }}
-            className="max-w-4xl mx-auto bg-green-50/50  p-5 sm:p-12 rounded-3xl border-2 border-green-200 shadow-xl"
+            className="max-w-4xl mx-auto bg-green-50/50 p-5 sm:p-6 rounded-3xl border-2 border-green-200 shadow-xl"
             style={{
               boxShadow:
                 "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
@@ -432,7 +432,7 @@ const Home = () => {
                 "linear-gradient(to bottom right, #f0fdf4, #ecfeff)",
             }}
           >
-            <div className="relative text-center">
+            <div className="m-5 relative text-center">
               <p className="text-xl sm:text-2xl text-gray-700 font-medium leading-relaxed my-8">
                 <span className="text-primary font-bold">
                   "Kelestarian Lingkungan

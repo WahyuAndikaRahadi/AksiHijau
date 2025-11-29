@@ -41,7 +41,7 @@ const WasteDetection: React.FC = () => {
 
   // PENTING: Ganti dengan API Key Gemini Anda
   // Pertahankan API Key (disarankan untuk menggunakan variable environment di aplikasi nyata)
-  const GEMINI_API_KEY = 'AIzaSyB7OU1L0CYeiYOZ5HUJ9vKkc11rqT6_sac';
+  const GEMINI_API_KEY = 'AIzaSyCd0GI0s9DwM85zKST89DantFFyO1ltQTE';
 
   // Hapus useEffect untuk loading TensorFlow model
   useEffect(() => {
@@ -239,13 +239,13 @@ const WasteDetection: React.FC = () => {
             <Recycle className="w-12 h-12 text-white" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Deteksi Sampah AI
+            EcoScan
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-2">
             Powered by Google Gemini AI
           </p>
           <p className="text-sm text-gray-500">
-            Foto sampah → Gemini analisis dan identifikasi pengelolaan
+            Foto sampah → EcoScan akan analisis dan identifikasi pengelolaan
           </p>
         </motion.div>
 
@@ -306,7 +306,7 @@ const WasteDetection: React.FC = () => {
                 </div>
                 <div className="p-6 bg-purple-50 rounded-xl">
                   <Sparkles className="w-8 h-8 text-purple-500 mb-3" />
-                  <h3 className="font-semibold text-gray-900 mb-2">2. Gemini Deteksi & Analisis</h3>
+                  <h3 className="font-semibold text-gray-900 mb-2">2. EcoScan Mengnalisis</h3>
                   <p className="text-sm text-gray-600">AI identifikasi sampah spesifik dan kategorisasi</p>
                 </div>
                 <div className="p-6 bg-green-50 rounded-xl">
@@ -320,7 +320,7 @@ const WasteDetection: React.FC = () => {
               <div className="mt-6 text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  Gemini AI Ready
+                  EcoScan Ready
                 </div>
               </div>
             </div>
@@ -381,7 +381,7 @@ const WasteDetection: React.FC = () => {
             <div className="p-6 sm:p-8">
               {/* Captured Image */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-4 text-center">📸 Foto Hasil Jepretan</h3>
+                <h3 className="text-lg font-semibold mb-4 text-center">📸 Foto Terlampir</h3>
                 <div className="relative max-w-2xl mx-auto">
                   <img
                     src={capturedImage}
@@ -399,7 +399,7 @@ const WasteDetection: React.FC = () => {
                 {isDetecting && isAnalyzingWithAI && (
                   <div className="flex flex-col items-center justify-center py-12">
                     <Sparkles className="w-16 h-16 text-green-500 animate-pulse mb-4" />
-                    <p className="text-gray-600 font-medium">Gemini AI mendeteksi object & menganalisis...</p>
+                    <p className="text-gray-600 font-medium">EcoScan mendeteksi object & menganalisis...</p>
                     <p className="text-sm text-gray-500 mt-2">Proses deteksi objek dan analisis pengelolaan</p>
                   </div>
                 )}
@@ -495,12 +495,7 @@ const WasteDetection: React.FC = () => {
                         >
                           🔄 Deteksi Sampah Lain
                         </button>
-                        <button
-                          onClick={() => window.print()}
-                          className="flex-1 py-4 border-2 border-green-500 text-green-500 rounded-xl hover:bg-green-50 transition-all duration-300 font-bold text-lg"
-                        >
-                          🖨️ Cetak Hasil
-                        </button>
+                       
                       </div>
                     </motion.div>
                   )}
