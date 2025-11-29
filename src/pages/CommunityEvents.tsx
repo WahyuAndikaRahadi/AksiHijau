@@ -19,6 +19,11 @@ interface Event {
 const CommunityEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
+  // ✨ Tambah state untuk mencegah double submission pada create event
+  const [isCreating, setIsCreating] = useState(false);
+  // ✨ Tambah state untuk menonaktifkan tombol upvote saat request
+  const [upvoting, setUpvoting] = useState<Set<number>>(new Set());
+  
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -31,6 +36,8 @@ const CommunityEvents = () => {
     event_date: '',
     location: '',
   });
+  
+  const isLoggedIn = !!localStorage.getItem('token');
 
   // Load events
   useEffect(() => {
@@ -60,13 +67,18 @@ const CommunityEvents = () => {
   const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('Silakan login terlebih dahulu');
-        return;
-      }
+    // ✨ Cek validasi wajib (title, desc, date) dan status loading
+    if (!formData.title.trim() || !formData.description.trim() || !formData.event_date.trim() || isCreating) return;
 
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Silakan login terlebih dahulu');
+      return;
+    }
+
+    setIsCreating(true); // Mulai proses posting
+    
+    try {
       const response = await fetch(`${API_URL}/events`, {
         method: 'POST',
         headers: {
@@ -80,7 +92,8 @@ const CommunityEvents = () => {
         alert('Event berhasil dibuat! Menunggu persetujuan admin.');
         setShowCreateModal(false);
         setFormData({ title: '', description: '', event_date: '', location: '' });
-        loadEvents();
+        // Hanya reload event yang sudah disetujui, tapi panggil loadEvents untuk refresh
+        loadEvents(); 
       } else {
         const error = await response.json();
         alert(error.error || 'Gagal membuat event');
@@ -88,17 +101,24 @@ const CommunityEvents = () => {
     } catch (error) {
       console.error('Error creating event:', error);
       alert('Terjadi kesalahan');
+    } finally {
+      setIsCreating(false); // Selesai proses posting
     }
   };
 
   const handleUpvote = async (eventId: number) => {
+    if (!isLoggedIn) {
+      alert('Silakan login untuk upvote');
+      return;
+    }
+    // ✨ Cek apakah event ini sudah dalam proses upvote
+    if (upvoting.has(eventId)) return;
+
+    setUpvoting(prev => new Set(prev).add(eventId)); // Mulai upvote
+
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        alert('Silakan login untuk upvote');
-        return;
-      }
-
+      
       const response = await fetch(`${API_URL}/events/${eventId}/upvote`, {
         method: 'POST',
         headers: {
@@ -107,15 +127,33 @@ const CommunityEvents = () => {
       });
 
       if (response.ok) {
-        loadEvents(); // Reload untuk update count
+        // Karena upvote adalah toggle dan kita tidak menyimpan state upvote user, 
+        // kita panggil loadEvents untuk mendapatkan count terbaru dan status upvote yang akurat.
+        await loadEvents(); 
+      } else {
+         const error = await response.json();
+         alert(error.error || 'Gagal upvote event.');
       }
     } catch (error) {
       console.error('Error upvoting:', error);
+      alert('Terjadi kesalahan koneksi saat upvote.');
+    } finally {
+      // Selesai upvote, hapus dari set
+      setUpvoting(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(eventId);
+        return newSet;
+      });
     }
   };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
+    // ✨ Robustness check for Invalid Date
+    if (isNaN(date.getTime())) {
+        return 'Tanggal tidak valid'; 
+    }
+    
     return date.toLocaleDateString('id-ID', {
       weekday: 'long',
       year: 'numeric',
@@ -138,7 +176,7 @@ const CommunityEvents = () => {
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
+    const startingDayOfWeek = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
 
     const days = [];
     
@@ -163,6 +201,9 @@ const CommunityEvents = () => {
     
     return events.filter(event => {
       const eventDate = new Date(event.event_date);
+      // Cek apakah tanggal valid sebelum perbandingan
+      if(isNaN(eventDate.getTime())) return false; 
+        
       return (
         eventDate.getDate() === day &&
         eventDate.getMonth() === month &&
@@ -170,6 +211,8 @@ const CommunityEvents = () => {
       );
     });
   };
+
+  const isFormValid = formData.title.trim() && formData.description.trim() && formData.event_date.trim();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-sky-50">
@@ -182,8 +225,14 @@ const CommunityEvents = () => {
               <p className="text-gray-600 mt-1">Temukan dan ikuti event lingkungan di sekitar Anda</p>
             </div>
             <button
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+              onClick={() => {
+                if (!isLoggedIn) alert('Harap login untuk membuat Event.');
+                else setShowCreateModal(true);
+              }}
+              disabled={!isLoggedIn}
+              className={`flex items-center gap-2 px-6 py-3 text-white rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl ${
+                isLoggedIn ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'
+              }`}
             >
               <Plus className="w-5 h-5" />
               <span className="font-semibold">Buat Event</span>
@@ -244,49 +293,62 @@ const CommunityEvents = () => {
                 <p className="text-gray-600 text-lg">Belum ada event yang tersedia</p>
               </div>
             ) : (
-              filteredEvents.map((event, index) => (
-                <motion.div
-                  key={event.event_id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
-                >
-                  <div className="p-6">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
-                        <p className="text-gray-600 mb-4">{event.description}</p>
-                        
-                        <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4" />
-                            <span>{formatDate(event.event_date)}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4" />
-                            <span>{event.location}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Users className="w-4 h-4" />
-                            <span>Dibuat oleh {event.creator_name}</span>
+              filteredEvents.map((event, index) => {
+                const isCurrentlyUpvoting = upvoting.has(event.event_id);
+                
+                return (
+                  <motion.div
+                    key={event.event_id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+                  >
+                    <div className="p-6">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
+                          <p className="text-gray-600 mb-4">{event.description}</p>
+                          
+                          <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                            <div className="flex items-center gap-2">
+                              <Clock className="w-4 h-4" />
+                              <span>{formatDate(event.event_date)}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <MapPin className="w-4 h-4" />
+                              <span>{event.location}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Users className="w-4 h-4" />
+                              <span>Dibuat oleh {event.creator_name}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Upvote Button */}
-                      <button
-                        onClick={() => handleUpvote(event.event_id)}
-                        className="flex flex-col items-center gap-1 px-4 py-3 bg-green-50 hover:bg-green-100 rounded-lg transition-all duration-300 ml-4"
-                      >
-                        <TrendingUp className="w-6 h-6 text-green-600" />
-                        <span className="text-sm font-bold text-green-600">{event.upvote_count}</span>
-                        <span className="text-xs text-gray-600">Upvote</span>
-                      </button>
+                        {/* Upvote Button */}
+                        <button
+                          onClick={() => handleUpvote(event.event_id)}
+                          disabled={!isLoggedIn || isCurrentlyUpvoting}
+                          className={`flex flex-col items-center gap-1 px-4 py-3 rounded-lg transition-all duration-300 ml-4 ${
+                            !isLoggedIn || isCurrentlyUpvoting 
+                              ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                              : 'bg-green-50 hover:bg-green-100'
+                          }`}
+                        >
+                          {isCurrentlyUpvoting ? (
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600" />
+                          ) : (
+                            <TrendingUp className="w-6 h-6 text-green-600" />
+                          )}
+                          <span className="text-sm font-bold text-green-600">{event.upvote_count}</span>
+                          <span className="text-xs text-gray-600">Upvote</span>
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))
+                  </motion.div>
+                );
+              })
             )}
           </div>
         ) : (
@@ -353,7 +415,7 @@ const CommunityEvents = () => {
       </div>
 
       {/* Create Event Modal */}
-      {showCreateModal && (
+      {showCreateModal && isLoggedIn && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -377,6 +439,7 @@ const CommunityEvents = () => {
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="Contoh: Beach Cleanup Pantai Indah"
+                    disabled={isCreating}
                   />
                 </div>
 
@@ -390,6 +453,7 @@ const CommunityEvents = () => {
                     rows={4}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="Deskripsikan event Anda..."
+                    disabled={isCreating}
                   />
                 </div>
 
@@ -402,6 +466,7 @@ const CommunityEvents = () => {
                     value={formData.event_date}
                     onChange={(e) => setFormData({ ...formData, event_date: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    disabled={isCreating}
                   />
                 </div>
 
@@ -415,6 +480,7 @@ const CommunityEvents = () => {
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="Contoh: Pantai Indah, Jakarta"
+                    disabled={isCreating}
                   />
                 </div>
               </div>
@@ -422,16 +488,35 @@ const CommunityEvents = () => {
 
             <div className="p-6 border-t flex gap-4">
               <button
-                onClick={() => setShowCreateModal(false)}
+                onClick={() => {
+                    setShowCreateModal(false);
+                    if (!isCreating) {
+                       setFormData({ title: '', description: '', event_date: '', location: '' });
+                    }
+                }}
+                disabled={isCreating}
                 className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-300 font-semibold"
               >
                 Batal
               </button>
               <button
                 onClick={handleCreateEvent}
-                className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 font-semibold"
+                // ✨ Tambahkan cek isFormValid dan isCreating
+                disabled={!isFormValid || isCreating}
+                className={`flex-1 px-6 py-3 text-white rounded-lg transition-all duration-300 font-semibold ${
+                  !isFormValid || isCreating
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-green-600 hover:bg-green-700'
+                }`}
               >
-                Buat Event
+                {isCreating ? (
+                    <div className="flex items-center justify-center gap-2">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                        <span>Membuat Event...</span>
+                    </div>
+                ) : (
+                    'Buat Event'
+                )}
               </button>
             </div>
           </motion.div>

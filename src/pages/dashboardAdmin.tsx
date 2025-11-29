@@ -1,3 +1,4 @@
+// dashboardAdmin.tsx (REWRITE FINAL)
 import { motion } from "framer-motion";
 import {
   Shield,
@@ -9,6 +10,8 @@ import {
   XCircle,
   Clock,
   TrendingUp,
+  Trash2, 
+  Heart, // Ditambahkan karena PostCard membutuhkannya
 } from "lucide-react";
 import { useState, useEffect, useCallback, useMemo } from "react";
 
@@ -20,73 +23,148 @@ interface Event { event_id: number; title: string; description: string; event_da
 interface Post { post_id: number; content: string; image_url?: string; username: string; status: string; like_count: number; comment_count: number; }
 interface User { user_id: number; username: string; email: string; eco_level: number; is_admin: boolean; post_count: number; event_count: number; created_at: string; }
 interface Badge { badge_id: number; badge_name: string; description: string; required_level: number; }
-interface DashboardStats { totalUsers: number; totalEvents: number; totalPosts: number; pendingApprovals: number; }
+interface DashboardStats { totalUsers: number; totalEventsPending: number; totalEvents: number; totalPosts: number; }
 
-type TabType = "events" | "posts" | "users";
+type TabType = "events_pending" | "events_all" | "posts_all" | "users";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState<TabType>("events");
+  const [activeTab, setActiveTab] = useState<TabType>("events_pending");
   const [pendingEvents, setPendingEvents] = useState<Event[]>([]);
-  const [pendingPosts, setPendingPosts] = useState<Post[]>([]);
+  const [allEvents, setAllEvents] = useState<Event[]>([]); // Lazy Loaded
+  const [allPosts, setAllPosts] = useState<Post[]>([]); // Lazy Loaded
   const [users, setUsers] = useState<User[]>([]);
   const [badges, setBadges] = useState<Badge[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingContent, setLoadingContent] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null); // State untuk realtime delete
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
   const [showBadgeModal, setShowBadgeModal] = useState(false);
 
-  // Stats dihitung dari data (lebih akurat & efisien)
-  const stats = useMemo<DashboardStats>(() => ({
-    totalUsers: users.length,
-    totalEvents: pendingEvents.length,
-    totalPosts: pendingPosts.length,
-    pendingApprovals: pendingEvents.length + pendingPosts.length,
-  }), [users.length, pendingEvents.length, pendingPosts.length]);
-
   const token = localStorage.getItem("token");
 
-  // Fetch all data
-  const loadAllData = useCallback(async () => {
-    if (!token) {
-      alert("Silakan login sebagai admin");
-      return;
-    }
+  // Stats dihitung dari data yang tersedia
+  const stats = useMemo<DashboardStats>(() => ({
+    totalUsers: users.length,
+    totalEventsPending: pendingEvents.length,
+    // Gunakan 0 jika belum terload, jika sudah, pakai length
+    totalEvents: allEvents.length || 0,
+    totalPosts: allPosts.length || 0,
+  }), [users.length, pendingEvents.length, allEvents.length, allPosts.length]);
+
+  const formatDate = (date: string) => new Date(date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+
+  // FUNGSI UTAMA: Fetch Data Minimal untuk Initial Load
+  const loadInitialData = useCallback(async () => {
+    if (!token) return;
 
     setLoading(true);
     try {
-      const [eventsRes, postsRes, usersRes, badgesRes] = await Promise.all([
+      const [pendingEventsRes, usersRes, badgesRes] = await Promise.all([
         fetch(`${API_URL}/events?status=PENDING`, { headers: { Authorization: `Bearer ${token}` } }),
-        fetch(`${API_URL}/posts?status=PENDING`, { headers: { Authorization: `Bearer ${token}` } }),
         fetch(`${API_URL}/admin/users`, { headers: { Authorization: `Bearer ${token}` } }),
         fetch(`${API_URL}/badges`),
       ]);
 
-      if (!eventsRes.ok || !postsRes.ok || !usersRes.ok) throw new Error("Failed to fetch data");
+      if (!pendingEventsRes.ok || !usersRes.ok) throw new Error("Failed to fetch initial data");
 
-      const [eventsData, postsData, usersData, badgesData] = await Promise.all([
-        eventsRes.json(),
-        postsRes.json(),
+      const [pendingEventsData, usersData, badgesData] = await Promise.all([
+        pendingEventsRes.json(),
         usersRes.json(),
         badgesRes.json(),
       ]);
 
-      setPendingEvents(eventsData);
-      setPendingPosts(postsData);
+      setPendingEvents(pendingEventsData);
       setUsers(usersData);
       setBadges(badgesData);
     } catch (err) {
       console.error(err);
-      alert("Gagal memuat data dashboard");
     } finally {
       setLoading(false);
     }
   }, [token]);
+  
+  // FUNGSI LAZY LOADING: Fetch SEMUA Events
+  const loadAllEvents = useCallback(async () => {
+    if (loadingContent || allEvents.length > 0 && allEvents.every(e => e.status !== 'PENDING')) return;
+    
+    setLoadingContent(true);
+    try {
+      const res = await fetch(`${API_URL}/admin/events`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setAllEvents(data);
+    } catch (err) {
+      console.error('Error fetching all events:', err);
+    } finally {
+      setLoadingContent(false);
+    }
+  }, [token, allEvents.length, loadingContent]);
+  
+  // FUNGSI LAZY LOADING: Fetch SEMUA Posts
+  const loadAllPosts = useCallback(async () => {
+    if (loadingContent || allPosts.length > 0) return;
+    
+    setLoadingContent(true);
+    try {
+      const res = await fetch(`${API_URL}/admin/posts`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      setAllPosts(data);
+    } catch (err) {
+      console.error('Error fetching all posts:', err);
+    } finally {
+      setLoadingContent(false);
+    }
+  }, [token, allPosts.length, loadingContent]);
+
 
   useEffect(() => {
-    loadAllData();
-  }, [loadAllData]);
+    loadInitialData();
+  }, [loadInitialData]);
 
-  // Moderation handlers
-  const moderate = useCallback(async (type: "events" | "posts", id: number, status: "ACCEPTED" | "REJECTED") => {
+  useEffect(() => {
+    if (activeTab === 'events_all') {
+      loadAllEvents();
+    } else if (activeTab === 'posts_all') {
+      loadAllPosts();
+    }
+  }, [activeTab, loadAllEvents, loadAllPosts]);
+
+  // FUNGSI REALTIME DELETE
+  const deleteItem = useCallback(async (type: "events" | "posts", id: number) => {
+    if (!token || deletingId || !window.confirm(`Yakin ingin menghapus ${type === "events" ? "event" : "post"} ini secara permanen?`)) return;
+
+    setDeletingId(id);
+
+    try {
+      const res = await fetch(`${API_URL}/admin/${type}/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+      
+      // Update state secara langsung (tanpa refresh)
+      if (type === "events") {
+          setPendingEvents(prev => prev.filter(e => e.event_id !== id));
+          setAllEvents(prev => prev.filter(e => e.event_id !== id));
+      } else {
+          setAllPosts(prev => prev.filter(p => p.post_id !== id));
+      }
+      // Memperbarui users data untuk stats count yang akurat (optional, tapi disarankan)
+      // loadInitialData(); 
+
+    } catch (err: any) {
+      alert(err.message || "Gagal menghapus");
+    } finally {
+      setDeletingId(null);
+    }
+  }, [token, deletingId]); 
+
+
+  const moderate = useCallback(async (type: "events", id: number, status: "ACCEPTED" | "REJECTED") => {
     if (!token) return;
 
     try {
@@ -97,12 +175,16 @@ const AdminDashboard = () => {
       });
 
       if (!res.ok) throw new Error(await res.text());
-      alert(`Berhasil ${status === "ACCEPTED" ? "menyetujui" : "menolak"} ${type === "events" ? "event" : "post"}`);
-      loadAllData();
+      alert(`Berhasil ${status === "ACCEPTED" ? "menyetujui" : "menolak"} event`);
+      
+      // Update state langsung: hapus dari pending, kosongkan allEvents agar dimuat ulang dengan status baru
+      setPendingEvents(prev => prev.filter(e => e.event_id !== id));
+      setAllEvents([]); 
+
     } catch (err: any) {
       alert(err.message || "Gagal memoderasi");
     }
-  }, [token, loadAllData]);
+  }, [token]);
 
   const awardBadge = async (badgeId: number) => {
     if (!selectedUser || !token) return;
@@ -118,20 +200,17 @@ const AdminDashboard = () => {
       alert("Badge berhasil diberikan!");
       setShowBadgeModal(false);
       setSelectedUser(null);
-      loadAllData();
+      loadInitialData(); // Muat ulang user data untuk update level
     } catch (err: any) {
       alert(err.message || "Gagal memberikan badge");
     }
   };
-
-  const formatDate = (date: string) => new Date(date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
 
   // Render
   if (!token) return <div className="p-8 text-center">Harap login sebagai admin</div>;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-sky-50">
-      {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center gap-3 mb-6">
@@ -148,9 +227,9 @@ const AdminDashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[
               { label: "Total Users", value: stats.totalUsers, icon: Users, color: "from-blue-500 to-blue-600" },
-              { label: "Pending Events", value: stats.totalEvents, icon: Calendar, color: "from-green-500 to-green-600" },
-              { label: "Pending Posts", value: stats.totalPosts, icon: MessageSquare, color: "from-purple-500 to-purple-600" },
-              { label: "Total Pending", value: stats.pendingApprovals, icon: Clock, color: "from-orange-500 to-orange-600" },
+              { label: "Pending Events", value: stats.totalEventsPending, icon: Clock, color: "from-orange-500 to-orange-600" },
+              { label: "Total Events", value: stats.totalEvents || (activeTab === 'events_all' ? 0 : '...'), icon: Calendar, color: "from-green-500 to-green-600" },
+              { label: "Total Posts", value: stats.totalPosts || (activeTab === 'posts_all' ? 0 : '...'), icon: MessageSquare, color: "from-purple-500 to-purple-600" },
             ].map((stat, i) => (
               <div key={i} className={`bg-gradient-to-br ${stat.color} rounded-xl p-4 text-white`}>
                 <div className="flex items-center justify-between">
@@ -171,13 +250,14 @@ const AdminDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex gap-1">
             {([
-              { key: "events", icon: Calendar, label: "Events", count: pendingEvents.length },
-              { key: "posts", icon: MessageSquare, label: "Posts", count: pendingPosts.length },
+              { key: "events_pending", icon: Clock, label: "Pending Events", count: pendingEvents.length },
+              { key: "events_all", icon: Calendar, label: "All Events", count: allEvents.length || '...' },
+              { key: "posts_all", icon: MessageSquare, label: "All Posts", count: allPosts.length || '...' },
               { key: "users", icon: Users, label: "Users", count: users.length },
             ] as const).map(tab => (
               <button
                 key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
+                onClick={() => setActiveTab(tab.key as TabType)}
                 className={`px-6 py-4 font-semibold transition-all flex items-center gap-2 ${
                   activeTab === tab.key
                     ? "text-green-600 border-b-2 border-green-600"
@@ -194,38 +274,75 @@ const AdminDashboard = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {loading ? (
+        {(loading && activeTab === 'events_pending' || loadingContent) ? (
           <div className="flex justify-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600" />
           </div>
         ) : (
           <>
-            {/* Events Tab */}
-            {activeTab === "events" && (
-              <Section title={`Pending Events (${pendingEvents.length})`}>
+            {/* Events Pending Tab */}
+            {activeTab === "events_pending" && (
+              <Section title={`Events Membutuhkan Persetujuan (${pendingEvents.length})`}>
                 {pendingEvents.length === 0 ? <EmptyState message="Tidak ada event yang perlu direview" /> : (
                   pendingEvents.map(event => (
-                    <EventCard key={event.event_id} event={event} onModerate={(status) => moderate("events", event.event_id, status)} formatDate={formatDate} />
+                    <EventCard 
+                      key={event.event_id} 
+                      event={event} 
+                      onModerate={(status) => moderate("events", event.event_id, status)} 
+                      onDelete={() => deleteItem("events", event.event_id)}
+                      formatDate={formatDate} 
+                      showStatus={true}
+                      isDeleting={deletingId === event.event_id} 
+                    />
                   ))
                 )}
               </Section>
             )}
+            
+            {/* Events All Tab (BARU) */}
+            {activeTab === "events_all" && (
+              <Section title={`Semua Events (${allEvents.length})`}>
+                <div className="space-y-4">
+                  {allEvents.length === 0 ? <EmptyState message="Tidak ada event di database" /> : (
+                    allEvents.map(event => (
+                      <EventCard 
+                        key={event.event_id} 
+                        event={event} 
+                        onModerate={(status) => moderate("events", event.event_id, status)} 
+                        onDelete={() => deleteItem("events", event.event_id)}
+                        formatDate={formatDate} 
+                        showStatus={true} 
+                        isDeleting={deletingId === event.event_id} 
+                      />
+                    ))
+                  )}
+                </div>
+              </Section>
+            )}
 
-            {/* Posts Tab */}
-            {activeTab === "posts" && (
-              <Section title={`Pending Posts (${pendingPosts.length})`}>
-                {pendingPosts.length === 0 ? <EmptyState message="Tidak ada post yang perlu direview" /> : (
-                  pendingPosts.map(post => (
-                    <PostCard key={post.post_id} post={post} onModerate={(status) => moderate("posts", post.post_id, status)} />
-                  ))
-                )}
+            {/* Posts All Tab (BARU) */}
+            {activeTab === "posts_all" && (
+              <Section title={`Semua Posts (${allPosts.length})`}>
+                <div className="space-y-4">
+                  {allPosts.length === 0 ? <EmptyState message="Tidak ada post di database" /> : (
+                    allPosts.map(post => (
+                      <PostCard 
+                        key={post.post_id} 
+                        post={post} 
+                        onDelete={() => deleteItem("posts", post.post_id)}
+                        showStatus={false} 
+                        isDeleting={deletingId === post.post_id} 
+                      />
+                    ))
+                  )}
+                </div>
               </Section>
             )}
 
             {/* Users Tab */}
             {activeTab === "users" && (
               <Section title={`User Management (${users.length})`}>
-                <div className="bg-white rounded-xl shadow-md overflow-hidden">
+                 <div className="bg-white rounded-xl shadow-md overflow-hidden">
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
@@ -323,35 +440,58 @@ const EmptyState: React.FC<{ message: string }> = ({ message }) => (
   </div>
 );
 
-const EventCard: React.FC<{ event: Event; onModerate: (status: "ACCEPTED" | "REJECTED") => void; formatDate: (d: string) => string }> = ({ event, onModerate, formatDate }) => (
-  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl shadow-md p-6">
+// EventCard (Menambahkan isDeleting)
+const EventCard: React.FC<{ event: Event; onModerate: (status: "ACCEPTED" | "REJECTED") => void; onDelete: () => void; formatDate: (d: string) => string; showStatus?: boolean; isDeleting: boolean }> = ({ event, onModerate, onDelete, formatDate, showStatus = false, isDeleting }) => (
+  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`bg-white rounded-xl shadow-md p-6 relative ${isDeleting ? 'opacity-70' : ''}`}>
     <div className="flex items-start justify-between gap-4">
       <div className="flex-1">
         <h3 className="text-lg font-bold text-gray-900 mb-2">{event.title}</h3>
         <p className="text-gray-600 mb-3 line-clamp-2">{event.description}</p>
         <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-          <span>Calendar {formatDate(event.event_date)}</span>
+          <span><Calendar className="w-4 h-4 inline-block mr-1" /> {formatDate(event.event_date)}</span>
           <span>Location {event.location}</span>
           <span>User {event.creator_name}</span>
           <span>Up {event.upvote_count} upvotes</span>
+          {showStatus && (
+            <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                event.status === 'ACCEPTED' ? 'bg-green-100 text-green-800' :
+                event.status === 'PENDING' ? 'bg-orange-100 text-orange-800' :
+                'bg-red-100 text-red-800'
+            } ml-2`}>
+                {event.status}
+            </span>
+          )}
         </div>
       </div>
-      <div className="flex gap-2">
-        <button onClick={() => onModerate("ACCEPTED")} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-semibold">
-          <CheckCircle className="w-4 h-4" /> Accept
-        </button>
-        <button onClick={() => onModerate("REJECTED")} className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-semibold">
-          <XCircle className="w-4 h-4" /> Reject
+      <div className="flex gap-2 items-start">
+        {event.status === 'PENDING' && ( // Tombol Moderasi hanya muncul di status PENDING
+          <>
+            <button onClick={() => onModerate("ACCEPTED")} disabled={isDeleting} className={`flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-semibold ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
+              <CheckCircle className="w-4 h-4" /> Accept
+            </button>
+            <button onClick={() => onModerate("REJECTED")} disabled={isDeleting} className={`flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-semibold ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
+              <XCircle className="w-4 h-4" /> Reject
+            </button>
+          </>
+        )}
+        {/* Tombol Hapus dengan Spinner */}
+        <button onClick={onDelete} disabled={isDeleting} className={`flex items-center gap-2 px-4 py-2 bg-gray-200 text-red-600 rounded-lg hover:bg-gray-300 text-sm font-semibold transition-colors flex-shrink-0 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
+          {isDeleting ? (
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600" />
+          ) : (
+            <Trash2 className="w-4 h-4" />
+          )}
         </button>
       </div>
     </div>
   </motion.div>
 );
 
-const PostCard: React.FC<{ post: Post; onModerate: (status: "ACCEPTED" | "REJECTED") => void }> = ({ post, onModerate }) => (
-  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl shadow-md p-6">
+// PostCard (Menambahkan isDeleting)
+const PostCard: React.FC<{ post: Post; onDelete: () => void; showStatus?: boolean; isDeleting: boolean }> = ({ post, onDelete, showStatus = false, isDeleting }) => (
+  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`bg-white rounded-xl shadow-md p-6 relative ${isDeleting ? 'opacity-70' : ''}`}>
     <div className="flex items-start gap-4">
-      <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold">
+      <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
         {post.username[0].toUpperCase()}
       </div>
       <div className="flex-1">
@@ -361,18 +501,19 @@ const PostCard: React.FC<{ post: Post; onModerate: (status: "ACCEPTED" | "REJECT
           <img src={post.image_url} alt="Post" className="w-full max-w-md rounded-lg mb-3 object-cover max-h-96" onError={e => (e.currentTarget.style.display = "none")} />
         )}
         <div className="flex gap-4 text-sm text-gray-500">
-          <span>Heart {post.like_count} likes</span>
-          <span>Speech Bubble {post.comment_count} comments</span>
+          <span><Heart className="w-4 h-4 inline-block mr-1" /> {post.like_count} likes</span>
+          <span><MessageSquare className="w-4 h-4 inline-block mr-1" /> {post.comment_count} comments</span>
         </div>
       </div>
-      <div className="flex gap-2">
-        <button onClick={() => onModerate("ACCEPTED")} className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-semibold">
-          <CheckCircle className="w-4 h-4" /> Accept
-        </button>
-        <button onClick={() => onModerate("REJECTED")} className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-semibold">
-          <XCircle className="w-4 h-4" /> Reject
-        </button>
-      </div>
+      {/* Tombol Hapus Post dengan Spinner */}
+      <button onClick={onDelete} disabled={isDeleting} className={`flex items-center gap-2 px-4 py-2 bg-gray-200 text-red-600 rounded-lg hover:bg-gray-300 text-sm font-semibold transition-colors flex-shrink-0 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
+        {isDeleting ? (
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600" />
+        ) : (
+          <Trash2 className="w-4 h-4" />
+        )}
+        {isDeleting ? 'Menghapus...' : 'Hapus'}
+      </button>
     </div>
   </motion.div>
 );
