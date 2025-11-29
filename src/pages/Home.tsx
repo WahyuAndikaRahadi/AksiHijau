@@ -133,7 +133,7 @@ const TestimonialTicker = ({ testimonials, direction = "left", duration = 25 }) 
           >
             <motion.div
               whileHover={{ y: -5, boxShadow: "0 10px 20px rgba(0,0,0,0.1)" }}
-              className="bg-white p-8 rounded-2xl shadow-md border border-gray-100 h-full flex flex-col justify-between transition-all duration-300"
+              className="bg-white p-8 rounded-2xl shadow-md border border-green-300 hover:border-sky-300 h-full flex flex-col justify-between transition-all duration-300"
             >
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg mr-4">
@@ -205,7 +205,7 @@ const FaqItem = ({ question, answer, isOpen, onClick }) => {
       initial={false}
       animate={{
         backgroundColor: isOpen ? "#f0fdf4" : "#ffffff",
-        borderColor: isOpen ? "#34d399" : "#e5e7eb",
+        borderColor: isOpen ? "#34d399" : "#34d399",
         boxShadow: isOpen ? "0 4px 6px -1px rgba(0, 0, 0, 0.1)" : "none"
       }}
       className="border border-gray-200 rounded-xl p-5 mb-4 transition-all duration-300 cursor-pointer"
