@@ -30,6 +30,7 @@ const SocialCommunity = () => {
   const [selectedPost, setSelectedPost] = useState<number | null>(null);
   const [comments, setComments] = useState<{ [key: number]: Comment[] }>({});
   const [commentText, setCommentText] = useState('');
+  const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
 
   // Form state
   const [postContent, setPostContent] = useState('');
@@ -39,6 +40,11 @@ const SocialCommunity = () => {
 
   useEffect(() => {
     loadPosts();
+    // Load liked posts from localStorage
+    const savedLiked = localStorage.getItem('likedPosts');
+    if (savedLiked) {
+      setLikedPosts(new Set(JSON.parse(savedLiked)));
+    }
   }, []);
 
   const loadPosts = async () => {
@@ -115,6 +121,17 @@ const SocialCommunity = () => {
       });
 
       if (response.ok) {
+        setLikedPosts(prev => {
+          const newSet = new Set(prev);
+          if (newSet.has(postId)) {
+            newSet.delete(postId);
+          } else {
+            newSet.add(postId);
+          }
+          // Save to localStorage
+          localStorage.setItem('likedPosts', JSON.stringify([...newSet]));
+          return newSet;
+        });
         loadPosts();
       }
     } catch (error) {
@@ -246,6 +263,7 @@ const SocialCommunity = () => {
             ) : (
               posts.map((post, index) => {
                 const badge = getLevelBadge(post.eco_level);
+                const isLiked = likedPosts.has(post.post_id);
                 
                 return (
                   <motion.div
@@ -292,9 +310,11 @@ const SocialCommunity = () => {
                     <div className="px-4 py-3 border-t flex items-center gap-6">
                       <button
                         onClick={() => handleLike(post.post_id)}
-                        className="flex items-center gap-2 text-gray-600 hover:text-red-500 transition-colors"
+                        className={`flex items-center gap-2 transition-colors ${
+                          isLiked ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
+                        }`}
                       >
-                        <Heart className="w-5 h-5" />
+                        <Heart className={`w-5 h-5 ${isLiked ? 'fill-red-500' : ''}`} />
                         <span className="font-semibold">{post.like_count}</span>
                       </button>
                       
