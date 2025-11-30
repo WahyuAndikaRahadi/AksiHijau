@@ -41,7 +41,7 @@ const WasteDetection: React.FC = () => {
 
   // PENTING: Ganti dengan API Key Gemini Anda
   // Pertahankan API Key (disarankan untuk menggunakan variable environment di aplikasi nyata)
-  const GEMINI_API_KEY = 'AIzaSyCd0GI0s9DwM85zKST89DantFFyO1ltQTE';
+  const GEMINI_API_KEY = 'AIzaSyAfiuMovd57WuNsEOWYex3tRy4UE3V5-Vg';
 
   // Hapus useEffect untuk loading TensorFlow model
   useEffect(() => {
@@ -148,7 +148,7 @@ const WasteDetection: React.FC = () => {
       
       Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
 
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

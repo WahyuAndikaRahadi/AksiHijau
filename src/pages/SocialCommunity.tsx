@@ -1,9 +1,9 @@
-// SocialCommunity.tsx (FINAL FIXES)
+// SocialCommunity.tsx (KODE LENGKAP YANG DIREVISI)
 import { motion } from 'framer-motion';
 import { Heart, MessageCircle, Send, Image as ImageIcon, Leaf, Award, XCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
-const API_URL = 'http://localhost:5000';
+const API_URL = 'http://localhost:5000'; // Pastikan ini sesuai dengan backend Anda
 
 interface Post {
   post_id: number;
@@ -32,7 +32,8 @@ const SocialCommunity = () => {
   const [selectedPost, setSelectedPost] = useState<number | null>(null);
   const [comments, setComments] = useState<{ [key: number]: Comment[] }>({});
   const [commentText, setCommentText] = useState('');
-  const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
+  // State ini sekarang menampung post ID yang di-like dari backend
+  const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set()); 
 
   // Form state
   const [postContent, setPostContent] = useState('');
@@ -41,26 +42,56 @@ const SocialCommunity = () => {
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const isLoggedIn = !!localStorage.getItem('token'); 
 
-  useEffect(() => {
-    loadPosts();
-    const savedLiked = localStorage.getItem('likedPosts');
-    if (savedLiked) {
-      setLikedPosts(new Set(JSON.parse(savedLiked)));
+// ----------------------------------------------------
+// ## FUNGSI LIKE DAN POST LOADING
+// ----------------------------------------------------
+
+  // Fungsi baru untuk memuat ID postingan yang sudah di-like oleh user saat ini
+  const loadLikedPosts = async (token: string) => {
+    try {
+      // ASUMSI: Endpoint ini mengembalikan array of post IDs (number[])
+      const response = await fetch(`${API_URL}/user/liked-posts`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const likedPostIds: number[] = await response.json();
+        setLikedPosts(new Set(likedPostIds));
+      } else {
+        console.error('Failed to load user liked posts:', response.statusText);
+        // Jika gagal, pastikan state tetap kosong untuk menghindari like palsu
+        setLikedPosts(new Set()); 
+      }
+    } catch (error) {
+      console.error('Error loading liked posts:', error);
+      setLikedPosts(new Set());
     }
-  }, []);
+  };
+
 
   const loadPosts = async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/posts`, {
         headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
+          // Token dikirim untuk backend memproses jika user ini like post atau tidak (opsional tergantung implementasi backend)
+          'Authorization': token ? `Bearer ${token}` : '', 
         },
       });
 
       if (response.ok) {
         const data = await response.json();
         setPosts(data);
+
+        // Muat status like setelah post termuat, jika user sedang login
+        if (token) {
+          await loadLikedPosts(token); 
+        } else {
+          setLikedPosts(new Set()); // Kosongkan jika tidak login
+        }
+
       }
     } catch (error) {
       console.error('Error loading posts:', error);
@@ -68,6 +99,11 @@ const SocialCommunity = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadPosts();
+    // Hapus loading status liked dari localStorage di sini, karena kini dari backend
+  }, []);
 
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,17 +134,12 @@ const SocialCommunity = () => {
       if (response.ok) {
         const newPost: Post = await response.json(); 
 
-        // FIX for Invalid Date on immediate display: 
-        // Ensure the created_at timestamp is valid for the optimistic update.
-        // If the backend returns an incomplete/unparseable date string, 
-        // use the current time (ISO string) as a fallback.
         const postToAdd: Post = {
             ...newPost,
-            // Check if created_at exists AND is a parseable date. If not, use current time.
+            // Perbaikan agar tanggal tidak 'Invalid Date' saat ditampilkan
             created_at: newPost.created_at && !isNaN(new Date(newPost.created_at).getTime()) 
                         ? newPost.created_at 
                         : new Date().toISOString(),
-            // Safety check for like/comment count if backend doesn't return them immediately
             like_count: newPost.like_count ?? 0, 
             comment_count: newPost.comment_count ?? 0,
         };
@@ -131,13 +162,39 @@ const SocialCommunity = () => {
   };
 
   const handleLike = async (postId: number) => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('Silakan login untuk like');
-        return;
-      }
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Silakan login untuk like');
+      return;
+    }
 
+    const isCurrentlyLiked = likedPosts.has(postId);
+
+    // 1. Optimistic UI Update: Langsung ubah state sebelum API selesai
+    setPosts(prevPosts =>
+      prevPosts.map(post => {
+        if (post.post_id === postId) {
+          return {
+            ...post,
+            like_count: isCurrentlyLiked ? post.like_count - 1 : post.like_count + 1,
+          };
+        }
+        return post;
+      })
+    );
+    
+    setLikedPosts(prev => {
+      const newSet = new Set(prev);
+      if (isCurrentlyLiked) {
+        newSet.delete(postId);
+      } else {
+        newSet.add(postId);
+      }
+      return newSet;
+    });
+
+    // 2. API Call ke Backend
+    try {
       const response = await fetch(`${API_URL}/posts/${postId}/like`, {
         method: 'POST',
         headers: {
@@ -145,37 +202,65 @@ const SocialCommunity = () => {
         },
       });
 
-      if (response.ok) {
-        // Optimistic UI Update untuk Like
+      if (!response.ok) {
+        // Rollback UI Update jika API gagal
+        console.error('Like API failed. Rolling back UI.');
+        
         setPosts(prevPosts =>
-            prevPosts.map(post => {
-                if (post.post_id === postId) {
-                    const isCurrentlyLiked = likedPosts.has(postId);
-                    return {
-                        ...post,
-                        like_count: isCurrentlyLiked ? post.like_count - 1 : post.like_count + 1,
-                    };
-                }
-                return post;
-            })
+          prevPosts.map(post => {
+            if (post.post_id === postId) {
+              return {
+                ...post,
+                // Mengembalikan like_count ke kondisi semula
+                like_count: isCurrentlyLiked ? post.like_count + 1 : post.like_count - 1, 
+              };
+            }
+            return post;
+          })
         );
         
         setLikedPosts(prev => {
           const newSet = new Set(prev);
-          if (newSet.has(postId)) {
-            newSet.delete(postId);
+          if (isCurrentlyLiked) {
+            newSet.add(postId); // Tambahkan kembali (rollback unlike)
           } else {
-            newSet.add(postId);
+            newSet.delete(postId); // Hapus (rollback like)
           }
-          localStorage.setItem('likedPosts', JSON.stringify([...newSet]));
           return newSet;
         });
+        
+        alert('Gagal memperbarui like. Status dikembalikan.');
       }
     } catch (error) {
       console.error('Error liking post:', error);
-      loadPosts(); 
+      // Rollback jika error jaringan
+       setPosts(prevPosts => 
+          prevPosts.map(post => {
+              if (post.post_id === postId) {
+                  return {
+                      ...post,
+                      like_count: isCurrentlyLiked ? post.like_count + 1 : post.like_count - 1,
+                  };
+              }
+              return post;
+          })
+      );
+      setLikedPosts(prev => {
+          const newSet = new Set(prev);
+          if (isCurrentlyLiked) {
+              newSet.add(postId);
+          } else {
+              newSet.delete(postId);
+          }
+          return newSet;
+      });
+      alert('Terjadi kesalahan jaringan.');
     }
   };
+
+// ----------------------------------------------------
+// ## FUNGSI COMMENT DAN UTILITY
+// ----------------------------------------------------
 
   const loadComments = async (postId: number) => {
     try {
@@ -212,11 +297,13 @@ const SocialCommunity = () => {
       if (response.ok) {
         const newComment: Comment = await response.json(); 
         
+        // Optimistic UI Update untuk komentar
         setComments(prev => ({
             ...prev,
-            [postId]: [newComment, ...(prev[postId] || [])],
+            [postId]: [newComment, ...(prev[postId] || [])], // Tambahkan di depan
         }));
 
+        // Update comment_count di post
         setPosts(prevPosts => 
             prevPosts.map(post => 
                 post.post_id === postId ? { ...post, comment_count: post.comment_count + 1 } : post
@@ -303,6 +390,10 @@ const SocialCommunity = () => {
   };
 
 
+// ----------------------------------------------------
+// ## KOMPONEN UTAMA (JSX)
+// ----------------------------------------------------
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-sky-50">
       {/* Header */}
@@ -363,7 +454,8 @@ const SocialCommunity = () => {
             ) : (
               posts.map((post, index) => {
                 const badge = getLevelBadge(post.eco_level);
-                const isLiked = likedPosts.has(post.post_id);
+                // **FIXED**: Status like diambil dari state likedPosts yang disinkronkan dengan backend
+                const isLiked = likedPosts.has(post.post_id); 
                 
                 return (
                   <motion.div
@@ -414,10 +506,12 @@ const SocialCommunity = () => {
                         onClick={() => handleLike(post.post_id)}
                         disabled={!isLoggedIn} 
                         className={`flex items-center gap-2 transition-colors ${
+                          // **FIXED**: Warna tombol like sesuai status likedPosts
                           isLiked ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
                         } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
-                        <Heart className={`w-5 h-5 ${isLiked ? 'fill-red-500' : ''}`} />
+                        {/* **FIXED**: Ikon hati diisi jika sudah di-like */}
+                        <Heart className={`w-5 h-5 ${isLiked ? 'fill-red-500' : ''}`} /> 
                         <span className="font-semibold">{post.like_count}</span>
                       </button>
                       
