@@ -41,7 +41,7 @@ const WasteDetection: React.FC = () => {
 
   // PENTING: Ganti dengan API Key Gemini Anda
   // Pertahankan API Key (disarankan untuk menggunakan variable environment di aplikasi nyata)
-  const GEMINI_API_KEY = 'AIzaSyAfiuMovd57WuNsEOWYex3tRy4UE3V5-Vg';
+  const GEMINI_API_KEY = 'AIzaSyBm7j_d45T56ZoLEnS2zAin9ExG_HEUWGk';
 
   // Hapus useEffect untuk loading TensorFlow model
   useEffect(() => {

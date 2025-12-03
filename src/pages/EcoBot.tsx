@@ -16,7 +16,7 @@ const PRIMARY_COLOR_TAILWIND = "bg-emerald-500";
 const ACCENT_COLOR_TAILWIND = "text-emerald-600";
 const MODEL_NAME = "gemini-2.5-flash-lite";
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`;
-const GEMINI_API_KEY = 'AIzaSyAArJQQtejtfzUHGYlNyR1W_ZFUfRp_xmQ';
+const GEMINI_API_KEY = 'AIzaSyBU_XwDdo1d10izloI1wGlukAjaXTruMzk';
 
 // System Instruction
 const SYSTEM_INSTRUCTION = `
