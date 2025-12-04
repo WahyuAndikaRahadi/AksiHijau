@@ -1,14 +1,14 @@
 [
   {
     "id": 1,
-    "title": "Mendaur Ulang Sampah Plastik Menjadi Karya Seni yang Bernilai",
+    "title": "Mendaur Ulang Sampah Plastik Menjadi Karya Seni kreatif di sekolah.",
     "slug": "daur-ulang-sampah-plastik",
     "category": "Daur Ulang",
     "author": "Tim Lestari Bumi",
     "date": "2023-10-25",
-    "bannerImage": "/images/blog/blog1-banner.jpg",
-    "description": "Pelajari cara mengubah botol dan kantong plastik bekas menjadi dekorasi rumah yang unik dan fungsional. Sebuah langkah kecil untuk mengurangi limbah.",
-    "detailDescription": "Sampah plastik adalah masalah lingkungan global yang serius. Namun, dengan sedikit kreativitas, kita dapat mengubah limbah ini menjadi sesuatu yang indah dan berguna. Proses daur ulang sederhana di rumah ini tidak hanya membantu planet, tetapi juga memberikan kepuasan tersendiri. Kami akan membahas langkah-langkah pembuatan pot bunga dari botol plastik, hingga kerajinan mozaik dari tutup botol. Setiap karya yang Anda ciptakan adalah pernyataan cinta terhadap bumi.",
+    "bannerImage": "/img/Mendaurulang.jpeg",
+    "description": "Mengubah sampah plastik menjadi karya kreatif di sekolah. Ajak siswa lebih peduli lingkungan lewat praktik langsung daur ulang.",
+    "detailDescription": "Di lingkungan sekolah, sampah plastik seperti botol minuman, kemasan jajanan, hingga tutup botol sering kali menjadi penyumbang terbesar tumpukan sampah. Melalui program daur ulang kreatif, sekolah dapat mengubah limbah tersebut menjadi karya seni yang unik, fungsional, dan penuh nilai edukasi. Selain membantu mengurangi polusi plastik, kegiatan ini juga mengajarkan siswa tentang kreativitas, tanggung jawab lingkungan, dan pentingnya gaya hidup berkelanjutan. Setiap karya fashion yang dibuat menjadi simbol bahwa siswa mampu menciptakan perubahan positif dan menjadikan limbah sebagai sesuatu yang bernilai dan membanggakan.",
     "galleryImages": [
       "/images/blog/blog1-gallery1.jpg",
       "/images/blog/blog1-gallery2.jpg",
@@ -18,14 +18,14 @@
   },
   {
     "id": 2,
-    "title": "Komposting di Apartemen: Solusi Sampah Organik Bagi Warga Kota",
-    "slug": "komposting-di-apartemen",
-    "category": "Zero Waste",
+    "title": "Ketahanan Pangan di Sekolah: Komposting untuk Masa Depan Lebih Hijau",
+    "slug": "Ketahanan-pangan-Sekolah",
+    "category": "Ketahanan Pangan",
     "author": "Siti Aisyah",
     "date": "2023-11-10",
-    "bannerImage": "/images/blog/blog2-banner.jpg",
-    "description": "Tidak perlu halaman luas untuk membuat kompos! Temukan metode komposting yang cocok untuk ruang terbatas seperti balkon apartemen Anda.",
-    "detailDescription": "Banyak yang berpikir komposting hanya bisa dilakukan di rumah dengan halaman belakang. Artikel ini membantah mitos tersebut dengan memperkenalkan metode komposting Bokashi atau Vermikomposting (cacing) yang minim bau dan ruang. Anda akan belajar memilih wadah yang tepat, bahan yang boleh dan tidak boleh dimasukkan, serta cara memanen 'emas hitam' (kompos) Anda untuk menyuburkan tanaman hias.",
+    "bannerImage": "./img/Ketahananpangan.jpg",
+    "description": "Sekolah dapat menjadi ruang terbaik untuk membangun budaya ketahanan pangan. Pelajari bagaimana komposting dari sampah organik kantin dan taman sekolah dapat membantu menghasilkan pupuk alami untuk kebun edukasi.",
+    "detailDescription": "Ketahanan pangan tidak harus dimulai dari skala besar. Di sekolah, proses ini dapat dimulai dari sesuatu yang sederhana seperti pengelolaan sampah organik. Dengan metode komposting seperti Bokashi atau Vermikomposting (menggunakan cacing), sampah makanan yang biasanya terbuang dapat diubah menjadi pupuk organik berkualitas. Artikel ini akan membahas langkah memilih wadah yang tepat, bahan organik yang bisa diolah, serta teknik memanen kompos untuk digunakan pada tanaman sekolah seperti kebun hidroponik atau taman edukasi",
     "galleryImages": [
       "/images/blog/blog2-gallery1.jpg",
       "/images/blog/blog2-gallery2.jpg"
@@ -33,18 +33,34 @@
   },
   {
     "id": 3,
-    "title": "Mengenal Perbedaan Sampah Anorganik dan B3 (Bahan Berbahaya Beracun)",
-    "slug": "sampah-anorganik-dan-b3",
+    "title": "Kompos di Sekolah: Mengolah Sampah Organik Menjadi Pupuk Bernilai",
+    "slug": "kompos-di-sekolah",
     "category": "Edukasi",
     "author": "Dr. Eko Wibowo",
     "date": "2023-12-01",
-    "bannerImage": "/images/blog/blog3-banner.jpg",
-    "description": "Edukasi tentang cara memilah dan membuang sampah berbahaya seperti baterai, lampu, dan kemasan pestisida dengan benar untuk mencegah pencemaran.",
-    "detailDescription": "Tidak semua sampah non-organik sama. Sampah B3 (Bahan Berbahaya dan Beracun) memerlukan penanganan khusus karena dapat mencemari air dan tanah serta membahayakan kesehatan. Kami mengulas identifikasi umum sampah B3 rumah tangga (baterai, cat, elektronik bekas) dan prosedur pembuangan yang benar sesuai regulasi, mendorong pembaca untuk mencari titik pengumpulan khusus.",
+    "bannerImage": "/img/Kompos.jpeg",
+    "description": "Pelajari cara membuat kompos dari sampah organik kantin dan taman sekolah sebagai langkah sederhana menuju lingkungan sekolah yang lebih hijau dan berkelanjutan.",
+    "detailDescription": "Pembuatan kompos di sekolah merupakan salah satu cara paling efektif untuk mengurangi sampah organik sekaligus menghasilkan pupuk alami yang bermanfaat untuk kebun sekolah. Artikel ini membahas jenis sampah yang dapat dikomposkan seperti sisa makanan, daun kering, dan rumput taman. Selain itu, dijelaskan juga metode komposting sederhana seperti metode takakura, vermikompos menggunakan cacing, serta kompos drum. Dengan langkah-langkah yang mudah, siswa dan guru dapat bekerja sama menerapkan budaya peduli lingkungan melalui pembuatan kompos.",
     "galleryImages": [
       "/images/blog/blog3-gallery1.jpg",
       "/images/blog/blog3-gallery2.jpg",
       "/images/blog/blog3-gallery3.jpg"
     ]
-  }
+  },
+{
+  "id": 4,
+  "title": "Sosialisasi Bank Sampah Gunung Emas: Membangun Budaya Peduli Lingkungan",
+  "slug": "sosialisasi-bank-sampah-gunung-emas",
+  "category": "Edukasi",
+  "author": "Dr. Eko Wibowo",
+  "date": "2023-12-01",
+  "bannerImage": "/img/Sosialisasi-Bank-Sampah.jpg",
+  "description": "Kenali bagaimana Bank Sampah Gunung Emas membantu sekolah dalam mengelola sampah dengan sistem pemilahan, penimbangan, hingga penukaran nilai ekonomi untuk menciptakan lingkungan yang bersih, sehat, dan berkelanjutan.",
+  "detailDescription": "Sosialisasi Bank Sampah Gunung Emas merupakan langkah nyata dalam mengedukasi siswa dan warga sekolah mengenai pentingnya memilah dan mengelola sampah dengan benar. Melalui sistem tabungan sampah, siswa diajarkan bahwa sampah bukan hanya limbah, tetapi dapat memiliki nilai guna dan nilai ekonomi. Program ini juga memberi pengetahuan mengenai jenis sampah seperti organik, anorganik, dan sampah yang dapat didaur ulang. Dalam kegiatan ini, siswa berlatih menimbang, mencatat, dan menukarkan sampah menjadi poin atau tabungan. Dengan keterlibatan guru dan siswa, Bank Sampah Gunung Emas bertujuan membentuk kebiasaan peduli lingkungan sekaligus menciptakan sekolah yang lebih bersih, produktif, dan berkelanjutan.",
+  "galleryImages": [
+    "/images/blog/blog3-gallery1.jpg",
+    "/images/blog/blog3-gallery2.jpg",
+    "/images/blog/blog3-gallery3.jpg"
+  ]
+}
 ]

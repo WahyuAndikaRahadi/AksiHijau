@@ -2,8 +2,10 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import AirQuality from './pages/AirQuality';
 import Home from './pages/Home';
 import About from './pages/About';
+import Features from './pages/Features';
 import News from './pages/News';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
@@ -38,6 +40,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/features" element={<Features />} />
+            <Route path="/air-quality" element={<AirQuality />} />
             <Route path="/news" element={<News />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
