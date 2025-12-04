@@ -57,7 +57,6 @@ const AppContent = () => {
           
           <Route path="/blog" element={<BlogList />} />
           <Route path="/blog/:slug" element={<BlogPost />} /> 
-
         </Routes>
       </main>
       {!hideNavAndFooter && <Footer />}  {/* Footer hanya tampil jika bukan /ai */}
