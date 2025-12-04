@@ -32,6 +32,9 @@ import {
   Trees,
   ChevronRight,
   ArrowRight,
+  Github,
+  Linkedin,
+  Instagram,
 } from 'lucide-react';
 
 // ==========================================
@@ -49,38 +52,145 @@ ChartJS.register(
 );
 
 // ==========================================
-// 2. KOMPONEN UTAMA (ABOUT PAGE)
+// 2. DATA TIM
+// ==========================================
+const teamMembers = [
+  {
+    name: 'Wahyu Andika Rahadi',
+    role: 'Team Lead',
+    image:
+      'https://api.dicebear.com/7.x/avataaars/svg?seed=Wahyu&backgroundColor=b6e3f4',
+    bio: 'Mengkoordinasikan visi dan misi AksiHijau untuk dampak yang berkelanjutan.',
+    social: { linkedin: '#', instagram: '#' },
+  },
+  {
+    name: 'Muhammad Bintang',
+    role: 'Lead Developer',
+    image:
+      'https://api.dicebear.com/7.x/avataaars/svg?seed=Bintang&backgroundColor=c0eb75',
+    bio: 'Membangun infrastruktur digital yang efisien untuk pengalaman pengguna terbaik.',
+    social: { github: '#', linkedin: '#', instagram: '#' },
+  },
+  {
+    name: 'Bagus Hasan Ali',
+    role: 'Head of Community',
+    image:
+      'https://api.dicebear.com/7.x/avataaars/svg?seed=Citra&backgroundColor=ffdfbf',
+    bio: 'Menghubungkan relawan dan mengelola konten edukasi lingkungan.',
+    social: { linkedin: '#', instagram: '#' },
+  },
+];
+
+// ==========================================
+// 3. DATA SOLUSI (TIMELINE)
+// ==========================================
+const solutions = [
+  {
+    icon: ShieldCheck,
+    title: 'Sadar Akan Jejak Karbon',
+    description:
+      'Kenali dampak dari aktivitas harianmu terhadap lingkungan dan mulai hitung jejak karbon pribadimu.',
+  },
+  {
+    icon: Zap,
+    title: 'Efisiensi Energi Sehari-hari',
+    description:
+      'Mulai dari mematikan lampu tak terpakai, beralih ke LED, hingga mengurangi penggunaan AC berlebihan.',
+  },
+  {
+    icon: RefreshCw,
+    title: 'Terapkan 3R Secara Berkala',
+    description:
+      'Reduce, Reuse, Recycle. Gunakan barang berulang kali dan pilah sampah organik serta anorganik.',
+  },
+  {
+    icon: Megaphone,
+    title: 'Ambil Aksi dan Suarakan',
+    description:
+      'Ingat, menjaga bumi butuh konsistensi. Ajak orang terdekatmu dan mulai langkah pertamamu sekarang.',
+  },
+];
+
+// ==========================================
+// 4. DATA DAMPAK KAMI DALAM ANGKA
+// ==========================================
+const impactStats = [
+  {
+    icon: Users,
+    value: '1.200+',
+    label: 'Relawan Terhubung',
+    desc: 'Bergabung dalam berbagai aksi, kampanye, dan gerakan hijau.',
+  },
+  {
+    icon: Trees,
+    value: '3.500+',
+    label: 'Pohon Tertanam',
+    desc: 'Dilaporkan oleh komunitas melalui aksi penanaman dan restorasi.',
+  },
+  {
+    icon: Zap,
+    value: '85%',
+    label: 'Aksi Hemat Energi',
+    desc: 'Pengguna yang rutin menyelesaikan tantangan hemat energi.',
+  },
+  {
+    icon: ShieldCheck,
+    value: '24/7',
+    label: 'Akses Edukasi',
+    desc: 'Konten hijau dan panduan aksi tersedia kapan pun dibutuhkan.',
+  },
+];
+
+// ==========================================
+// 5. DATA PROSES / CARA KERJA
+// ==========================================
+const processSteps = [
+  {
+    id: 1,
+    title: 'Gabung Gerakan',
+    desc: 'Buat akun AksiHijau dan mulai login untuk mengikuti acara komunitas.',
+    image:
+      'https://media.istockphoto.com/id/2151209290/id/foto/ilustrasi-3d-pria-pria-qadir-online-konsep-medis-seluler-aplikasi-untuk-perawatan-kesehatan.webp?a=1&b=1&s=612x612&w=0&k=20&c=rQfCWIKZgpKb2_2wwSVDEx8i5z6sNc6eZ08zHJmGOzA=',
+    color: 'bg-blue-100',
+  },
+  {
+    id: 2,
+    title: 'Pilih Tantangan',
+    desc: 'Telusuri berbagai tantangan harian, mulai dari hemat energi hingga olah sampah.',
+    image: 'https://i.pinimg.com/736x/24/66/6b/24666b39c23712cb7b9d42c51703b808.jpg',
+    color: 'bg-orange-100',
+  },
+  {
+    id: 3,
+    title: 'Lakukan Aksi',
+    desc: 'Jalankan misi di dunia nyata. Tanam pohon, pilah sampah, atau gunakan tumbler.',
+    image:
+      'https://media.istockphoto.com/id/1329055727/id/foto/seorang-pria-memegang-pohon-untuk-ditanam-di-tanah-ilustrasi.webp?a=1&b=1&s=612x612&w=0&k=20&c=lj9qglZNapiHHUp7zKS88XIjmojeyuW2azfewJ1W3eI=',
+    color: 'bg-purple-100',
+  },
+  {
+    id: 4,
+    title: 'Verifikasi',
+    desc: 'Unggah bukti aksimu. Sistem kami dan komunitas akan memverifikasi kontribusimu.',
+    image:
+      'https://media.istockphoto.com/id/819929090/id/foto/konsep-tanda-centang-3d.webp?a=1&b=1&s=612x612&w=0&k=20&c=SF8G2TiebZCX_0xxCUBCOhBthUksMsYShK_IGXpJmXk=',
+    color: 'bg-cyan-100',
+  },
+  {
+    id: 5,
+    title: 'Raih Apresiasi',
+    desc: 'Dapatkan poin, lencana hijau, dan naikkan peringkatmu di Leaderboard Komunitas.',
+    image:
+      'https://plus.unsplash.com/premium_photo-1718560021014-b2464cd8021d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8TGF5YXIlMjBwb25zZWwlMjBtZW5hbXBpbGthbiUyMHVjYXBhbiUyMHNlbGFtYXQlMjBkYW4lMjBwb2luJTIweWFuZyUyMGRpZGFwYXQufGVufDB8fDB8fHww',
+    color: 'bg-emerald-100',
+  },
+];
+
+// ==========================================
+// 6. KOMPONEN UTAMA (ABOUT PAGE)
 // ==========================================
 const About = () => {
-  // Data Solusi (Timeline)
-  const solutions = [
-    {
-      icon: ShieldCheck,
-      title: 'Sadar Akan Jejak Karbon',
-      description:
-        'Kenali dampak dari aktivitas harianmu terhadap lingkungan dan mulai hitung jejak karbon pribadimu.',
-    },
-    {
-      icon: Zap,
-      title: 'Efisiensi Energi Sehari-hari',
-      description:
-        'Mulai dari mematikan lampu tak terpakai, beralih ke LED, hingga mengurangi penggunaan AC berlebihan.',
-    },
-    {
-      icon: RefreshCw,
-      title: 'Terapkan 3R Secara Berkala',
-      description:
-        'Reduce, Reuse, Recycle. Gunakan barang berulang kali dan pilah sampah organik serta anorganik.',
-    },
-    {
-      icon: Megaphone,
-      title: 'Ambil Aksi dan Suarakan',
-      description:
-        'Ingat, menjaga bumi butuh konsistensi. Ajak orang terdekatmu dan mulai langkah pertamamu sekarang.',
-    },
-  ];
-
-  // Data Chart
+  // Data chart
   const chartData = {
     labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
     datasets: [
@@ -143,9 +253,7 @@ const About = () => {
         boxPadding: 4,
         callbacks: {
           label: (context: any) =>
-            `${context.dataset.label}: ${context.parsed.y.toFixed(
-              1,
-            )} Juta Ton`,
+            `${context.dataset.label}: ${context.parsed.y.toFixed(1)} Juta Ton`,
         },
       },
     },
@@ -192,7 +300,7 @@ const About = () => {
           </p>
         </motion.div>
 
-        {/* BAGIAN MISI KAMI */}
+        {/* MISI KAMI */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24 mx-5">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -253,7 +361,7 @@ const About = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.3 + idx * 0.1 }}
-                className="bg-white rounded-2xl shado~w-lg p-0 overflow-hidden flex items-center justify-center aspect-square transition-all duration-300 hover:shadow-blue-300 hover:border-blue-300 border-2 border-green-300 shadow-green-300"
+                className="bg-white rounded-2xl shadow-lg p-0 overflow-hidden flex items-center justify-center aspect-square transition-all duration-300 hover:shadow-blue-300 hover:border-blue-300 border-2 border-green-300 shadow-green-300"
               >
                 <img
                   src={imgSrc}
@@ -524,7 +632,7 @@ const About = () => {
           </motion.div>
         </motion.div>
 
-        {/* BAGIAN TARGET DAMPAK */}
+        {/* TARGET DAMPAK */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -599,7 +707,7 @@ const About = () => {
           </div>
         </motion.div>
 
-        {/* BAGIAN PROSES / CARA KERJA */}
+        {/* PROSES / CARA KERJA */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -623,48 +731,7 @@ const About = () => {
             <div className="hidden lg:block absolute top-1/2 left-0 w-full h-0.5 bg-gray-200 -translate-y-1/2 z-0 border-2" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 relative z-10">
-              {[
-                {
-                  id: 1,
-                  title: 'Gabung Gerakan',
-                  desc: 'Buat akun AksiHijau dan mulai login untuk mengikuti acara komunitas.',
-                  image:
-                    'https://media.istockphoto.com/id/2151209290/id/foto/ilustrasi-3d-pria-pria-qadir-online-konsep-medis-seluler-aplikasi-untuk-perawatan-kesehatan.webp?a=1&b=1&s=612x612&w=0&k=20&c=rQfCWIKZgpKb2_2wwSVDEx8i5z6sNc6eZ08zHJmGOzA=',
-                  color: 'bg-blue-100',
-                },
-                {
-                  id: 2,
-                  title: 'Pilih Tantangan',
-                  desc: 'Telusuri berbagai tantangan harian, mulai dari hemat energi hingga olah sampah.',
-                  image:
-                    'https://i.pinimg.com/736x/24/66/6b/24666b39c23712cb7b9d42c51703b808.jpg',
-                  color: 'bg-orange-100',
-                },
-                {
-                  id: 3,
-                  title: 'Lakukan Aksi',
-                  desc: 'Jalankan misi di dunia nyata. Tanam pohon, pilah sampah, atau gunakan tumbler.',
-                  image:
-                    'https://media.istockphoto.com/id/1329055727/id/foto/seorang-pria-memegang-pohon-untuk-ditanam-di-tanah-ilustrasi.webp?a=1&b=1&s=612x612&w=0&k=20&c=lj9qglZNapiHHUp7zKS88XIjmojeyuW2azfewJ1W3eI=',
-                  color: 'bg-purple-100',
-                },
-                {
-                  id: 4,
-                  title: 'Verifikasi',
-                  desc: 'Unggah bukti aksimu. Sistem kami dan komunitas akan memverifikasi kontribusimu.',
-                  image:
-                    'https://media.istockphoto.com/id/819929090/id/foto/konsep-tanda-centang-3d.webp?a=1&b=1&s=612x612&w=0&k=20&c=SF8G2TiebZCX_0xxCUBCOhBthUksMsYShK_IGXpJmXk=',
-                  color: 'bg-cyan-100',
-                },
-                {
-                  id: 5,
-                  title: 'Raih Apresiasi',
-                  desc: 'Dapatkan poin, lencana hijau, dan naikkan peringkatmu di Leaderboard Komunitas.',
-                  image:
-                    'https://plus.unsplash.com/premium_photo-1718560021014-b2464cd8021d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8TGF5YXIlMjBwb25zZWwlMjBtZW5hbXBpbGthbiUyMHVjYXBhbiUyMHNlbGFtYXQlMjBkYW4lMjBwb2luJTIweWFuZyUyMGRpZGFwYXQufGVufDB8fDB8fHww',
-                  color: 'bg-emerald-100',
-                },
-              ].map((step, index) => (
+              {processSteps.map((step, index) => (
                 <motion.div
                   key={step.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -708,14 +775,14 @@ const About = () => {
                     </p>
                   </div>
 
-                  {index !== 4 && (
+                  {index !== processSteps.length - 1 && (
                     <div className="hidden lg:flex absolute top-1/2 -right-6 xl:-right-8 transform -translate-y-1/2 items-center justify-center z-0">
                       <ArrowRight className="w-8 h-8 text-gray-300" />
                     </div>
                   )}
 
                   <div className="lg:hidden flex justify-center mt-4 opacity-30">
-                    {index !== 4 && (
+                    {index !== processSteps.length - 1 && (
                       <ChevronRight className="w-6 h-6 rotate-90" />
                     )}
                   </div>
@@ -769,11 +836,12 @@ const About = () => {
 
           <div className="mt-6 space-y-6">
             <p className="text-gray-700 text-lg leading-relaxed">
-              Data yang tersaji di atas bukan sekadar angka; itu adalah cerminan
-              dari tantangan nyata yang dihadapi planet kita. Tren kenaikan
-              emisi global, hilangnya keanekaragaman hayati, dan polusi plastik
-              yang konsisten menjadi <strong>latar belakang utama</strong> dan
-              panggilan mendesak bagi kami. Kami melihat adanya{' '}
+              Data yang tersaji di atas bukan sekadar angka; itu adalah
+              cerminan dari tantangan nyata yang dihadapi planet kita. Tren
+              kenaikan emisi global, hilangnya keanekaragaman hayati, dan
+              polusi plastik yang konsisten menjadi{' '}
+              <strong>latar belakang utama</strong> dan panggilan mendesak bagi
+              kami. Kami melihat adanya{' '}
               <strong>kebutuhan mendesak</strong> akan platform yang dapat
               diakses untuk edukasi dan aksi iklim. Peningkatan ini menunjukkan
               bahwa metode advokasi tradisional saja tidak lagi mencukupi.
@@ -784,8 +852,9 @@ const About = () => {
               <strong>Sikap apatis</strong> atau kebingungan yang masih melekat
               kuat membuat banyak orang takut untuk memulai. Selain itu,{' '}
               <strong>akses yang terbatas</strong> ke data yang terverifikasi
-              dan panduan praktis serta <strong>biaya solusi hijau</strong> yang
-              terkadang dianggap mahal menjadi penghalang yang nyata.
+              dan panduan praktis serta{' '}
+              <strong>biaya solusi hijau</strong> yang terkadang dianggap mahal
+              menjadi penghalang yang nyata.
             </p>
             <p className="text-gray-700 text-lg leading-relaxed">
               Oleh karena itu, <strong>AksiHijau lahir</strong> sebagai jawaban
@@ -807,7 +876,7 @@ const About = () => {
           className="my-24 w-full bg-gradient-to-r from-green-700 to-green-500 rounded-3xl p-8 md:p-12 shadow-2xl relative"
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Kolom Kiri: Ilustrasi */}
+            {/* Kiri: Ilustrasi */}
             <div className="relative z-10 order-2 lg:order-1">
               <div className="bg-emerald-100 rounded-2xl p-6 aspect-[4/3] flex items-center justify-center relative shadow-inner">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob" />
@@ -835,7 +904,7 @@ const About = () => {
               </div>
             </div>
 
-            {/* Kolom Kanan: Timeline */}
+            {/* Kanan: Timeline */}
             <div className="order-1 lg:order-2 text-white">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 Solusi Nyata untuk Pulihkan Bumi
@@ -868,6 +937,181 @@ const About = () => {
                 ))}
               </div>
             </div>
+          </div>
+        </motion.div>
+
+        {/* BAGIAN DAMPAK KAMI DALAM ANGKA */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+          {impactStats.map((item, index) => (
+            <motion.div
+              key={item.label}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.08 }}
+              whileHover={{ y: -6, scale: 1.02 }}
+              className="relative group h-full"
+            >
+              {/* border glow */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-200/40 via-transparent to-cyan-200/40 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
+
+              <div
+                className="relative bg-white rounded-2xl border border-emerald-100/70 shadow-sm 
+        group-hover:border-emerald-300 group-hover:shadow-lg 
+        transition-all duration-300 p-6 
+        flex flex-col items-center text-center justify-between h-full"
+              >
+                <div className="mb-4 flex items-center justify-center">
+                  <div
+                    className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center 
+            shadow-[0_6px_18px_rgba(16,185,129,0.18)]"
+                  >
+                    <item.icon className="w-6 h-6 text-emerald-600" />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-1">
+                    {item.value}
+                  </div>
+                  <div className="text-[13px] font-semibold uppercase tracking-[0.16em] text-emerald-700 mb-2">
+                    {item.label}
+                  </div>
+                </div>
+
+                <p className="text-xs md:text-sm text-gray-500 leading-relaxed mt-2">
+                  {item.desc}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+
+        {/* TIM KAMI */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="my-24 py-16 px-6 bg-gradient-to-b from-emerald-50 via-white to-cyan-50 rounded-3xl border border-emerald-100 shadow-xl relative overflow-hidden"
+        >
+          {/* Dekorasi */}
+          <div className="pointer-events-none absolute -top-24 right-[-40px] w-60 h-60 bg-emerald-200/50 rounded-full blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 left-[-40px] w-72 h-72 bg-cyan-200/50 rounded-full blur-3xl" />
+          <div className="pointer-events-none absolute inset-x-10 top-1/2 h-px bg-gradient-to-r from-transparent via-emerald-100 to-transparent" />
+
+          {/* Header */}
+          <div className="text-center mb-16 relative z-10">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-emerald-200 text-emerald-700 text-xs font-semibold mb-4 shadow-sm">
+              <Users className="w-4 h-4" />
+              Tim Kolaborasi AksiHijau
+            </div>
+
+            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3 tracking-tight">
+              Di Balik <span className="text-green-600">Gerakan Hijau</span>
+            </h2>
+
+            <p className="text-gray-600 max-w-2xl mx-auto text-base md:text-lg">
+              Setiap fitur dan inisiatif AksiHijau adalah hasil kerja tim yang
+              saling melengkapi: pemimpin, developer, dan penggerak komunitas.
+            </p>
+          </div>
+
+          {/* Cards Tim */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+            {teamMembers.map((member, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.45, delay: idx * 0.1 }}
+                whileHover={{ y: -8, scale: 1.015 }}
+                className="relative bg-white/90 backdrop-blur-lg rounded-3xl p-6 shadow-md border border-emerald-100 hover:border-emerald-300 transition-all duration-300 group overflow-hidden"
+              >
+                {/* Garis accent atas */}
+                <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-500 opacity-70" />
+
+                {/* Badge role */}
+                <div className="absolute top-4 right-4">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-semibold border border-emerald-100">
+                    {member.role}
+                  </span>
+                </div>
+
+                {/* Avatar */}
+                <div className="flex flex-col items-center text-center mt-4 mb-5">
+                  <div className="relative">
+                    <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-emerald-400 via-cyan-400 to-emerald-500 p-[3px] shadow-lg group-hover:shadow-emerald-300/70 transition-shadow duration-300">
+                      <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
+                        <img
+                          src={member.image}
+                          alt={member.name}
+                          className="w-full h-full rounded-full object-cover"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="absolute inset-0 flex items-center justify-center -z-10">
+                      <div className="w-16 h-16 bg-emerald-200/60 blur-2xl rounded-full" />
+                    </div>
+                  </div>
+
+                  <h3 className="mt-4 text-lg md:text-xl font-bold text-gray-900">
+                    {member.name}
+                  </h3>
+                  <p className="mt-1 text-xs tracking-[0.18em] uppercase text-emerald-600 font-semibold">
+                    {member.role}
+                  </p>
+                </div>
+
+                {/* Bio */}
+                <p className="text-gray-500 text-sm leading-relaxed text-center mb-5 px-1">
+                  {member.bio}
+                </p>
+
+                {/* Divider */}
+                <div className="w-full h-px bg-gradient-to-r from-transparent via-emerald-100 to-transparent mb-4" />
+
+                {/* Social */}
+                <div className="flex items-center justify-center gap-3">
+                  {member.social.github && (
+                    <a
+                      href={member.social.github}
+                      className="w-9 h-9 rounded-full flex items-center justify-center bg-gray-50 border border-gray-200 text-gray-500 hover:text-gray-900 hover:border-gray-300 hover:-translate-y-0.5 transition-all duration-200"
+                      aria-label={`${member.name} Github`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Github className="w-4 h-4" />
+                    </a>
+                  )}
+                  {member.social.linkedin && (
+                    <a
+                      href={member.social.linkedin}
+                      className="w-9 h-9 rounded-full flex items-center justify-center bg-blue-50 border border-blue-100 text-blue-600 hover:text-blue-700 hover:border-blue-200 hover:-translate-y-0.5 transition-all duration-200"
+                      aria-label={`${member.name} Linkedin`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Linkedin className="w-4 h-4" />
+                    </a>
+                  )}
+                  {member.social.instagram && (
+                    <a
+                      href={member.social.instagram}
+                      className="w-9 h-9 rounded-full flex items-center justify-center bg-pink-50 border border-pink-100 text-pink-500 hover:text-pink-600 hover:border-pink-200 hover:-translate-y-0.5 transition-all duration-200"
+                      aria-label={`${member.name} Instagram`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Instagram className="w-4 h-4" />
+                    </a>
+                  )}
+                </div>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
       </div>
