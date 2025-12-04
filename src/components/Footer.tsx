@@ -29,7 +29,7 @@ const Footer = () => {
   return (
     <motion.footer 
       // pb-40 untuk mobile, md:pb-60 untuk desktop
-      className="bg-gradient-to-b from-green-50 to-green-100 border-t-8 border-green-700 overflow-hidden pb-8 md:pb-60 relative"
+      className="bg-gradient-to-b from-green-50 to-green-100 border-t-4 border-green-700 overflow-hidden pb-8 md:pb-60 relative"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.3 }}
@@ -46,8 +46,6 @@ const Footer = () => {
           <motion.div className="col-span-1 md:col-span-2" variants={itemVariants}>
             <div className="flex items-center space-x-3 mb-4">
               <motion.div
-                initial={{ rotate: 0 }}
-                animate={{ rotate: 360 }}
                 transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
               >
                 <Leaf className="w-10 h-10 text-green-700" /> 

@@ -343,9 +343,7 @@ app.post('/events/:eventId/upvote', authenticateToken, async (req, res) => {
     }
 });
 
-// ============================================
-// SOCIAL POSTS ROUTES
-// ============================================
+
 
 // GET: Mengambil semua posts
 app.get('/posts', async (req, res) => {
@@ -366,10 +364,12 @@ app.get('/posts', async (req, res) => {
         const params = [];
         
         if (status) {
+            // Admin bisa filter, tapi default untuk public adalah SEMUA
             query += ` WHERE p.status = $1`;
             params.push(status);
         } else {
-            query += ` WHERE p.status = 'ACCEPTED'`;
+            // Tidak ada filter status default (semua post terlihat)
+            // Kecuali admin ingin melihat yang pending, dia bisa menggunakan query param ?status=PENDING
         }
 
         query += `
@@ -378,14 +378,25 @@ app.get('/posts', async (req, res) => {
         `;
 
         const result = await pool.query(query, params);
-        res.json(result.rows);
+        
+        // ✨ FIX 1: Konversi like_count dan comment_count ke number (integer)
+        const posts = result.rows.map(post => ({
+            ...post,
+            like_count: parseInt(post.like_count, 10) || 0,
+            comment_count: parseInt(post.comment_count, 10) || 0,
+        }));
+        
+        res.json(posts); // Mengirim data yang sudah dikonversi
+
     } catch (err) {
         console.error('Error fetching posts:', err);
         res.status(500).json({ error: 'Internal server error', details: err.message });
     }
 });
 
-// POST: Membuat post baru
+
+
+// POST: Membuat post baru (Tidak ada lagi 'PENDING' status)
 app.post('/posts', authenticateToken, async (req, res) => {
     console.log('POST /posts hit!');
     const { content, image_url } = req.body;
@@ -397,15 +408,25 @@ app.post('/posts', authenticateToken, async (req, res) => {
 
         const result = await pool.query(
             `INSERT INTO social_posts (content, image_url, created_by, status)
-             VALUES ($1, $2, $3, 'PENDING')
+             VALUES ($1, $2, $3, 'ACCEPTED') -- Post langsung ACCEPTED
              RETURNING *`,
             [content, image_url || null, req.user.user_id]
         );
+        
+        const newPost = result.rows[0];
 
-        res.status(201).json({
-            message: 'Post berhasil dibuat dan menunggu persetujuan admin',
-            post: result.rows[0]
-        });
+        // ✨ FIX 2: Buat objek Post yang lengkap dengan data dari token (req.user)
+        const completePost = {
+            ...newPost,
+            username: req.user.username, // Ambil dari token
+            eco_level: req.user.eco_level, // Ambil dari token
+            like_count: 0, // Inisialisasi
+            comment_count: 0, // Inisialisasi
+        };
+
+        // Mengirim objek Post lengkap secara langsung, tidak dibungkus
+        res.status(201).json(completePost);
+        
     } catch (err) {
         console.error('Error creating post:', err);
         res.status(500).json({ error: 'Internal server error', details: err.message });
@@ -468,6 +489,8 @@ app.get('/posts/:postId/comments', async (req, res) => {
     }
 });
 
+
+
 // POST: Menambahkan komentar ke post
 app.post('/posts/:postId/comments', authenticateToken, async (req, res) => {
     console.log(`POST /posts/${req.params.postId}/comments hit!`);
@@ -486,17 +509,15 @@ app.post('/posts/:postId/comments', authenticateToken, async (req, res) => {
             [postId, req.user.user_id, content]
         );
 
-        // Get username untuk response
-        const userResult = await pool.query(
-            'SELECT username, eco_level FROM users WHERE user_id = $1',
-            [req.user.user_id]
-        );
-
-        res.status(201).json({
+        // ✨ FIX 3: Hapus kueri database kedua, gunakan data dari token (req.user)
+        const newComment = {
             ...result.rows[0],
-            username: userResult.rows[0].username,
-            eco_level: userResult.rows[0].eco_level
-        });
+            username: req.user.username, // Ambil dari token
+            eco_level: req.user.eco_level // Ambil dari token
+        };
+
+        res.status(201).json(newComment);
+        
     } catch (err) {
         console.error('Error adding comment:', err);
         res.status(500).json({ error: 'Internal server error', details: err.message });
@@ -508,47 +529,43 @@ app.post('/posts/:postId/comments', authenticateToken, async (req, res) => {
 // ============================================
 
 // PATCH: Moderasi event (Accept/Reject)
-app.patch('/admin/events/:eventId/moderate', authenticateToken, adminOnly, async (req, res) => {
-    console.log(`PATCH /admin/events/${req.params.eventId}/moderate hit!`);
-    const { eventId } = req.params;
-    const { status } = req.body;
-
+app.get('/admin/events', authenticateToken, adminOnly, async (req, res) => {
+    console.log('GET /admin/events hit!');
     try {
-        if (!['ACCEPTED', 'REJECTED'].includes(status)) {
-            return res.status(400).json({ error: 'Status tidak valid' });
-        }
-
-        await pool.query(
-            'UPDATE events SET status = $1 WHERE event_id = $2',
-            [status, eventId]
+        const result = await pool.query(
+            `SELECT e.*, u.username as creator_name,
+                    COUNT(DISTINCT ev.upvote_id) as upvote_count
+             FROM events e
+             JOIN users u ON e.created_by = u.user_id
+             LEFT JOIN event_upvotes ev ON e.event_id = ev.event_id
+             GROUP BY e.event_id, u.username
+             ORDER BY e.created_at DESC`
         );
-
-        res.json({ message: `Event berhasil di-${status.toLowerCase()}` });
+        res.json(result.rows);
     } catch (err) {
-        console.error('Error moderating event:', err);
+        console.error('Error fetching all events for admin:', err);
         res.status(500).json({ error: 'Internal server error', details: err.message });
     }
 });
 
 // PATCH: Moderasi post (Accept/Reject)
-app.patch('/admin/posts/:postId/moderate', authenticateToken, adminOnly, async (req, res) => {
-    console.log(`PATCH /admin/posts/${req.params.postId}/moderate hit!`);
-    const { postId } = req.params;
-    const { status } = req.body;
-
+app.get('/admin/posts', authenticateToken, adminOnly, async (req, res) => {
+    console.log('GET /admin/posts hit!');
     try {
-        if (!['ACCEPTED', 'REJECTED'].includes(status)) {
-            return res.status(400).json({ error: 'Status tidak valid' });
-        }
-
-        await pool.query(
-            'UPDATE social_posts SET status = $1 WHERE post_id = $2',
-            [status, postId]
+        const result = await pool.query(
+            `SELECT p.*, u.username, u.eco_level,
+                   COUNT(DISTINCT pl.like_id) as like_count,
+                   COUNT(DISTINCT c.comment_id) as comment_count
+            FROM social_posts p
+            JOIN users u ON p.created_by = u.user_id
+            LEFT JOIN post_likes pl ON p.post_id = pl.post_id
+            LEFT JOIN comments c ON p.post_id = c.post_id
+            GROUP BY p.post_id, u.username, u.eco_level
+            ORDER BY p.created_at DESC`
         );
-
-        res.json({ message: `Post berhasil di-${status.toLowerCase()}` });
+        res.json(result.rows);
     } catch (err) {
-        console.error('Error moderating post:', err);
+        console.error('Error fetching all posts for admin:', err);
         res.status(500).json({ error: 'Internal server error', details: err.message });
     }
 });
@@ -626,6 +643,48 @@ app.get('/badges', async (req, res) => {
         res.json(result.rows);
     } catch (err) {
         console.error('Error fetching badges:', err);
+        res.status(500).json({ error: 'Internal server error', details: err.message });
+    }
+});
+
+app.delete('/admin/events/:eventId', authenticateToken, adminOnly, async (req, res) => {
+    console.log(`DELETE /admin/events/${req.params.eventId} hit!`);
+    const { eventId } = req.params;
+
+    try {
+        const result = await pool.query(
+            'DELETE FROM events WHERE event_id = $1 RETURNING event_id',
+            [eventId]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'Event tidak ditemukan' });
+        }
+
+        res.json({ message: 'Event berhasil dihapus' });
+    } catch (err) {
+        console.error('Error deleting event:', err);
+        res.status(500).json({ error: 'Internal server error', details: err.message });
+    }
+});
+
+app.delete('/admin/posts/:postId', authenticateToken, adminOnly, async (req, res) => {
+    console.log(`DELETE /admin/posts/${req.params.postId} hit!`);
+    const { postId } = req.params;
+
+    try {
+        const result = await pool.query(
+            'DELETE FROM social_posts WHERE post_id = $1 RETURNING post_id',
+            [postId]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'Post tidak ditemukan' });
+        }
+
+        res.json({ message: 'Post berhasil dihapus' });
+    } catch (err) {
+        console.error('Error deleting post:', err);
         res.status(500).json({ error: 'Internal server error', details: err.message });
     }
 });

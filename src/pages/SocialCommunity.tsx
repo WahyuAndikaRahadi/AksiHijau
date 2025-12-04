@@ -1,8 +1,9 @@
+// SocialCommunity.tsx (KODE LENGKAP YANG DIREVISI)
 import { motion } from 'framer-motion';
-import { Heart, MessageCircle, Send, Image as ImageIcon, Leaf, Award } from 'lucide-react';
+import { Heart, MessageCircle, Send, Image as ImageIcon, Leaf, Award, XCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
-const API_URL = 'http://localhost:5000';
+const API_URL = 'http://localhost:5000'; // Pastikan ini sesuai dengan backend Anda
 
 interface Post {
   post_id: number;
@@ -26,33 +27,71 @@ interface Comment {
 const SocialCommunity = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isPosting, setIsPosting] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState<number | null>(null);
   const [comments, setComments] = useState<{ [key: number]: Comment[] }>({});
   const [commentText, setCommentText] = useState('');
+  // State ini sekarang menampung post ID yang di-like dari backend
+  const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set()); 
 
   // Form state
   const [postContent, setPostContent] = useState('');
   const [postImage, setPostImage] = useState('');
 
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const isLoggedIn = !!localStorage.getItem('token'); 
 
-  useEffect(() => {
-    loadPosts();
-  }, []);
+// ----------------------------------------------------
+// ## FUNGSI LIKE DAN POST LOADING
+// ----------------------------------------------------
+
+  // Fungsi baru untuk memuat ID postingan yang sudah di-like oleh user saat ini
+  const loadLikedPosts = async (token: string) => {
+    try {
+      // ASUMSI: Endpoint ini mengembalikan array of post IDs (number[])
+      const response = await fetch(`${API_URL}/user/liked-posts`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const likedPostIds: number[] = await response.json();
+        setLikedPosts(new Set(likedPostIds));
+      } else {
+        console.error('Failed to load user liked posts:', response.statusText);
+        // Jika gagal, pastikan state tetap kosong untuk menghindari like palsu
+        setLikedPosts(new Set()); 
+      }
+    } catch (error) {
+      console.error('Error loading liked posts:', error);
+      setLikedPosts(new Set());
+    }
+  };
+
 
   const loadPosts = async () => {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/posts`, {
         headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
+          // Token dikirim untuk backend memproses jika user ini like post atau tidak (opsional tergantung implementasi backend)
+          'Authorization': token ? `Bearer ${token}` : '', 
         },
       });
 
       if (response.ok) {
         const data = await response.json();
         setPosts(data);
+
+        // Muat status like setelah post termuat, jika user sedang login
+        if (token) {
+          await loadLikedPosts(token); 
+        } else {
+          setLikedPosts(new Set()); // Kosongkan jika tidak login
+        }
+
       }
     } catch (error) {
       console.error('Error loading posts:', error);
@@ -61,16 +100,25 @@ const SocialCommunity = () => {
     }
   };
 
+  useEffect(() => {
+    loadPosts();
+    // Hapus loading status liked dari localStorage di sini, karena kini dari backend
+  }, []);
+
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('Silakan login terlebih dahulu');
-        return;
-      }
+    if (!postContent.trim() || isPosting) return;
 
+    const token = localStorage.getItem('token');
+    if (!token) {
+        alert('Silakan login terlebih dahulu untuk membuat post.');
+        return;
+    }
+
+    setIsPosting(true);
+    
+    try {
       const response = await fetch(`${API_URL}/posts`, {
         method: 'POST',
         headers: {
@@ -84,11 +132,23 @@ const SocialCommunity = () => {
       });
 
       if (response.ok) {
-        alert('Post berhasil dibuat! Menunggu persetujuan admin.');
+        const newPost: Post = await response.json(); 
+
+        const postToAdd: Post = {
+            ...newPost,
+            // Perbaikan agar tanggal tidak 'Invalid Date' saat ditampilkan
+            created_at: newPost.created_at && !isNaN(new Date(newPost.created_at).getTime()) 
+                        ? newPost.created_at 
+                        : new Date().toISOString(),
+            like_count: newPost.like_count ?? 0, 
+            comment_count: newPost.comment_count ?? 0,
+        };
+
+        setPosts(prev => [postToAdd, ...prev]);
+        
         setShowCreateModal(false);
         setPostContent('');
         setPostImage('');
-        loadPosts();
       } else {
         const error = await response.json();
         alert(error.error || 'Gagal membuat post');
@@ -96,17 +156,45 @@ const SocialCommunity = () => {
     } catch (error) {
       console.error('Error creating post:', error);
       alert('Terjadi kesalahan');
+    } finally {
+      setIsPosting(false);
     }
   };
 
   const handleLike = async (postId: number) => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('Silakan login untuk like');
-        return;
-      }
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Silakan login untuk like');
+      return;
+    }
 
+    const isCurrentlyLiked = likedPosts.has(postId);
+
+    // 1. Optimistic UI Update: Langsung ubah state sebelum API selesai
+    setPosts(prevPosts =>
+      prevPosts.map(post => {
+        if (post.post_id === postId) {
+          return {
+            ...post,
+            like_count: isCurrentlyLiked ? post.like_count - 1 : post.like_count + 1,
+          };
+        }
+        return post;
+      })
+    );
+    
+    setLikedPosts(prev => {
+      const newSet = new Set(prev);
+      if (isCurrentlyLiked) {
+        newSet.delete(postId);
+      } else {
+        newSet.add(postId);
+      }
+      return newSet;
+    });
+
+    // 2. API Call ke Backend
+    try {
       const response = await fetch(`${API_URL}/posts/${postId}/like`, {
         method: 'POST',
         headers: {
@@ -114,13 +202,65 @@ const SocialCommunity = () => {
         },
       });
 
-      if (response.ok) {
-        loadPosts();
+      if (!response.ok) {
+        // Rollback UI Update jika API gagal
+        console.error('Like API failed. Rolling back UI.');
+        
+        setPosts(prevPosts =>
+          prevPosts.map(post => {
+            if (post.post_id === postId) {
+              return {
+                ...post,
+                // Mengembalikan like_count ke kondisi semula
+                like_count: isCurrentlyLiked ? post.like_count + 1 : post.like_count - 1, 
+              };
+            }
+            return post;
+          })
+        );
+        
+        setLikedPosts(prev => {
+          const newSet = new Set(prev);
+          if (isCurrentlyLiked) {
+            newSet.add(postId); // Tambahkan kembali (rollback unlike)
+          } else {
+            newSet.delete(postId); // Hapus (rollback like)
+          }
+          return newSet;
+        });
+        
+        alert('Gagal memperbarui like. Status dikembalikan.');
       }
     } catch (error) {
       console.error('Error liking post:', error);
+      // Rollback jika error jaringan
+       setPosts(prevPosts => 
+          prevPosts.map(post => {
+              if (post.post_id === postId) {
+                  return {
+                      ...post,
+                      like_count: isCurrentlyLiked ? post.like_count + 1 : post.like_count - 1,
+                  };
+              }
+              return post;
+          })
+      );
+      setLikedPosts(prev => {
+          const newSet = new Set(prev);
+          if (isCurrentlyLiked) {
+              newSet.add(postId);
+          } else {
+              newSet.delete(postId);
+          }
+          return newSet;
+      });
+      alert('Terjadi kesalahan jaringan.');
     }
   };
+
+// ----------------------------------------------------
+// ## FUNGSI COMMENT DAN UTILITY
+// ----------------------------------------------------
 
   const loadComments = async (postId: number) => {
     try {
@@ -155,9 +295,22 @@ const SocialCommunity = () => {
       });
 
       if (response.ok) {
+        const newComment: Comment = await response.json(); 
+        
+        // Optimistic UI Update untuk komentar
+        setComments(prev => ({
+            ...prev,
+            [postId]: [newComment, ...(prev[postId] || [])], // Tambahkan di depan
+        }));
+
+        // Update comment_count di post
+        setPosts(prevPosts => 
+            prevPosts.map(post => 
+                post.post_id === postId ? { ...post, comment_count: post.comment_count + 1 } : post
+            )
+        );
+
         setCommentText('');
-        loadComments(postId);
-        loadPosts(); // Reload untuk update comment count
       }
     } catch (error) {
       console.error('Error adding comment:', error);
@@ -177,6 +330,12 @@ const SocialCommunity = () => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
+    
+    // Robustness check for Invalid Date
+    if (isNaN(date.getTime())) {
+        return 'Invalid Date'; 
+    }
+    
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
@@ -202,6 +361,39 @@ const SocialCommunity = () => {
     return badges[level] || badges[1];
   };
 
+  const ImagePreview: React.FC<{ url: string, onRemove: () => void }> = ({ url, onRemove }) => {
+    const [imgError, setImgError] = useState(false);
+    useEffect(() => { setImgError(false); }, [url]);
+
+    if (!url || imgError) return null;
+
+    return (
+        <div className="relative mt-3">
+            <img
+                src={url}
+                alt="Preview"
+                className="w-full rounded-lg object-cover max-h-64 border border-gray-200"
+                onError={() => {
+                    setImgError(true);
+                    onRemove(); 
+                    alert('Gagal memuat gambar dari link tersebut.');
+                }}
+            />
+            <button
+                onClick={onRemove}
+                className="absolute top-2 right-2 bg-red-600 text-white rounded-full p-1.5 hover:bg-red-700 transition"
+            >
+                <XCircle className="w-4 h-4" />
+            </button>
+        </div>
+    );
+  };
+
+
+// ----------------------------------------------------
+// ## KOMPONEN UTAMA (JSX)
+// ----------------------------------------------------
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-sky-50">
       {/* Header */}
@@ -219,8 +411,14 @@ const SocialCommunity = () => {
             </div>
             
             <button
-              onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all shadow-md"
+              onClick={() => {
+                if (isLoggedIn) setShowCreateModal(true);
+                else alert('Harap login untuk membuat Post.');
+              }}
+              disabled={!isLoggedIn}
+              className={`flex items-center gap-2 px-4 py-2 text-white rounded-lg transition-all shadow-md ${
+                isLoggedIn ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'
+              }`}
             >
               <Send className="w-5 h-5" />
               <span className="font-semibold hidden sm:inline">Post</span>
@@ -228,6 +426,16 @@ const SocialCommunity = () => {
           </div>
         </div>
       </div>
+
+      {/* Pesan Login */}
+      {!isLoggedIn && (
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+          <div className="text-center py-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg shadow-sm">
+            <p className="font-semibold">Anda belum login.</p>
+            <p className="text-sm mt-1">Silakan login untuk membuat post, memberi like, dan berkomentar.</p>
+          </div>
+        </div>
+      )}
 
       {/* Main Feed */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -246,6 +454,8 @@ const SocialCommunity = () => {
             ) : (
               posts.map((post, index) => {
                 const badge = getLevelBadge(post.eco_level);
+                // **FIXED**: Status like diambil dari state likedPosts yang disinkronkan dengan backend
+                const isLiked = likedPosts.has(post.post_id); 
                 
                 return (
                   <motion.div
@@ -258,7 +468,8 @@ const SocialCommunity = () => {
                     {/* Post Header */}
                     <div className="p-4 flex items-center gap-3">
                       <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                        {post.username[0].toUpperCase()}
+                        {/* Safely access username initial */}
+                        {(post.username?.[0] || 'U').toUpperCase()} 
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
@@ -284,6 +495,7 @@ const SocialCommunity = () => {
                           src={post.image_url}
                           alt="Post"
                           className="w-full rounded-lg object-cover max-h-96"
+                          onError={(e) => { e.currentTarget.style.display = 'none'; }} 
                         />
                       </div>
                     )}
@@ -292,9 +504,14 @@ const SocialCommunity = () => {
                     <div className="px-4 py-3 border-t flex items-center gap-6">
                       <button
                         onClick={() => handleLike(post.post_id)}
-                        className="flex items-center gap-2 text-gray-600 hover:text-red-500 transition-colors"
+                        disabled={!isLoggedIn} 
+                        className={`flex items-center gap-2 transition-colors ${
+                          // **FIXED**: Warna tombol like sesuai status likedPosts
+                          isLiked ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
+                        } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
-                        <Heart className="w-5 h-5" />
+                        {/* **FIXED**: Ikon hati diisi jika sudah di-like */}
+                        <Heart className={`w-5 h-5 ${isLiked ? 'fill-red-500' : ''}`} /> 
                         <span className="font-semibold">{post.like_count}</span>
                       </button>
                       
@@ -320,17 +537,21 @@ const SocialCommunity = () => {
                               type="text"
                               value={commentText}
                               onChange={(e) => setCommentText(e.target.value)}
-                              placeholder="Tulis komentar..."
+                              placeholder={isLoggedIn ? "Tulis komentar..." : "Login untuk berkomentar"}
                               className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-green-500 focus:border-transparent"
                               onKeyPress={(e) => {
-                                if (e.key === 'Enter') {
+                                if (e.key === 'Enter' && isLoggedIn) {
                                   handleAddComment(post.post_id);
                                 }
                               }}
+                              disabled={!isLoggedIn} 
                             />
                             <button
                               onClick={() => handleAddComment(post.post_id)}
-                              className="px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-all"
+                              disabled={!isLoggedIn || !commentText.trim()}
+                              className={`px-4 py-2 text-white rounded-full transition-all ${
+                                isLoggedIn ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-400 cursor-not-allowed'
+                              }`}
                             >
                               <Send className="w-4 h-4" />
                             </button>
@@ -345,7 +566,8 @@ const SocialCommunity = () => {
                             return (
                               <div key={comment.comment_id} className="flex gap-3">
                                 <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                                  {comment.username[0].toUpperCase()}
+                                  {/* Safely access comment username initial */}
+                                  {(comment.username?.[0] || 'U').toUpperCase()} 
                                 </div>
                                 <div className="flex-1 bg-white rounded-lg p-3">
                                   <div className="flex items-center gap-2 mb-1">
@@ -374,7 +596,7 @@ const SocialCommunity = () => {
       </div>
 
       {/* Create Post Modal */}
-      {showCreateModal && (
+      {showCreateModal && isLoggedIn && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -398,6 +620,7 @@ const SocialCommunity = () => {
                     rows={6}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="Ceritakan aksi hijau Anda, tips lingkungan, atau pengalaman menarik..."
+                    disabled={isPosting}
                   />
                 </div>
 
@@ -414,17 +637,10 @@ const SocialCommunity = () => {
                     onChange={(e) => setPostImage(e.target.value)}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     placeholder="https://example.com/image.jpg"
+                    disabled={isPosting}
                   />
-                  {postImage && (
-                    <div className="mt-3">
-                      <img
-                        src={postImage}
-                        alt="Preview"
-                        className="w-full rounded-lg object-cover max-h-64"
-                        onError={() => setPostImage('')}
-                      />
-                    </div>
-                  )}
+                  {/* ImagePreview component handles error and removal */}
+                  <ImagePreview url={postImage} onRemove={() => setPostImage('')} /> 
                 </div>
               </div>
             </div>
@@ -436,16 +652,26 @@ const SocialCommunity = () => {
                   setPostContent('');
                   setPostImage('');
                 }}
+                disabled={isPosting}
                 className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-semibold"
               >
                 Batal
               </button>
               <button
                 onClick={handleCreatePost}
-                disabled={!postContent.trim()}
-                className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed"
+                disabled={!postContent.trim() || isPosting}
+                className={`flex-1 px-6 py-3 text-white rounded-lg transition-all font-semibold ${
+                  !postContent.trim() || isPosting ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'
+                }`}
               >
-                Posting
+                {isPosting ? (
+                    <div className="flex items-center justify-center gap-2">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                        <span>Memposting...</span>
+                    </div>
+                ) : (
+                    'Posting'
+                )}
               </button>
             </div>
           </motion.div>

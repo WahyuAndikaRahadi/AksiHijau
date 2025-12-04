@@ -1,14 +1,16 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Camera, Upload, X, Trash2, Recycle, Leaf, AlertCircle, Sparkles, RotateCw } from 'lucide-react';
+import { Camera, Upload, X, Recycle, Leaf, AlertCircle, Sparkles, RotateCw } from 'lucide-react';
 import Webcam from 'react-webcam';
-import * as cocoSsd from '@tensorflow-models/coco-ssd';
-import '@tensorflow/tfjs';
+
+// Hapus import:
+// import * as cocoSsd from '@tensorflow-models/coco-ssd';
+// import '@tensorflow/tfjs';
 
 // Interface untuk hasil deteksi
 interface DetectionResult {
   detectedObject: string;
-  confidence: number;
+  confidence: number; // Tetap ada untuk UI, bisa diset 100% atau 0
   wasteAnalysis: {
     wasteType: string;
     recyclable: boolean;
@@ -18,199 +20,58 @@ interface DetectionResult {
   } | null;
 }
 
-// Daftar object yang TIDAK boleh dideteksi (manusia)
-const EXCLUDED_OBJECTS = [
-  'person', 'people', 'man', 'woman', 'child', 'boy', 'girl',
-  'human', 'face', 'body', 'hand', 'head'
-];
-
-// Filter untuk hanya deteksi barang
-const filterObjectDetections = (predictions: cocoSsd.DetectedObject[]): cocoSsd.DetectedObject[] => {
-  return predictions.filter(pred => 
-    !EXCLUDED_OBJECTS.includes(pred.class.toLowerCase())
-  );
-};
+// Hapus variabel dan fungsi filter object COCO-SSD
 
 const WasteDetection: React.FC = () => {
   const [isCameraOpen, setIsCameraOpen] = useState<boolean>(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [isDetecting, setIsDetecting] = useState<boolean>(false);
+  // State isDetecting sekarang hanya untuk menunjukkan proses analisis dari Gemini
+  const [isDetecting, setIsDetecting] = useState<boolean>(false); 
   const [isAnalyzingWithAI, setIsAnalyzingWithAI] = useState<boolean>(false);
   const [detectionResult, setDetectionResult] = useState<DetectionResult | null>(null);
-  const [model, setModel] = useState<cocoSsd.ObjectDetection | null>(null);
+  // Hapus state model
   const [error, setError] = useState<string | null>(null);
-  const [realtimePredictions, setRealtimePredictions] = useState<cocoSsd.DetectedObject[]>([]);
+  // Hapus state realtimePredictions
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
 
   const webcamRef = useRef<Webcam>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  // Hapus canvasRef
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const detectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  // Hapus detectionIntervalRef
 
   // PENTING: Ganti dengan API Key Gemini Anda
-  const GEMINI_API_KEY = 'AIzaSyB7OU1L0CYeiYOZ5HUJ9vKkc11rqT6_sac';
+  // Pertahankan API Key (disarankan untuk menggunakan variable environment di aplikasi nyata)
+  const GEMINI_API_KEY = 'AIzaSyBm7j_d45T56ZoLEnS2zAin9ExG_HEUWGk';
 
-  // Load TensorFlow model
+  // Hapus useEffect untuk loading TensorFlow model
   useEffect(() => {
-    const loadModel = async () => {
-      try {
-        console.log('Loading TensorFlow model...');
-        const loadedModel = await cocoSsd.load();
-        setModel(loadedModel);
-        console.log('✅ TensorFlow model loaded successfully');
-      } catch (error) {
-        console.error('❌ Error loading TensorFlow model:', error);
-        setError('Gagal memuat model AI. Refresh halaman.');
-      }
-    };
-    loadModel();
+    // Simulasi inisialisasi berhasil
+    console.log('✅ Gemini API is ready for analysis.');
   }, []);
 
-  // Cleanup
-  useEffect(() => {
-    return () => {
-      if (detectionIntervalRef.current) {
-        clearInterval(detectionIntervalRef.current);
-      }
-    };
-  }, []);
+  // Hapus useEffect cleanup interval
 
   // Buka kamera
   const openCamera = (): void => {
-    if (!model) {
-      setError('Model AI masih loading. Tunggu hingga tombol aktif.');
-      return;
-    }
-    
+    // Hapus validasi !model
     setIsCameraOpen(true);
     setError(null);
     setCapturedImage(null);
     setDetectionResult(null);
     
-    // Start real-time detection setelah camera ready
-    setTimeout(() => {
-      startRealtimeDetection();
-    }, 1500);
+    // Hapus startRealtimeDetection
   };
 
-  // Real-time detection
-  const startRealtimeDetection = (): void => {
-    if (!model) return;
-
-    const detectFrame = async () => {
-      if (
-        webcamRef.current &&
-        webcamRef.current.video &&
-        webcamRef.current.video.readyState === 4
-      ) {
-        const video = webcamRef.current.video;
-        
-        try {
-          const predictions = await model.detect(video);
-          // Filter hanya barang (tidak termasuk orang)
-          const filteredPredictions = filterObjectDetections(predictions);
-          setRealtimePredictions(filteredPredictions);
-          
-          // Draw predictions on canvas
-          if (canvasRef.current) {
-            const canvas = canvasRef.current;
-            const ctx = canvas.getContext('2d');
-            
-            if (ctx) {
-              canvas.width = video.videoWidth;
-              canvas.height = video.videoHeight;
-              
-              drawPredictions(filteredPredictions, ctx, canvas.width, canvas.height);
-            }
-          }
-        } catch (error) {
-          console.error('Detection error:', error);
-        }
-      }
-    };
-
-    // Jalankan deteksi setiap 300ms
-    detectionIntervalRef.current = setInterval(detectFrame, 300);
-  };
-
-  // Gambar bounding box dan label
-  const drawPredictions = (
-    predictions: cocoSsd.DetectedObject[],
-    ctx: CanvasRenderingContext2D,
-    canvasWidth: number,
-    canvasHeight: number
-  ): void => {
-    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-    predictions.forEach(prediction => {
-      const [x, y, width, height] = prediction.bbox;
-      const confidence = (prediction.score * 100).toFixed(1);
-
-      // Warna border berdasarkan confidence
-      const boxColor = prediction.score > 0.7 ? '#10b981' : prediction.score > 0.5 ? '#f59e0b' : '#ef4444';
-      
-      // Draw bounding box
-      ctx.strokeStyle = boxColor;
-      ctx.lineWidth = 4;
-      ctx.strokeRect(x, y, width, height);
-
-      // Draw label background
-      const label = `${prediction.class} ${confidence}%`;
-      ctx.font = 'bold 18px Arial';
-      const textWidth = ctx.measureText(label).width;
-      const textHeight = 24;
-
-      ctx.fillStyle = boxColor;
-      ctx.fillRect(x, y > 30 ? y - textHeight - 8 : y + height + 8, textWidth + 16, textHeight + 8);
-
-      // Draw label text
-      ctx.fillStyle = '#ffffff';
-      ctx.fillText(label, x + 8, y > 30 ? y - 12 : y + height + textHeight + 4);
-
-      // Draw corner indicators
-      const cornerLength = 25;
-      ctx.lineWidth = 5;
-      
-      // Top-left
-      ctx.beginPath();
-      ctx.moveTo(x, y + cornerLength);
-      ctx.lineTo(x, y);
-      ctx.lineTo(x + cornerLength, y);
-      ctx.stroke();
-
-      // Top-right
-      ctx.beginPath();
-      ctx.moveTo(x + width - cornerLength, y);
-      ctx.lineTo(x + width, y);
-      ctx.lineTo(x + width, y + cornerLength);
-      ctx.stroke();
-
-      // Bottom-left
-      ctx.beginPath();
-      ctx.moveTo(x, y + height - cornerLength);
-      ctx.lineTo(x, y + height);
-      ctx.lineTo(x + cornerLength, y + height);
-      ctx.stroke();
-
-      // Bottom-right
-      ctx.beginPath();
-      ctx.moveTo(x + width - cornerLength, y + height);
-      ctx.lineTo(x + width, y + height);
-      ctx.lineTo(x + width, y + height - cornerLength);
-      ctx.stroke();
-    });
-  };
+  // Hapus fungsi startRealtimeDetection
+  // Hapus fungsi drawPredictions
 
   // Tutup kamera
   const closeCamera = (): void => {
-    if (detectionIntervalRef.current) {
-      clearInterval(detectionIntervalRef.current);
-      detectionIntervalRef.current = null;
-    }
+    // Hapus logika clearInterval
     setIsCameraOpen(false);
     setCapturedImage(null);
     setDetectionResult(null);
-    setRealtimePredictions([]);
+    // Hapus setRealtimePredictions
   };
 
   // Switch kamera depan/belakang
@@ -220,10 +81,7 @@ const WasteDetection: React.FC = () => {
 
   // Capture foto dari webcam
   const capturePhoto = useCallback((): void => {
-    if (!model) {
-      setError('Model AI belum siap. Tunggu beberapa detik...');
-      return;
-    }
+    // Hapus validasi !model
 
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
@@ -231,20 +89,15 @@ const WasteDetection: React.FC = () => {
       if (imageSrc) {
         setCapturedImage(imageSrc);
         
-        // Stop real-time detection
-        if (detectionIntervalRef.current) {
-          clearInterval(detectionIntervalRef.current);
-          detectionIntervalRef.current = null;
-        }
+        // Hapus logika stop real-time detection
         
         setIsCameraOpen(false);
-        setRealtimePredictions([]);
         
-        // Deteksi dengan TensorFlow
-        detectObject(imageSrc);
+        // Langsung panggil Gemini untuk Deteksi dan Analisis
+        analyzeWithGemini(imageSrc);
       }
     }
-  }, [webcamRef, model]);
+  }, [webcamRef]); // Hapus 'model' dari dependency array
 
   // Handle upload file
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -254,89 +107,48 @@ const WasteDetection: React.FC = () => {
       reader.onload = (e) => {
         const imageData = e.target?.result as string;
         setCapturedImage(imageData);
-        detectObject(imageData);
+        // Langsung panggil Gemini untuk Deteksi dan Analisis
+        analyzeWithGemini(imageData);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  // Deteksi object dengan TensorFlow.js
-  const detectObject = async (imageData: string): Promise<void> => {
-    if (!model) {
-      setError('Model AI belum siap. Tunggu sebentar...');
-      return;
-    }
+  // Hapus fungsi detectObject
 
-    setIsDetecting(true);
-    setError(null);
-
-    try {
-      const img = new Image();
-      img.src = imageData;
-      
-      await new Promise((resolve) => {
-        img.onload = resolve;
-      });
-
-      const predictions = await model.detect(img);
-      // Filter hanya barang
-      const filteredPredictions = filterObjectDetections(predictions);
-      
-      if (filteredPredictions.length > 0) {
-        const detected = filteredPredictions[0];
-        console.log('TensorFlow Detection:', detected);
-
-        const result: DetectionResult = {
-          detectedObject: detected.class,
-          confidence: detected.score * 100,
-          wasteAnalysis: null
-        };
-        
-        setDetectionResult(result);
-        setIsDetecting(false);
-
-        // Analisis dengan Gemini AI
-        await analyzeWithGemini(detected.class, imageData);
-      } else {
-        setError('Tidak ada barang terdeteksi. Pastikan hanya memfoto barang/sampah, bukan orang.');
-        setIsDetecting(false);
-      }
-    } catch (error) {
-      console.error('Error detecting object:', error);
-      setError('Gagal mendeteksi object. Coba lagi.');
-      setIsDetecting(false);
-    }
-  };
-
-  // Analisis dengan Gemini AI
-  const analyzeWithGemini = async (detectedObject: string, imageBase64: string): Promise<void> => {
+  // Analisis dengan Gemini AI (Sekarang mencakup Deteksi Objek)
+  const analyzeWithGemini = async (imageBase64: string): Promise<void> => {
     setIsAnalyzingWithAI(true);
+    setIsDetecting(true); // Mulai proses loading gabungan
+    setError(null);
 
     try {
       const base64Data = imageBase64.split(',')[1];
 
+      // PROMPT BARU: Meminta Gemini melakukan Deteksi Objek Spesifik dan Analisis Sampah
       const prompt = `Kamu adalah ahli pengelolaan sampah dan lingkungan. 
       
-Object yang terdeteksi: "${detectedObject}"
+      Analisis gambar ini. Identifikasi **object utama** dalam gambar yang kemungkinan adalah sampah, dan beri nama klasifikasi yang paling spesifik (misalnya, bukan hanya "botol" tapi "Botol Plastik PET").
+      
+      Berikan analisis lengkap dalam format JSON berikut. Pastikan 'detectedObject' dalam output JSON adalah hasil deteksi spesifik dari gambar.
+      {
+        "detectedObject": "Nama object yang paling spesifik terdeteksi dalam gambar (contoh: Botol Plastik PET, Sisa Makanan, Baterai Bekas, dll)",
+        "wasteType": "Jenis sampah (contoh: Sampah Plastik, Sampah Organik, Sampah Logam, dll)",
+        "recyclable": true/false,
+        "category": "Kategori sampah (Organik/Anorganik/B3)",
+        "tips": [
+          "Tip 1 cara pengelolaan",
+          "Tip 2 cara pengelolaan",
+          "Tip 3 cara pengelolaan",
+          "Tip 4 cara pengelolaan",
+          "Tip 5 cara pengelolaan"
+        ],
+        "environmentalImpact": "Penjelasan dampak lingkungan jika tidak dikelola dengan baik (1-2 kalimat)"
+      }
+      
+      Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
 
-Berdasarkan object tersebut, berikan analisis lengkap dalam format JSON berikut:
-{
-  "wasteType": "Jenis sampah (contoh: Sampah Plastik, Sampah Organik, Sampah Logam, dll)",
-  "recyclable": true/false,
-  "category": "Kategori sampah (Organik/Anorganik/B3)",
-  "tips": [
-    "Tip 1 cara pengelolaan",
-    "Tip 2 cara pengelolaan",
-    "Tip 3 cara pengelolaan",
-    "Tip 4 cara pengelolaan",
-    "Tip 5 cara pengelolaan"
-  ],
-  "environmentalImpact": "Penjelasan dampak lingkungan jika tidak dikelola dengan baik (1-2 kalimat)"
-}
-
-Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
-
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API_KEY}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -361,24 +173,33 @@ Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
       }
 
       const data = await response.json();
-      const geminiResponse = data.candidates[0].content.parts[0].text;
+      const geminiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
       
+      if (!geminiResponse) {
+          throw new Error('No valid response from Gemini.');
+      }
+
       const jsonMatch = geminiResponse.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        const wasteAnalysis = JSON.parse(jsonMatch[0]);
+        const analysisData = JSON.parse(jsonMatch[0]);
         
-        setDetectionResult(prev => prev ? {
-          ...prev,
-          wasteAnalysis
-        } : null);
+        const result: DetectionResult = {
+          // Ambil hasil deteksi dari JSON yang dihasilkan Gemini
+          detectedObject: analysisData.detectedObject || "Object Tidak Teridentifikasi",
+          confidence: 100, // Karena Gemini adalah sumber kebenaran, set confidence tinggi
+          wasteAnalysis: analysisData
+        };
+
+        setDetectionResult(result);
       } else {
-        throw new Error('Invalid Gemini response format');
+        throw new Error('Invalid Gemini response format. Could not extract JSON.');
       }
     } catch (error) {
       console.error('Error analyzing with Gemini:', error);
-      setError('Gagal menganalisis dengan AI. Pastikan API Key Gemini valid.');
+      setError('Gagal menganalisis dengan AI. Pastikan API Key Gemini valid dan gambar jelas.');
     } finally {
       setIsAnalyzingWithAI(false);
+      setIsDetecting(false); // Selesaikan proses loading
     }
   };
 
@@ -389,7 +210,7 @@ Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
     setIsDetecting(false);
     setIsAnalyzingWithAI(false);
     setError(null);
-    setRealtimePredictions([]);
+    // Hapus setRealtimePredictions
   };
 
   const getCategoryColor = (category: string): string => {
@@ -418,13 +239,13 @@ Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
             <Recycle className="w-12 h-12 text-white" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Deteksi Sampah AI
+            EcoScan
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-2">
-            Powered by TensorFlow.js & Google Gemini AI
+            Powered by Google Gemini AI
           </p>
           <p className="text-sm text-gray-500">
-            Foto sampah → AI deteksi object → Gemini analisis pengelolaan
+            Foto sampah → EcoScan akan analisis dan identifikasi pengelolaan
           </p>
         </motion.div>
 
@@ -453,23 +274,16 @@ Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
                 <button
                   onClick={openCamera}
-                  disabled={!model}
-                  className="flex items-center justify-center gap-2 px-8 py-4 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                  // Hapus disabled={!model}
+                  className="flex items-center justify-center gap-2 px-8 py-4 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
                   <Camera className="w-6 h-6" />
-                  {!model ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-1"></div>
-                      Loading Model...
-                    </>
-                  ) : (
-                    'Buka Kamera'
-                  )}
+                  Buka Kamera
                 </button>
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={!model}
-                  className="flex items-center justify-center gap-2 px-8 py-4 border-2 border-green-500 text-green-500 rounded-xl hover:bg-green-50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  // Hapus disabled={!model}
+                  className="flex items-center justify-center gap-2 px-8 py-4 border-2 border-green-500 text-green-500 rounded-xl hover:bg-green-50 transition-all duration-300"
                 >
                   <Upload className="w-6 h-6" />
                   Upload Foto
@@ -488,33 +302,31 @@ Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
                 <div className="p-6 bg-blue-50 rounded-xl">
                   <Camera className="w-8 h-8 text-blue-500 mb-3" />
                   <h3 className="font-semibold text-gray-900 mb-2">1. Foto Sampah</h3>
-                  <p className="text-sm text-gray-600">Kamera real-time dengan deteksi otomatis</p>
+                  <p className="text-sm text-gray-600">Ambil atau upload foto sampah</p>
                 </div>
                 <div className="p-6 bg-purple-50 rounded-xl">
-                  <Leaf className="w-8 h-8 text-purple-500 mb-3" />
-                  <h3 className="font-semibold text-gray-900 mb-2">2. TensorFlow Deteksi</h3>
-                  <p className="text-sm text-gray-600">AI identifikasi dengan border & label</p>
+                  <Sparkles className="w-8 h-8 text-purple-500 mb-3" />
+                  <h3 className="font-semibold text-gray-900 mb-2">2. EcoScan Mengnalisis</h3>
+                  <p className="text-sm text-gray-600">AI identifikasi sampah spesifik dan kategorisasi</p>
                 </div>
                 <div className="p-6 bg-green-50 rounded-xl">
-                  <Sparkles className="w-8 h-8 text-green-500 mb-3" />
-                  <h3 className="font-semibold text-gray-900 mb-2">3. Gemini Analisis</h3>
-                  <p className="text-sm text-gray-600">Tips pengelolaan dari AI</p>
+                  <Recycle className="w-8 h-8 text-green-500 mb-3" />
+                  <h3 className="font-semibold text-gray-900 mb-2">3. Panduan Pengelolaan</h3>
+                  <p className="text-sm text-gray-600">Tips pengelolaan terbaik dari AI</p>
                 </div>
               </div>
 
               {/* Status Model */}
-              {model && (
-                <div className="mt-6 text-center">
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    AI Model Ready
-                  </div>
+              <div className="mt-6 text-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  EcoScan Ready
                 </div>
-              )}
+              </div>
             </div>
           )}
 
-          {/* Camera View dengan React Webcam */}
+          {/* Camera View dengan React Webcam (Tanpa Overlay Real-time) */}
           {isCameraOpen && (
             <div className="relative bg-black">
               <div className="relative">
@@ -527,34 +339,10 @@ Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
                   className="w-full h-auto"
                 />
                 
-                {/* Canvas overlay untuk bounding box */}
-                <canvas
-                  ref={canvasRef}
-                  className="absolute top-0 left-0 w-full h-full pointer-events-none"
-                  style={{ objectFit: 'cover' }}
-                />
+                {/* Hapus Canvas overlay untuk bounding box */}
               </div>
 
-              {/* Info real-time detections */}
-              {realtimePredictions.length > 0 && (
-                <div className="absolute top-4 left-4 right-4">
-                  <div className="bg-black/70 backdrop-blur-sm rounded-xl p-4 text-white">
-                    <p className="text-sm font-semibold mb-2">
-                      🎯 Terdeteksi: {realtimePredictions.length} object
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {realtimePredictions.slice(0, 3).map((pred, idx) => (
-                        <span
-                          key={idx}
-                          className="px-3 py-1 bg-green-500 rounded-full text-xs font-medium"
-                        >
-                          {pred.class} ({(pred.score * 100).toFixed(0)}%)
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
+              {/* Hapus Info real-time detections */}
 
               {/* Camera controls */}
               <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
@@ -582,20 +370,18 @@ Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
                   </button>
                 </div>
                 <p className="text-center text-white text-sm mt-4 drop-shadow-lg font-medium">
-                  {realtimePredictions.length > 0 
-                    ? '✅ Object terdeteksi! Tekan tombol untuk capture' 
-                    : '📷 Arahkan kamera ke sampah'}
+                  📷 Ambil foto sampah untuk memulai analisis
                 </p>
               </div>
             </div>
           )}
 
-          {/* Result Section - Layout Full Width */}
+          {/* Result Section */}
           {capturedImage && (
             <div className="p-6 sm:p-8">
-              {/* Captured Image - Full Width di Atas */}
+              {/* Captured Image */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-4 text-center">📸 Foto Hasil Jepretan</h3>
+                <h3 className="text-lg font-semibold mb-4 text-center">📸 Foto Terlampir</h3>
                 <div className="relative max-w-2xl mx-auto">
                   <img
                     src={capturedImage}
@@ -605,38 +391,16 @@ Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
                 </div>
               </div>
 
-              {/* Analysis Result - Full Width di Bawah */}
+              {/* Analysis Result */}
               <div>
                 <h3 className="text-lg font-semibold mb-4 text-center">🤖 Hasil Analisis AI</h3>
                 
-                {/* TensorFlow Detection Loading */}
-                {isDetecting && (
+                {/* Combined Gemini Analysis Loading */}
+                {isDetecting && isAnalyzingWithAI && (
                   <div className="flex flex-col items-center justify-center py-12">
-                    <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mb-4"></div>
-                    <p className="text-gray-600 font-medium">TensorFlow mendeteksi object...</p>
-                  </div>
-                )}
-
-                {/* Gemini Analysis Loading */}
-                {!isDetecting && isAnalyzingWithAI && detectionResult && (
-                  <div className="space-y-4">
-                    <div className="max-w-2xl mx-auto p-6 bg-blue-50 rounded-xl">
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="text-sm text-gray-600 font-medium">Object Terdeteksi</span>
-                        <span className="text-sm font-bold text-blue-600">
-                          {detectionResult.confidence.toFixed(1)}% yakin
-                        </span>
-                      </div>
-                      <h4 className="text-3xl font-bold text-gray-900 capitalize text-center">
-                        {detectionResult.detectedObject}
-                      </h4>
-                    </div>
-                    
-                    <div className="flex flex-col items-center justify-center py-12">
-                      <Sparkles className="w-16 h-16 text-green-500 animate-pulse mb-4" />
-                      <p className="text-gray-600 font-medium">Gemini AI menganalisis sampah...</p>
-                      <p className="text-sm text-gray-500 mt-2">Mohon tunggu sebentar</p>
-                    </div>
+                    <Sparkles className="w-16 h-16 text-green-500 animate-pulse mb-4" />
+                    <p className="text-gray-600 font-medium">EcoScan mendeteksi object & menganalisis...</p>
+                    <p className="text-sm text-gray-500 mt-2">Proses deteksi objek dan analisis pengelolaan</p>
                   </div>
                 )}
 
@@ -648,32 +412,27 @@ Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
                       animate={{ opacity: 1, y: 0 }}
                       className="space-y-4 max-w-3xl mx-auto"
                     >
-                      {/* TensorFlow Detection Card */}
+                      {/* Gemini Detection Card */}
                       <div className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl shadow-md">
                         <div className="flex items-center gap-3 mb-3">
                           <div className="p-2 bg-blue-500 rounded-lg">
                             <Leaf className="w-6 h-6 text-white" />
                           </div>
                           <div className="flex-1">
-                            <span className="text-sm text-gray-600 font-medium">TensorFlow Detection</span>
+                            <span className="text-sm text-gray-600 font-medium">Deteksi Objek Spesifik (Gemini)</span>
                             <h4 className="text-2xl font-bold text-gray-900 capitalize">
                               {detectionResult.detectedObject}
                             </h4>
                           </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-blue-600">
-                              {detectionResult.confidence.toFixed(1)}%
-                            </div>
-                            <span className="text-xs text-gray-500">Confidence</span>
-                          </div>
+                          {/* Hapus bagian confidence */}
                         </div>
                       </div>
 
-                      {/* Gemini Analysis Card */}
+                      {/* Gemini Analysis Card (Sama seperti sebelumnya) */}
                       <div className="p-6 bg-gradient-to-r from-green-50 to-green-100 rounded-xl shadow-md">
                         <div className="flex items-center gap-2 mb-4">
                           <Sparkles className="w-6 h-6 text-green-500" />
-                          <span className="text-sm text-gray-600 font-medium">Gemini AI Analysis</span>
+                          <span className="text-sm text-gray-600 font-medium">Hasil Analisis Sampah</span>
                         </div>
                         
                         <h4 className="text-2xl font-bold text-gray-900 mb-4">
@@ -705,7 +464,7 @@ Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
                         </div>
                       </div>
 
-                      {/* Tips Pengelolaan */}
+                      {/* Tips Pengelolaan (Sama seperti sebelumnya) */}
                       <div className="p-6 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl shadow-md">
                         <h4 className="font-bold text-xl text-gray-900 mb-4 flex items-center gap-2">
                           <AlertCircle className="w-6 h-6 text-purple-500" />
@@ -728,7 +487,7 @@ Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
                         </div>
                       </div>
 
-                      {/* Action Buttons */}
+                      {/* Action Buttons (Sama seperti sebelumnya) */}
                       <div className="flex flex-col sm:flex-row gap-3 pt-4">
                         <button
                           onClick={resetDetection}
@@ -736,12 +495,7 @@ Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
                         >
                           🔄 Deteksi Sampah Lain
                         </button>
-                        <button
-                          onClick={() => window.print()}
-                          className="flex-1 py-4 border-2 border-green-500 text-green-500 rounded-xl hover:bg-green-50 transition-all duration-300 font-bold text-lg"
-                        >
-                          🖨️ Cetak Hasil
-                        </button>
+                       
                       </div>
                     </motion.div>
                   )}
@@ -758,9 +512,9 @@ Berikan response HANYA dalam format JSON, tanpa penjelasan tambahan.`;
           transition={{ delay: 0.4 }}
           className="mt-8 text-center text-sm text-gray-600"
         >
-          <p className="mb-2">💡 <strong>Tips:</strong> Pastikan object terlihat jelas untuk hasil deteksi optimal</p>
+          <p className="mb-2">💡 <strong>Tips:</strong> Foto object yang jelas dan tunggal untuk hasil deteksi optimal</p>
           <p className="text-xs text-gray-500">
-            Teknologi: React Webcam + TensorFlow.js COCO-SSD + Google Gemini 1.5 Flash
+            Teknologi: React Webcam + Google Gemini 2.5 Flash
           </p>
         </motion.div>
       </div>
