@@ -67,7 +67,6 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-<<<<<<< HEAD
       <div className="min-h-screen bg-white flex flex-col">
         <Navbar />
         <main className="flex-grow">
@@ -92,9 +91,6 @@ function App() {
         </main>
         <Footer />
       </div>
-=======
-      <AppContent />  {/* Render AppContent di dalam Router */}
->>>>>>> 2cf3047424b41039229c7d834f3ab1f409ba7b16
     </Router>
   );
 }

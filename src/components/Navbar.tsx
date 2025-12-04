@@ -2,6 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Leaf, Menu, X, LogOut, User as UserIcon, ChevronDown, BookOpen, Newspaper } from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import Swal from 'sweetalert2';
 
 const Navbar = () => {
   const location = useLocation();
@@ -88,6 +89,7 @@ const Navbar = () => {
     setUserName('User');
     setIsMenuOpen(false);
     navigate('/login');
+    Swal.fire('Berhasil!', 'Logout anda berhasil', 'success')
   };
 
   // Efek Scroll
