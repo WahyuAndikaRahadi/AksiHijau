@@ -1,4 +1,3 @@
-// dashboardAdmin.tsx (REWRITE FINAL)
 import { motion } from "framer-motion";
 import {
   Shield,
@@ -11,9 +10,11 @@ import {
   Clock,
   TrendingUp,
   Trash2, 
-  Heart, // Ditambahkan karena PostCard membutuhkannya
+  Heart,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useMemo } from "react";
+// 💡 SweetAlert2 Import
+import Swal from 'sweetalert2';
 
 // Config
 const API_URL = "http://localhost:5000";
@@ -30,13 +31,14 @@ type TabType = "events_pending" | "events_all" | "posts_all" | "users";
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState<TabType>("events_pending");
   const [pendingEvents, setPendingEvents] = useState<Event[]>([]);
-  const [allEvents, setAllEvents] = useState<Event[]>([]); // Lazy Loaded
-  const [allPosts, setAllPosts] = useState<Post[]>([]); // Lazy Loaded
+  const [hasLoadedAllEvents, setHasLoadedAllEvents] = useState(false);
+  const [allEvents, setAllEvents] = useState<Event[]>([]); 
+  const [allPosts, setAllPosts] = useState<Post[]>([]); 
   const [users, setUsers] = useState<User[]>([]);
   const [badges, setBadges] = useState<Badge[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingContent, setLoadingContent] = useState(false);
-  const [deletingId, setDeletingId] = useState<number | null>(null); // State untuk realtime delete
+  const [deletingId, setDeletingId] = useState<number | null>(null); 
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
   const [showBadgeModal, setShowBadgeModal] = useState(false);
 
@@ -46,10 +48,9 @@ const AdminDashboard = () => {
   const stats = useMemo<DashboardStats>(() => ({
     totalUsers: users.length,
     totalEventsPending: pendingEvents.length,
-    // Gunakan 0 jika belum terload, jika sudah, pakai length
-    totalEvents: allEvents.length || 0,
+    totalEvents: hasLoadedAllEvents ? allEvents.length : 0,
     totalPosts: allPosts.length || 0,
-  }), [users.length, pendingEvents.length, allEvents.length, allPosts.length]);
+  }), [users.length, pendingEvents.length, allEvents.length, allPosts.length, hasLoadedAllEvents]);
 
   const formatDate = (date: string) => new Date(date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
 
@@ -59,25 +60,28 @@ const AdminDashboard = () => {
 
     setLoading(true);
     try {
-      const [pendingEventsRes, usersRes, badgesRes] = await Promise.all([
-        fetch(`${API_URL}/events?status=PENDING`, { headers: { Authorization: `Bearer ${token}` } }),
+      const [allEventsRes, usersRes, badgesRes] = await Promise.all([
+        fetch(`${API_URL}/admin/events`, { headers: { Authorization: `Bearer ${token}` } }),
         fetch(`${API_URL}/admin/users`, { headers: { Authorization: `Bearer ${token}` } }),
         fetch(`${API_URL}/badges`),
       ]);
 
-      if (!pendingEventsRes.ok || !usersRes.ok) throw new Error("Failed to fetch initial data");
+      if (!allEventsRes.ok || !usersRes.ok) throw new Error("Failed to fetch initial data");
 
-      const [pendingEventsData, usersData, badgesData] = await Promise.all([
-        pendingEventsRes.json(),
+      const [allEventsData, usersData, badgesData] = await Promise.all([
+        allEventsRes.json(),
         usersRes.json(),
         badgesRes.json(),
       ]);
 
-      setPendingEvents(pendingEventsData);
+      setPendingEvents(allEventsData.filter((e: Event) => e.status === 'PENDING'));
+      
       setUsers(usersData);
       setBadges(badgesData);
     } catch (err) {
       console.error(err);
+      // 💡 Ganti alert dengan Swal
+      Swal.fire('Error', 'Gagal memuat data awal dashboard.', 'error');
     } finally {
       setLoading(false);
     }
@@ -85,7 +89,7 @@ const AdminDashboard = () => {
   
   // FUNGSI LAZY LOADING: Fetch SEMUA Events
   const loadAllEvents = useCallback(async () => {
-    if (loadingContent || allEvents.length > 0 && allEvents.every(e => e.status !== 'PENDING')) return;
+    if (loadingContent || hasLoadedAllEvents) return; 
     
     setLoadingContent(true);
     try {
@@ -94,12 +98,13 @@ const AdminDashboard = () => {
       });
       const data = await res.json();
       setAllEvents(data);
+      setHasLoadedAllEvents(true);
     } catch (err) {
       console.error('Error fetching all events:', err);
     } finally {
       setLoadingContent(false);
     }
-  }, [token, allEvents.length, loadingContent]);
+  }, [token, loadingContent, hasLoadedAllEvents]);
   
   // FUNGSI LAZY LOADING: Fetch SEMUA Posts
   const loadAllPosts = useCallback(async () => {
@@ -125,16 +130,30 @@ const AdminDashboard = () => {
   }, [loadInitialData]);
 
   useEffect(() => {
-    if (activeTab === 'events_all') {
+    if (activeTab === 'events_all' && !hasLoadedAllEvents) {
       loadAllEvents();
-    } else if (activeTab === 'posts_all') {
+    } else if (activeTab === 'posts_all' && allPosts.length === 0) {
       loadAllPosts();
     }
-  }, [activeTab, loadAllEvents, loadAllPosts]);
+  }, [activeTab, loadAllEvents, loadAllPosts, hasLoadedAllEvents, allPosts.length]);
 
   // FUNGSI REALTIME DELETE
   const deleteItem = useCallback(async (type: "events" | "posts", id: number) => {
-    if (!token || deletingId || !window.confirm(`Yakin ingin menghapus ${type === "events" ? "event" : "post"} ini secara permanen?`)) return;
+    if (!token || deletingId) return;
+
+    // 💡 Ganti window.confirm dengan Swal
+    const confirmation = await Swal.fire({
+        title: `Yakin ingin menghapus ${type === "events" ? "event" : "post"} ini?`,
+        text: "Tindakan ini tidak dapat dibatalkan!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, hapus permanen!',
+        cancelButtonText: 'Batal'
+    });
+
+    if (!confirmation.isConfirmed) return;
 
     setDeletingId(id);
 
@@ -144,20 +163,22 @@ const AdminDashboard = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!res.ok) throw new Error(await res.text());
+      if (!res.ok) throw new Error((await res.json()).error || "Gagal menghapus");
       
-      // Update state secara langsung (tanpa refresh)
       if (type === "events") {
           setPendingEvents(prev => prev.filter(e => e.event_id !== id));
           setAllEvents(prev => prev.filter(e => e.event_id !== id));
       } else {
           setAllPosts(prev => prev.filter(p => p.post_id !== id));
       }
-      // Memperbarui users data untuk stats count yang akurat (optional, tapi disarankan)
-      // loadInitialData(); 
+      
+      // 💡 Notifikasi Sukses
+      Swal.fire('Berhasil!', `${type === "events" ? "Event" : "Post"} berhasil dihapus.`, 'success');
 
     } catch (err: any) {
-      alert(err.message || "Gagal menghapus");
+      console.error(err);
+      // 💡 Notifikasi Error
+      Swal.fire('Error', err.message || "Gagal menghapus", 'error');
     } finally {
       setDeletingId(null);
     }
@@ -166,6 +187,21 @@ const AdminDashboard = () => {
 
   const moderate = useCallback(async (type: "events", id: number, status: "ACCEPTED" | "REJECTED") => {
     if (!token) return;
+    
+    // Konfirmasi Moderasi
+    const statusText = status === "ACCEPTED" ? "menyetujui" : "menolak";
+    const confirmation = await Swal.fire({
+        title: `Konfirmasi ${statusText} event?`,
+        text: `Anda akan ${statusText} event ini.`,
+        icon: status === "ACCEPTED" ? 'question' : 'warning',
+        showCancelButton: true,
+        confirmButtonColor: status === "ACCEPTED" ? '#28a745' : '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: `Ya, ${statusText}!`,
+        cancelButtonText: 'Batal'
+    });
+
+    if (!confirmation.isConfirmed) return;
 
     try {
       const res = await fetch(`${API_URL}/admin/${type}/${id}/moderate`, {
@@ -174,17 +210,27 @@ const AdminDashboard = () => {
         body: JSON.stringify({ status }),
       });
 
-      if (!res.ok) throw new Error(await res.text());
-      alert(`Berhasil ${status === "ACCEPTED" ? "menyetujui" : "menolak"} event`);
+      if (!res.ok) throw new Error((await res.json()).error || "Gagal memoderasi");
       
-      // Update state langsung: hapus dari pending, kosongkan allEvents agar dimuat ulang dengan status baru
+      // 💡 Notifikasi Sukses
+      Swal.fire('Sukses!', `Berhasil ${statusText} event.`, 'success');
+      
+      // Update state langsung: hapus dari pending
       setPendingEvents(prev => prev.filter(e => e.event_id !== id));
-      setAllEvents([]); 
+      
+      // Update status event di allEvents jika sudah dimuat
+      if (hasLoadedAllEvents) {
+          setAllEvents(prev => prev.map(e => 
+              e.event_id === id ? { ...e, status } : e
+          ));
+      }
 
     } catch (err: any) {
-      alert(err.message || "Gagal memoderasi");
+      console.error(err);
+      // 💡 Notifikasi Error
+      Swal.fire('Error', err.message || "Gagal memoderasi", 'error');
     }
-  }, [token]);
+  }, [token, hasLoadedAllEvents]);
 
   const awardBadge = async (badgeId: number) => {
     if (!selectedUser || !token) return;
@@ -196,13 +242,18 @@ const AdminDashboard = () => {
         body: JSON.stringify({ badge_id: badgeId }),
       });
 
-      if (!res.ok) throw new Error(await res.text());
-      alert("Badge berhasil diberikan!");
+      if (!res.ok) throw new Error((await res.json()).error || "Gagal memberikan badge");
+      
+      // 💡 Notifikasi Sukses
+      Swal.fire('Berhasil!', "Badge berhasil diberikan!", 'success');
+
       setShowBadgeModal(false);
       setSelectedUser(null);
       loadInitialData(); // Muat ulang user data untuk update level
     } catch (err: any) {
-      alert(err.message || "Gagal memberikan badge");
+      console.error(err);
+      // 💡 Notifikasi Error
+      Swal.fire('Error', err.message || "Gagal memberikan badge", 'error');
     }
   };
 
@@ -228,8 +279,8 @@ const AdminDashboard = () => {
             {[
               { label: "Total Users", value: stats.totalUsers, icon: Users, color: "from-blue-500 to-blue-600" },
               { label: "Pending Events", value: stats.totalEventsPending, icon: Clock, color: "from-orange-500 to-orange-600" },
-              { label: "Total Events", value: stats.totalEvents || (activeTab === 'events_all' ? 0 : '...'), icon: Calendar, color: "from-green-500 to-green-600" },
-              { label: "Total Posts", value: stats.totalPosts || (activeTab === 'posts_all' ? 0 : '...'), icon: MessageSquare, color: "from-purple-500 to-purple-600" },
+              { label: "Total Events", value: hasLoadedAllEvents ? stats.totalEvents : '...', icon: Calendar, color: "from-green-500 to-green-600" },
+              { label: "Total Posts", value: allPosts.length || (activeTab === 'posts_all' ? 0 : '...'), icon: MessageSquare, color: "from-purple-500 to-purple-600" },
             ].map((stat, i) => (
               <div key={i} className={`bg-gradient-to-br ${stat.color} rounded-xl p-4 text-white`}>
                 <div className="flex items-center justify-between">
@@ -251,7 +302,7 @@ const AdminDashboard = () => {
           <div className="flex gap-1">
             {([
               { key: "events_pending", icon: Clock, label: "Pending Events", count: pendingEvents.length },
-              { key: "events_all", icon: Calendar, label: "All Events", count: allEvents.length || '...' },
+              { key: "events_all", icon: Calendar, label: "All Events", count: hasLoadedAllEvents ? allEvents.length : '...' },
               { key: "posts_all", icon: MessageSquare, label: "All Posts", count: allPosts.length || '...' },
               { key: "users", icon: Users, label: "Users", count: users.length },
             ] as const).map(tab => (
@@ -299,7 +350,7 @@ const AdminDashboard = () => {
               </Section>
             )}
             
-            {/* Events All Tab (BARU) */}
+            {/* Events All Tab */}
             {activeTab === "events_all" && (
               <Section title={`Semua Events (${allEvents.length})`}>
                 <div className="space-y-4">
@@ -320,7 +371,7 @@ const AdminDashboard = () => {
               </Section>
             )}
 
-            {/* Posts All Tab (BARU) */}
+            {/* Posts All Tab */}
             {activeTab === "posts_all" && (
               <Section title={`Semua Posts (${allPosts.length})`}>
                 <div className="space-y-4">
@@ -474,25 +525,28 @@ const EventCard: React.FC<{ event: Event; onModerate: (status: "ACCEPTED" | "REJ
             </button>
           </>
         )}
-        {/* Tombol Hapus dengan Spinner */}
-        <button onClick={onDelete} disabled={isDeleting} className={`flex items-center gap-2 px-4 py-2 bg-gray-200 text-red-600 rounded-lg hover:bg-gray-300 text-sm font-semibold transition-colors flex-shrink-0 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
-          {isDeleting ? (
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600" />
-          ) : (
-            <Trash2 className="w-4 h-4" />
-          )}
-        </button>
+        
+        {/* Tombol Hapus hanya muncul untuk event yang BUKAN PENDING */}
+        {event.status !== 'PENDING' && (
+            <button onClick={onDelete} disabled={isDeleting} className={`flex items-center gap-2 px-4 py-2 bg-gray-200 text-red-600 rounded-lg hover:bg-gray-300 text-sm font-semibold transition-colors flex-shrink-0 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                {isDeleting ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600" />
+                ) : (
+                <Trash2 className="w-4 h-4" />
+                )}
+            </button>
+        )}
       </div>
     </div>
   </motion.div>
 );
 
 // PostCard (Menambahkan isDeleting)
-const PostCard: React.FC<{ post: Post; onDelete: () => void; showStatus?: boolean; isDeleting: boolean }> = ({ post, onDelete, showStatus = false, isDeleting }) => (
+const PostCard: React.FC<{ post: Post; onDelete: () => void; showStatus?: boolean; isDeleting: boolean }> = ({ post, onDelete, isDeleting }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`bg-white rounded-xl shadow-md p-6 relative ${isDeleting ? 'opacity-70' : ''}`}>
     <div className="flex items-start gap-4">
       <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
-        {post.username[0].toUpperCase()}
+        {post.username[0]?.toUpperCase() || 'U'}
       </div>
       <div className="flex-1">
         <div className="font-semibold text-gray-900 mb-2">{post.username}</div>

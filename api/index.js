@@ -529,6 +529,36 @@ app.post('/posts/:postId/comments', authenticateToken, async (req, res) => {
 // ============================================
 
 // PATCH: Moderasi event (Accept/Reject)
+
+app.patch('/admin/events/:eventId/moderate', authenticateToken, adminOnly, async (req, res) => {
+    console.log(`PATCH /admin/events/${req.params.eventId}/moderate hit!`);
+    const { eventId } = req.params;
+    const { status } = req.body; // Diharapkan 'ACCEPTED' atau 'REJECTED'
+
+    if (!['ACCEPTED', 'REJECTED'].includes(status)) {
+        return res.status(400).json({ error: 'Status tidak valid' });
+    }
+
+    try {
+        const result = await pool.query(
+            `UPDATE events SET status = $1 WHERE event_id = $2 RETURNING *`,
+            [status, eventId]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'Event tidak ditemukan' });
+        }
+
+        res.json({ 
+            message: `Event berhasil dimoderasi menjadi ${status}`,
+            event: result.rows[0]
+        });
+    } catch (err) {
+        console.error('Error moderating event:', err);
+        res.status(500).json({ error: 'Internal server error', details: err.message });
+    }
+});
+
 app.get('/admin/events', authenticateToken, adminOnly, async (req, res) => {
     console.log('GET /admin/events hit!');
     try {

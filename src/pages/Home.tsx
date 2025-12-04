@@ -417,14 +417,32 @@ const Home = () => {
       </section>
 
       {/* 2. Filosofi AksiHijau */}
-      <section className="px-10 py-20 md:my-24 bg-white">
+      <section className="px-10 py-20 md:my-24 bg-white relative overflow-hidden">
+        
+        {/* Dekorasi Pohon Kiri (Filosofi) - FLIPPED */}
+        <div className="absolute top-0 -left-16 bottom-0 w-1/4 h-full hidden lg:block  pointer-events-none">
+          <img
+            src="./img/pohon.png" // PASTIKAN PATH INI BENAR SESUAI PROJECT ANDA
+            alt="Ilustrasi Pohon Hijau"
+            className="w-full h-full object-cover transform scale-x-[-1]" // scale-x-[-1] untuk flip horizontal
+          />
+        </div>
+
+        <div className="absolute top-0 -right-16 bottom-0 w-1/4 h-full hidden lg:block  pointer-events-none">
+          <img
+            src="./img/pohon.png" // PASTIKAN PATH INI BENAR SESUAI PROJECT ANDA
+            alt="Ilustrasi Pohon Hijau"
+            className="w-full h-full object-cover" // scale-x-[-1] untuk flip horizontal
+          />
+        </div>
+
         <div className="container mx-auto px-2 sm:px-6 lg:px-8">
           <motion.div
             variants={cardVariants}
             initial="initial"
             whileInView="animate"
             viewport={{ once: true, amount: 0.5 }}
-            className="max-w-4xl mx-auto bg-green-50/50 p-5 sm:p-6 rounded-3xl border-2 border-green-200 shadow-xl"
+            className="max-w-4xl mx-auto bg-green-50/50 p-5 sm:p-6 rounded-3xl border-2 border-green-200 shadow-xl relative z-10"
             style={{
               boxShadow:
                 "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)",
@@ -690,8 +708,9 @@ const Home = () => {
 
 
       {/* 6. FAQ Section BARU */}
-      <section className="px-5 py-20 bg-gray-50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
+      <section className="px-5 py-20 bg-gray-50 relative overflow-hidden">
+
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

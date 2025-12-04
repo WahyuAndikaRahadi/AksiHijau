@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Mail, Lock, User, Leaf } from 'lucide-react';
+import { Mail, Lock, User, Leaf, Eye, EyeOff } from 'lucide-react'; // Tambahkan Eye dan EyeOff
 import { useState } from 'react';
+import Swal from 'sweetalert2'; // Tambahkan import SweetAlert2
 
 // Ganti dengan Base URL API Anda yang sebenarnya (misalnya, URL Vercel)
 const API_BASE_URL = 'http://localhost:5000/auth'; // Contoh: 'https://aksi-hijau-api.vercel.app/auth'
@@ -14,17 +15,20 @@ const Register = () => {
     confirmPassword: '',
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false); // State untuk toggle password visibility
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State untuk toggle confirm password visibility
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
     setLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Konfirmasi password tidak cocok dengan password.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Konfirmasi password tidak cocok dengan password.',
+        confirmButtonColor: '#16a34a',
+      });
       setLoading(false);
       return;
     }
@@ -47,13 +51,23 @@ const Register = () => {
 
       if (!response.ok) {
         // Jika status kode 4xx atau 5xx
-        setError(data.error || 'Pendaftaran gagal. Coba lagi.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal',
+          text: data.error || 'Pendaftaran gagal. Coba lagi.',
+          confirmButtonColor: '#16a34a',
+        });
         setLoading(false);
         return;
       }
 
       // Jika pendaftaran berhasil (status 201)
-      setSuccess('Pendaftaran berhasil! Silakan login.');
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: 'Pendaftaran berhasil! Silakan login.',
+        confirmButtonColor: '#16a34a',
+      });
       // Kosongkan form setelah berhasil
       setFormData({
         username: '',
@@ -64,7 +78,12 @@ const Register = () => {
 
     } catch (err) {
       console.error('Error saat proses registrasi:', err);
-      setError('Terjadi kesalahan jaringan atau server. Coba lagi nanti.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Terjadi kesalahan jaringan atau server. Coba lagi nanti.',
+        confirmButtonColor: '#16a34a',
+      });
     } finally {
       setLoading(false);
     }
@@ -100,18 +119,7 @@ const Register = () => {
               Buat akun dan mulai aksi nyata untuk bumi
             </p>
           </div>
-          {/* --- Notifikasi Error/Success --- */}
-          {error && (
-            <div className="p-3 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="p-3 mb-4 text-sm text-green-700 bg-green-100 rounded-lg" role="alert">
-              {success}
-            </div>
-          )}
-          {/* ------------------------------- */}
+          {/* --- Notifikasi Error/Success dihapus karena menggunakan Swal --- */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -172,19 +180,36 @@ const Register = () => {
                 Password
               </label>
               <div className="relative">
+                {/* Ikon Kunci di Kiri */}
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
+                
                 <input
-                  type="password"
+                  // Tipe input dinamis
+                  type={showPassword ? 'text' : 'password'}
                   id="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+                  className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
                   placeholder="Minimal 6 karakter"
                 />
+
+                {/* Ikon Mata di Kanan (Toggle Button) */}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-primary focus:outline-none"
+                  aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
               </div>
             </motion.div>
             
@@ -197,19 +222,36 @@ const Register = () => {
                 Konfirmasi Password
               </label>
               <div className="relative">
+                {/* Ikon Kunci di Kiri */}
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
+                
                 <input
-                  type="password"
+                  // Tipe input dinamis
+                  type={showConfirmPassword ? 'text' : 'password'}
                   id="confirmPassword"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+                  className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
                   placeholder="Ulangi password"
                 />
+
+                {/* Ikon Mata di Kanan (Toggle Button) */}
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-primary focus:outline-none"
+                  aria-label={showConfirmPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
               </div>
             </motion.div>
 

@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Leaf } from 'lucide-react';
+import { Mail, Lock, Leaf, Eye, EyeOff } from 'lucide-react'; // Tambahkan Eye dan EyeOff
 import { useState } from 'react';
+import Swal from 'sweetalert2'; // Tambahkan import SweetAlert2
 
 // Ganti dengan Base URL API Anda yang sebenarnya (misalnya, URL Vercel)
 const API_BASE_URL = 'http://localhost:5000/auth'; // Contoh: 'https://aksi-hijau-api.vercel.app/auth'
@@ -15,13 +16,10 @@ const Login = () => {
     password: '',
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false); // State untuk toggle password visibility
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
     setLoading(true);
 
     try {
@@ -39,7 +37,12 @@ const Login = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || 'Gagal masuk. Cek kembali email dan password Anda.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal',
+          text: data.error || 'Gagal masuk. Cek kembali email dan password Anda.',
+          confirmButtonColor: '#16a34a',
+        });
         setLoading(false);
         return;
       }
@@ -54,22 +57,36 @@ const Login = () => {
       // Ini penting agar Navbar bisa mengambil 'username'
       localStorage.setItem('currentUser', JSON.stringify(user)); 
       
-      setSuccess('Login berhasil! Mengalihkan...');
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil',
+        text: 'Login berhasil! Mengalihkan...',
+        confirmButtonColor: '#16a34a',
+        timer: 1500,
+        showConfirmButton: false,
+      });
       
       console.log('Login Sukses, Token Disimpan:', token);
       
-      // 3. Lakukan pengalihan kondisional
-      if (user?.is_admin) {
-        // Jika admin, arahkan ke halaman admin
-        navigate('/dashboard-admin');
-      } else {
-        // Jika user biasa, arahkan ke halaman utama
-        navigate('/');
-      }
+      // 3. Lakukan pengalihan kondisional setelah Swal
+      setTimeout(() => {
+        if (user?.is_admin) {
+          // Jika admin, arahkan ke halaman admin
+          navigate('/dashboard-admin');
+        } else {
+          // Jika user biasa, arahkan ke halaman utama
+          navigate('/');
+        }
+      }, 1500);
 
     } catch (err) {
       console.error('Error saat proses login:', err);
-      setError('Terjadi kesalahan jaringan atau server. Coba lagi nanti.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal',
+        text: 'Terjadi kesalahan jaringan atau server. Coba lagi nanti.',
+        confirmButtonColor: '#16a34a',
+      });
     } finally {
       // Set loading menjadi false (meskipun navigasi sudah terjadi)
       setLoading(false);
@@ -106,18 +123,7 @@ const Login = () => {
               Masuk ke akun AksiHijau Anda
             </p>
           </div>
-          {/* --- Notifikasi Error/Success --- */}
-          {error && (
-            <div className="p-3 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="p-3 mb-4 text-sm text-green-700 bg-green-100 rounded-lg" role="alert">
-              {success}
-            </div>
-          )}
-          {/* ------------------------------- */}
+          {/* --- Notifikasi Error/Success dihapus karena menggunakan Swal --- */}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <motion.div
@@ -154,19 +160,36 @@ const Login = () => {
                 Password
               </label>
               <div className="relative">
+                {/* Ikon Kunci di Kiri */}
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
+                
                 <input
-                  type="password"
+                  // Tipe input dinamis
+                  type={showPassword ? 'text' : 'password'}
                   id="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+                  className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
                   placeholder="••••••••"
                 />
+
+                {/* Ikon Mata di Kanan (Toggle Button) */}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-primary focus:outline-none"
+                  aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
               </div>
             </motion.div>
 

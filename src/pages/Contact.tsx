@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { Mail, MapPin, Phone, Send } from 'lucide-react';
 import { useState } from 'react';
+import emailjs from '@emailjs/browser';
+import Swal from 'sweetalert2'; // Import SweetAlert2
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -8,10 +10,53 @@ const Contact = () => {
     email: '',
     message: '',
   });
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+    setLoading(true);
+
+    try {
+      // Konfigurasi EmailJS (ganti dengan ID Anda)
+      const serviceId = 'service_7pgcv2r'; // Ganti dengan Service ID dari EmailJS
+      const templateId = 'template_hb65sil'; // Ganti dengan Template ID dari EmailJS
+      const publicKey = 'XaoJzqugOBJNnw5Qn'; // Ganti dengan Public Key dari EmailJS
+
+      // Kirim email menggunakan EmailJS
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          message: formData.message,
+          to_email: 'aksihijau69@gmail.com', // Email tujuan
+        },
+        publicKey
+      );
+
+      // Notifikasi sukses dengan SweetAlert2
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: 'Pesan Anda telah dikirim. Kami akan segera merespons!',
+        confirmButtonColor: '#16a34a',
+      });
+
+      // Reset form setelah sukses
+      setFormData({ name: '', email: '', message: '' });
+    } catch (error) {
+      console.error('Error sending email:', error);
+      // Notifikasi error dengan SweetAlert2
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal!',
+        text: 'Terjadi kesalahan saat mengirim pesan. Coba lagi nanti.',
+        confirmButtonColor: '#16a34a',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -46,7 +91,7 @@ const Contact = () => {
             transition={{ delay: 0.2, duration: 0.6 }}
           >
             <div className="bg-white rounded-xl p-8 shadow-lg border-2 border-green-400 h-full">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 ">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 Kirim Pesan
               </h2>
 
@@ -116,16 +161,19 @@ const Contact = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6, duration: 0.6 }}
                   type="submit"
-                  className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all duration-300 hover:shadow-lg font-semibold flex items-center justify-center gap-2"
+                  disabled={loading}
+                  className={`w-full px-6 py-3 text-white rounded-lg transition-all duration-300 hover:shadow-lg font-semibold flex items-center justify-center gap-2 ${
+                    loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'
+                  }`}
                 >
                   <Send className="w-5 h-5" />
-                  Kirim Pesan
+                  {loading ? 'Mengirim...' : 'Kirim Pesan'}
                 </motion.button>
               </form>
             </div>
           </motion.div>
 
-          {/* Bagian Info Kontak (Kanan) */}
+          {/* Bagian Info Kontak (Kanan) - Tetap sama */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -150,8 +198,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-                    <p className="text-gray-600">info@aksihijau.org</p>
-                    <p className="text-gray-600">support@aksihijau.org</p>
+                    <p className="text-gray-600">aksihijau69@gmail.com</p>
                   </div>
                 </motion.div>
 
@@ -167,8 +214,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">Telepon</h3>
-                    <p className="text-gray-600">+62 21 1234 5678</p>
-                    <p className="text-gray-600">+62 812 3456 7890</p>
+                    <p className="text-gray-600">+62 895-4147-37959</p>
                   </div>
                 </motion.div>
 
@@ -205,7 +251,6 @@ const Contact = () => {
                     ></iframe>
                   </div>
                   {/* --- AKHIR AREA PETA --- */}
-
                 </motion.div>
               </div>
             </div>
