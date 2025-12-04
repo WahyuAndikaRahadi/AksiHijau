@@ -23,17 +23,17 @@ const Navbar = () => {
 
   // Navigasi Statis
   const baseNavLinks = [
-    { path: '/', label: 'Home' },
-    { path: '/about', label: 'About' },
+    { path: '/', label: 'Beranda' },
+    { path: '/Tentang', label: 'Tentang' },
     {
-      label: 'Features',
+      label: 'Fitur',
       isDropdown: true,
       id: 'features',
       path: '/features',
       dropdownLinks: [
-        { path: 'air-quality', label: 'Air Quality' },
-        { path: 'soil-health', label: 'Soil Health' },
-        { path: 'Water quality', label: 'Water Quality' },
+        { path: 'air-quality', label: 'Kualitas Udara' },
+        { path: 'soil-health', label: 'Kesehatan Tanah' },
+        { path: 'water-quality', label: 'Kualitas Air' },
       ],
     },
     {
@@ -47,16 +47,16 @@ const Navbar = () => {
       ],
     },
     {
-      label: 'Community',
+      label: 'Komunitas',
       isDropdown: true,
-      id: 'community',
-      path: '/community',
+      id: 'komunitas',
+      path: '/komunitas',
       dropdownLinks: [
-        { path: '/community-events', label: 'Community Events' },
-        { path: '/community-social', label: 'Social Community' },
+        { path: '/events-komunitas', label: 'Events Komunitas' },
+        { path: '/komunitas-sosial', label: 'Komunitas Sosial' },
       ],
     },
-    { path: '/contact', label: 'Contact' },
+    { path: '/Kontak', label: 'Kontak' },
   ];
 
   // Fungsi Cek Login

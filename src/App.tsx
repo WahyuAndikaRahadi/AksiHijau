@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AirQuality from './pages/AirQuality';
+import SoilHealth from './pages/SoilHealth';
 import Home from './pages/Home';
 import About from './pages/About';
 import Features from './pages/Features';
@@ -45,6 +46,7 @@ const AppContent = () => {
           <Route path="/about" element={<About />} />
           <Route path="/features" element={<Features />} />
           <Route path="/air-quality" element={<AirQuality />} />
+          <Route path="/soil-health" element={<SoilHealth />} />
           <Route path="/news" element={<News />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
