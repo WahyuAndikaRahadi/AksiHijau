@@ -24,7 +24,7 @@ const Navbar = () => {
   // Navigasi Statis
   const baseNavLinks = [
     { path: '/', label: 'Beranda' },
-    { path: '/Tentang', label: 'Tentang' },
+    { path: '/about', label: 'Tentang' },
     {
       label: 'Fitur',
       isDropdown: true,
@@ -49,14 +49,14 @@ const Navbar = () => {
     {
       label: 'Komunitas',
       isDropdown: true,
-      id: 'komunitas',
-      path: '/komunitas',
+      id: 'community',
+      path: '/community',
       dropdownLinks: [
-        { path: '/events-komunitas', label: 'Events Komunitas' },
-        { path: '/komunitas-sosial', label: 'Komunitas Sosial' },
+        { path: '/community-events', label: 'Events Komunitas' },
+        { path: '/community-social', label: 'Komunitas Sosial' },
       ],
     },
-    { path: '/Kontak', label: 'Kontak' },
+    { path: '/contact', label: 'Kontak' },
   ];
 
   // Fungsi Cek Login
