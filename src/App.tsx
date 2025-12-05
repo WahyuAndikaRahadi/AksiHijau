@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AirQuality from './pages/AirQuality';
 import SoilHealth from './pages/SoilHealth';
+import WaterQuality from './pages/WaterQuality';
 import Home from './pages/Home';
 import About from './pages/About';
 import Features from './pages/Features';
@@ -47,6 +48,7 @@ const AppContent = () => {
           <Route path="/features" element={<Features />} />
           <Route path="/air-quality" element={<AirQuality />} />
           <Route path="/soil-health" element={<SoilHealth />} />
+          <Route path="/water-quality" element={<WaterQuality />} />
           <Route path="/news" element={<News />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />

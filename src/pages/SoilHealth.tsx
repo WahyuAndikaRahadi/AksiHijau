@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sprout, BookOpen, Activity, Layers, AlertTriangle, Leaf, Microscope, ShieldCheck, Skull, X } from 'lucide-react';
+import {
+  Sprout,
+  BookOpen,
+  Activity,
+  Layers,
+  AlertTriangle,
+  Leaf,
+  Microscope,
+  ShieldCheck,
+  Skull,
+  X,
+} from 'lucide-react';
 
 const KesehatanTanah: React.FC = () => {
   const [showDetails, setShowDetails] = useState(false);
@@ -15,11 +26,10 @@ const KesehatanTanah: React.FC = () => {
         className="max-w-7xl mx-auto bg-white border border-emerald-100 rounded-[2.5rem] p-8 lg:p-12 relative shadow-xl"
       >
         {/* Dekorasi Latar Belakang */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-50 rounded-full filter blur-3xl opacity-50 -translate-y-1/2 translate-x-1/3 pointer-events-none border-2"></div>
-        <div className="absolute bottom-0 left-0 w-72 h-72 bg-lime-50 rounded-full filter blur-3xl opacity-50 translate-y-1/3 -translate-x-1/3 pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-50 rounded-full filter blur-3xl opacity-50 -translate-y-1/2 translate-x-1/3 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-72 h-72 bg-lime-50 rounded-full filter blur-3xl opacity-50 translate-y-1/3 -translate-x-1/3 pointer-events-none" />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center relative z-10">
-          
           {/* --- KONTEN KIRI (TEKS) --- */}
           <div>
             {/* Badge Kategori */}
@@ -31,14 +41,13 @@ const KesehatanTanah: React.FC = () => {
             {/* Judul Utama */}
             <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
               Jaga Fondasi Kehidupan: <br />
-              <span className="text-green-600">
-                Tanah Subur & Sehat
-              </span>
+              <span className="text-green-600">Tanah Subur &amp; Sehat</span>
             </h2>
 
             {/* Deskripsi */}
             <p className="text-gray-600 text-lg mb-10 leading-relaxed">
-              Tanah bukan sekadar pijakan, tapi ekosistem hidup yang menopang 95% pangan dunia. Degradasi tanah akibat bahan kimia dan erosi mengancam masa depan ketahanan pangan kita.
+              Tanah bukan sekadar pijakan, tapi ekosistem hidup yang menopang 95% pangan dunia. Degradasi tanah akibat
+              bahan kimia dan erosi mengancam masa depan ketahanan pangan kita.
             </p>
 
             {/* Kotak Statistik */}
@@ -54,10 +63,11 @@ const KesehatanTanah: React.FC = () => {
             </div>
 
             {/* Tombol Aksi */}
-            <button 
+            <button
               onClick={() => setShowDetails(!showDetails)}
               className={`
-                group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-300 rounded-full shadow-lg overflow-hidden
+                group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white 
+                transition-all duration-300 rounded-full shadow-lg overflow-hidden
                 ${showDetails ? 'bg-gray-800 hover:bg-gray-900' : 'bg-emerald-600 hover:bg-emerald-700'}
               `}
             >
@@ -71,40 +81,41 @@ const KesehatanTanah: React.FC = () => {
           {/* --- KONTEN KANAN (GAMBAR) --- */}
           <div className="relative w-full flex justify-center lg:justify-end pt-10 lg:pt-0">
             <div className="relative w-full">
-                {/* Container Gambar */}
-                <div className="w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-white group relative z-0">
-                    <img
-                        src="./img/KesehatanTanah.jpg"
-                        alt="Tanah Kering vs Subur"
-                        className="w-full h-full object-cover"
-                    />
-                    {/* Overlay Gradient Halus */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-60"></div>
-                </div>
+              {/* Container Gambar */}
+              <div className="w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-white group relative z-0">
+                <img
+                  src="./img/KesehatanTanah.jpg"
+                  alt="Tanah Kering vs Subur"
+                  className="w-full h-full object-cover"
+                />
+                {/* Overlay Gradient Halus */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-60" />
+              </div>
 
-                {/* Floating Card (Status Tanah) */}
-                <div className="absolute -bottom-6 -left-4 md:-bottom-8 md:-left-8 bg-white p-4 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-emerald-50 flex items-center gap-4 z-20 max-w-[260px]">
-                    <div className="p-3 bg-lime-100 rounded-xl flex-shrink-0 text-lime-600">
-                        <Layers className="w-6 h-6" />
-                    </div>
-                    <div>
-                        <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">
-                            Kandungan Organik
-                        </div>
-                        <div className="text-sm font-bold text-gray-800 flex items-center gap-2">
-                            <span className="text-red-500">Kritis (&lt;2%)</span>
-                            <Activity className="w-4 h-4 text-red-500 animate-pulse" />
-                        </div>
-                    </div>
+              {/* Floating Card (Status Tanah) */}
+              <div className="absolute -bottom-6 -left-4 md:-bottom-8 md:-left-8 bg-white p-4 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-emerald-50 flex items-center gap-4 z-20 max-w-[260px]">
+                <div className="p-3 bg-lime-100 rounded-xl flex-shrink-0 text-lime-600">
+                  <Layers className="w-6 h-6" />
                 </div>
+                <div>
+                  <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">
+                    Kandungan Organik
+                  </div>
+                  <div className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                    <span className="text-red-500">
+                      Kritis (&lt;2%)
+                    </span>
+                    <Activity className="w-4 h-4 text-red-500 animate-pulse" />
+                  </div>
+                </div>
+              </div>
 
-                {/* Elemen Dekoratif Daun Melayang */}
-                <div className="absolute -top-6 -right-6 p-3 bg-white rounded-full shadow-lg text-emerald-500 z-10 hidden md:block">
-                  <Leaf className="w-8 h-8" />
-                </div>
+              {/* Elemen Dekoratif Daun Melayang */}
+              <div className="absolute -top-6 -right-6 p-3 bg-white rounded-full shadow-lg text-emerald-500 z-10 hidden md:block">
+                <Leaf className="w-8 h-8" />
+              </div>
             </div>
           </div>
-
         </div>
 
         {/* --- PANEL DETAIL TAMBAHAN (EXPANDABLE) --- */}
@@ -121,7 +132,7 @@ const KesehatanTanah: React.FC = () => {
                 <h3 className="text-2xl font-bold text-emerald-900 mb-6 pb-4 border-b border-emerald-100">
                   Dampak Kerusakan Tanah
                 </h3>
-                
+
                 <div className="grid md:grid-cols-2 gap-12 mb-10">
                   {/* Dampak Lingkungan */}
                   <div>
@@ -144,7 +155,7 @@ const KesehatanTanah: React.FC = () => {
                     </ul>
                   </div>
 
-                  {/* Dampak Kesehatan Manusia (Opsional, jika ingin ditambahkan) */}
+                  {/* Jenis Pencemar Tanah */}
                   <div>
                     <h4 className="flex items-center text-lg font-bold text-red-600 mb-4">
                       <Skull className="w-5 h-5 mr-2" /> Jenis Pencemar Tanah
@@ -168,39 +179,37 @@ const KesehatanTanah: React.FC = () => {
 
                 {/* Solusi Berkelanjutan */}
                 <div className="pt-6 border-t border-emerald-50">
-                    <h4 className="flex items-center text-lg font-bold text-emerald-700 mb-6">
-                      <ShieldCheck className="w-5 h-5 mr-2" /> Solusi Berkelanjutan
-                    </h4>
-                    <div className="grid md:grid-cols-3 gap-4">
-                        {/* Solusi 1 */}
-                        <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
-                            <h5 className="font-bold text-emerald-800 mb-2 text-sm">Pengelolaan Sampah</h5>
-                            <p className="text-xs text-emerald-700/80 leading-relaxed">
-                                Terapkan sistem 3R (Reduce, Reuse, Recycle) dan dukung bank sampah lokal.
-                            </p>
-                        </div>
-                         {/* Solusi 2 */}
-                         <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
-                            <h5 className="font-bold text-emerald-800 mb-2 text-sm">Pertanian Organik</h5>
-                            <p className="text-xs text-emerald-700/80 leading-relaxed">
-                                Gunakan kompos alami dan pestisida ramah lingkungan untuk menjaga nutrisi tanah.
-                            </p>
-                        </div>
-                         {/* Solusi 3 */}
-                         <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
-                            <h5 className="font-bold text-emerald-800 mb-2 text-sm">Bioremediasi</h5>
-                            <p className="text-xs text-emerald-700/80 leading-relaxed">
-                                Penggunaan mikroorganisme khusus untuk membersihkan tanah dari polutan.
-                            </p>
-                        </div>
+                  <h4 className="flex items-center text-lg font-bold text-emerald-700 mb-6">
+                    <ShieldCheck className="w-5 h-5 mr-2" /> Solusi Berkelanjutan
+                  </h4>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    {/* Solusi 1 */}
+                    <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
+                      <h5 className="font-bold text-emerald-800 mb-2 text-sm">Pengelolaan Sampah</h5>
+                      <p className="text-xs text-emerald-700/80 leading-relaxed">
+                        Terapkan sistem 3R (Reduce, Reuse, Recycle) dan dukung bank sampah lokal.
+                      </p>
                     </div>
+                    {/* Solusi 2 */}
+                    <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
+                      <h5 className="font-bold text-emerald-800 mb-2 text-sm">Pertanian Organik</h5>
+                      <p className="text-xs text-emerald-700/80 leading-relaxed">
+                        Gunakan kompos alami dan pestisida ramah lingkungan untuk menjaga nutrisi tanah.
+                      </p>
+                    </div>
+                    {/* Solusi 3 */}
+                    <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
+                      <h5 className="font-bold text-emerald-800 mb-2 text-sm">Bioremediasi</h5>
+                      <p className="text-xs text-emerald-700/80 leading-relaxed">
+                        Penggunaan mikroorganisme khusus untuk membersihkan tanah dari polutan.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-
               </div>
             </motion.div>
           )}
         </AnimatePresence>
-
       </motion.div>
     </section>
   );
