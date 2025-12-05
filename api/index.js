@@ -467,6 +467,25 @@ app.post('/posts/:postId/like', authenticateToken, async (req, res) => {
     }
 });
 
+app.get('/user/liked-posts', authenticateToken, async (req, res) => {
+    console.log('GET /user/liked-posts hit!');
+    try {
+        // Query untuk mengambil semua post_id yang di-like oleh user saat ini (req.user.user_id)
+        const result = await pool.query(
+            'SELECT post_id FROM post_likes WHERE user_id = $1',
+            [req.user.user_id]
+        );
+        
+        // Mengembalikan array dari post_id (inilah yang dibutuhkan frontend)
+        const likedPostIds = result.rows.map(row => row.post_id);
+        res.json(likedPostIds);
+        
+    } catch (err) {
+        console.error('Error fetching liked post IDs:', err);
+        res.status(500).json({ error: 'Internal server error', details: err.message });
+    }
+});
+
 // GET: Mengambil komentar dari post tertentu
 app.get('/posts/:postId/comments', async (req, res) => {
     console.log(`GET /posts/${req.params.postId}/comments hit!`);
