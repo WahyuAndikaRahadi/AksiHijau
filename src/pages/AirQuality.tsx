@@ -8,7 +8,7 @@ import L from "leaflet";
 import { 
   CloudSun, Droplets, Wind, Thermometer, Sun, CloudRain, Navigation, Eye, MapPin, 
   BookOpen, AlertTriangle, HeartPulse, Zap, Leaf, ShieldCheck, Sparkles,
-  Loader2, LocateFixed, Circle, CheckCircle, Skull
+  Loader2, LocateFixed, Circle, CheckCircle, Skull, Info, ArrowRight
 } from 'lucide-react';
 
 // ==========================================
@@ -180,29 +180,31 @@ const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoa
     }
   };
 
+  
+
   return (
     <section className="py-10 px-4 w-full max-w-7xl mx-auto font-sans">
        {/* Header Section */}
        <div className="flex flex-col md:flex-row justify-between items-end mb-10 ml-2">
-          <div>
-            <h2 className="text-4xl font-extrabold text-slate-800 tracking-tight">
-              Kondisi <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-cyan-500">Cuaca Real-time</span>
-            </h2>
-            <p className="text-slate-500 mt-2 text-lg">Pantauan cuaca dan atmosfer kawasan industri.</p>
-          </div>
-          
-          {/* Live Indicator */}
-          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100 mt-4 md:mt-0">
-            {isLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin text-amber-500" />
-            ) : (
-                <span className="relative flex h-3 w-3">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                </span>
-            )}
-            <span className="text-sm font-semibold text-slate-600">{isLoading ? 'Mencari Lokasi...' : 'Data Langsung'}</span>
-          </div>
+         <div>
+           <h2 className="text-4xl font-extrabold text-slate-800 tracking-tight">
+             Kondisi <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-cyan-500">Cuaca Real-time</span>
+           </h2>
+           <p className="text-slate-500 mt-2 text-lg">Pantauan cuaca dan atmosfer kawasan industri.</p>
+         </div>
+         
+         {/* Live Indicator */}
+         <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100 mt-4 md:mt-0">
+           {isLoading ? (
+               <Loader2 className="w-4 h-4 animate-spin text-amber-500" />
+           ) : (
+               <span className="relative flex h-3 w-3">
+                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                   <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+               </span>
+           )}
+           <span className="text-sm font-semibold text-slate-600">{isLoading ? 'Mencari Lokasi...' : 'Data Langsung'}</span>
+         </div>
        </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -372,7 +374,82 @@ const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoa
 
 
 // ==========================================
-// 2. AIR QUALITY COMPONENT (MAIN LOGIC & API)
+// 2. AIR QUALITY BANNER (NEW COMPONENT - SEPERTI GAMBAR)
+// ==========================================
+const AirQualityBanner: React.FC = () => {
+    return (
+        <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="w-full max-w-7xl mx-auto mt-12 mb-8"
+        >
+            <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl border border-slate-100 flex flex-col md:flex-row gap-10 items-center overflow-hidden">
+                {/* Bagian Gambar (Kiri) */}
+                <div className="w-full md:w-1/2 relative group">
+                    <div className="absolute inset-0 bg-blue-500 rounded-3xl rotate-2 opacity-10 group-hover:rotate-6 transition-transform"></div>
+                    <img 
+                        src="https://images.unsplash.com/photo-1534088568595-a066f410bcda?q=80&w=1000&auto=format&fit=crop" 
+                        alt="Udara Bersih" 
+                        className="relative z-10 rounded-3xl shadow-lg w-full h-[320px] object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                    />
+                    
+                    {/* Floating Badge (seperti di gambar user) */}
+                    <div className="absolute z-20 -bottom-6 -right-4 md:-right-6 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce-slow border border-slate-100">
+                        <div className="bg-orange-50 p-3 rounded-xl">
+                            <Wind className="w-6 h-6 text-orange-500" />
+                        </div>
+                        <div>
+                            <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Kualitas Udara</div>
+                            <div className="text-sm font-bold text-slate-800 flex items-center gap-1">
+                                Pantau Live <span className="flex h-2 w-2 relative ml-1"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Bagian Konten (Kanan) */}
+                <div className="w-full md:w-1/2">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-50 text-cyan-600 text-xs font-bold uppercase tracking-wider mb-6 border border-cyan-100">
+                        <CloudSun className="w-4 h-4" /> Kualitas Udara
+                    </div>
+                    
+                    <h2 className="text-3xl md:text-5xl font-extrabold text-slate-800 mb-6 leading-[1.15]">
+                        Udara Bersih untuk <br/>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Masa Depan Sehat</span>
+                    </h2>
+                    
+                    <p className="text-slate-500 text-lg mb-8 leading-relaxed">
+                        Udara adalah sumber kehidupan, namun polusi industri dan emisi kendaraan mengancam kesehatan paru-paru kita. 
+                        Setiap hirupan udara bersih yang kita jaga hari ini adalah investasi kesehatan bagi generasi mendatang.
+                    </p>
+
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-2 gap-4 mb-8">
+                        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-colors">
+                            <div className="text-3xl font-black text-slate-800 mb-1">99%</div>
+                            <div className="text-xs font-medium text-slate-500 leading-tight">Populasi dunia menghirup udara polusi (WHO)</div>
+                        </div>
+                        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-colors">
+                            <div className="text-3xl font-black text-blue-600 mb-1">7 Juta</div>
+                            <div className="text-xs font-medium text-slate-500 leading-tight">Kematian dini per tahun akibat polusi</div>
+                        </div>
+                    </div>
+
+                    <button className="bg-[#0e4a6b] text-white px-8 py-4 rounded-full font-bold text-sm md:text-base flex items-center gap-2 hover:bg-slate-800 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-cyan-900/20 group">
+                        <BookOpen className="w-5 h-5" /> 
+                        Pelajari Dampaknya
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                </div>
+            </div>
+        </motion.div>
+    );
+}
+
+
+// ==========================================
+// 3. AIR QUALITY COMPONENT (MAIN LOGIC & API)
 // ==========================================
 const AirQuality: React.FC = () => {
     // Kunci API sudah terpasang
@@ -653,109 +730,109 @@ const AirQuality: React.FC = () => {
                     </motion.div>
                 </div>
                 
-                {/* --- ANALISIS DAMPAK --- */}
-                <AirQualityDetails />
+                {/* --- BANNER BARU (MENYERUPAI GAMBAR) --- */}
+                <AirQualityBanner />
+
+                {/* --- ANALISIS/PENJELASAN POLUTAN --- */}
+                <AirQualityDetails components={components} />
 
             </motion.div>
         </section>
     );
 };
 
-// ... (Komponen AirQualityDetails)
-const AirQualityDetails: React.FC = () => {
-    const [showDetails, setShowDetails] = useState(false);
+// ==========================================
+// 4. AIR QUALITY DETAILS (PENJELASAN POLUTAN)
+// ==========================================
+const AirQualityDetails: React.FC<{ components: any }> = ({ components }) => {
+    
+    // Definisi dan penjelasan setiap polutan
+    const pollutantInfo = {
+        co: {
+            name: "Karbon Monoksida",
+            desc: "Gas beracun dari pembakaran bahan bakar kendaraan dan industri.",
+            color: "text-slate-700",
+            bg: "bg-slate-100"
+        },
+        no: {
+            name: "Nitrogen Monoksida",
+            desc: "Dihasilkan dari emisi kendaraan bermotor dan proses pembakaran suhu tinggi.",
+            color: "text-blue-700",
+            bg: "bg-blue-50"
+        },
+        no2: {
+            name: "Nitrogen Dioksida",
+            desc: "Penyebab utama kabut asap dan hujan asam. Berbahaya bagi paru-paru.",
+            color: "text-rose-700",
+            bg: "bg-rose-50"
+        },
+        o3: {
+            name: "Ozon (Permukaan)",
+            desc: "Terbentuk dari reaksi kimia di udara. Dapat memicu asma dan gangguan pernapasan.",
+            color: "text-violet-700",
+            bg: "bg-violet-50"
+        },
+        so2: {
+            name: "Sulfur Dioksida",
+            desc: "Berasal dari pembakaran batubara dan minyak bumi di industri.",
+            color: "text-amber-700",
+            bg: "bg-amber-50"
+        },
+        pm2_5: {
+            name: "Partikel Halus (PM2.5)",
+            desc: "Partikel sangat kecil (<2.5µm) yang dapat menembus paru-paru hingga aliran darah.",
+            color: "text-red-700",
+            bg: "bg-red-50"
+        },
+        pm10: {
+            name: "Partikel Kasar (PM10)",
+            desc: "Debu, serbuk sari, dan partikel kasar yang mengiritasi mata dan hidung.",
+            color: "text-orange-700",
+            bg: "bg-orange-50"
+        },
+        nh3: {
+            name: "Amonia",
+            desc: "Gas berbau tajam dari limbah pertanian dan industri pupuk.",
+            color: "text-emerald-700",
+            bg: "bg-emerald-50"
+        }
+    };
+
     return (
-        <>
-        <div className="text-center mt-10">
-             <button 
-                onClick={() => setShowDetails(!showDetails)}
-                className={`text-white rounded-full px-8 py-4 font-bold flex items-center gap-2 transition-all shadow-lg hover:shadow-cyan-200/50 hover:scale-105 active:scale-95 mx-auto ${showDetails ? 'bg-slate-700 hover:bg-slate-800' : 'bg-gradient-to-r from-cyan-400 to-emerald-400'}`}
-            >
-                <BookOpen className="w-5 h-5" />
-                {showDetails ? 'Sembunyikan Analisis Dampak' : 'Pelajari Dampak Polusi Industri'}
-            </button>
-        </div>
-        
-        <AnimatePresence>
-            {showDetails && (
-            <motion.div
-                initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                animate={{ height: 'auto', opacity: 1, marginTop: 40 }}
-                exit={{ height: 0, opacity: 0, marginTop: 0 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="overflow-hidden"
-            >
-                <div className="bg-cyan-50 rounded-3xl p-8 border border-cyan-100 shadow-inner">
-                    <h3 className="text-2xl font-bold text-[#0e4a6b] mb-6 border-b border-cyan-100 pb-4">
-                        Analisis Dampak Polusi Industri
-                    </h3>
-                    
-                    <div className="grid md:grid-cols-2 gap-8 mb-8">
-                        {/* Sumber Polusi */}
-                        <div>
-                            <h4 className="flex items-center text-lg font-semibold text-rose-600 mb-3">
-                                <AlertTriangle className="w-5 h-5 mr-2" /> Pemicu Utama
-                            </h4>
-                            <ul className="space-y-2 text-slate-600 text-sm">
-                                <li className="flex items-start gap-2"><span className="text-rose-400">•</span> Pembakaran batu bara pembangkit listrik</li>
-                                <li className="flex items-start gap-2"><span className="text-rose-400">•</span> Proses manufaktur kimia dan semen</li>
-                                <li className="flex items-start gap-2"><span className="text-rose-400">•</span> Kebocoran gas industri (Metana/SO2)</li>
-                                <li className="flex items-start gap-2"><span className="text-rose-400">•</span> Debu operasional alat berat & konstruksi</li>
-                            </ul>
-                        </div>
-
-                        {/* Efek Kesehatan */}
-                        <div>
-                            <h4 className="flex items-center text-lg font-semibold text-orange-600 mb-3">
-                                <HeartPulse className="w-5 h-5 mr-2" /> Risiko Kesehatan
-                            </h4>
-                            <ul className="space-y-2 text-slate-600 text-sm">
-                                <li className="flex items-start gap-2"><span className="text-orange-400">•</span> Infeksi Saluran Pernapasan Akut (ISPA)</li>
-                                <li className="flex items-start gap-2"><span className="text-orange-400">•</span> Iritasi mata dan kulit akibat paparan zat kimia</li>
-                                <li className="flex items-start gap-2"><span className="text-orange-400">•</span> Risiko kanker paru-paru jangka panjang</li>
-                                <li className="flex items-start gap-2"><span className="text-orange-400">•</span> Keracunan logam berat (Timbal/Merkuri)</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    {/* Solusi Nyata Cards */}
-                    <div className="pt-6 border-t border-cyan-100">
-                        <h4 className="flex items-center text-lg font-semibold text-cyan-700 mb-4">
-                            <Sparkles className="w-5 h-5 mr-2" /> Langkah Penanggulangan
-                        </h4>
-                        <div className="grid md:grid-cols-3 gap-4">
-                            {/* Card 1 - Teknologi Filter */}
-                            <div className="bg-cyan-50/50 rounded-xl p-4 border border-cyan-100">
-                                <div className="w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center mb-3 text-cyan-600">
-                                    <ShieldCheck className="w-5 h-5" />
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+            className="overflow-hidden mt-2"
+        >
+            <div className="bg-cyan-50 rounded-3xl p-8 border border-cyan-100 shadow-inner">
+                <h3 className="text-2xl font-bold text-[#0e4a6b] mb-6 border-b border-cyan-100 pb-4 flex items-center gap-2">
+                    <Info className="w-6 h-6" /> Penjelasan Konsentrasi Polutan Udara
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {Object.entries(pollutantInfo).map(([key, info]) => {
+                        // Mengambil nilai dari props components, default ke 0 jika tidak ada
+                        const value = components && components[key] ? components[key] : 0;
+                        
+                        return (
+                            <div key={key} className={`${info.bg} p-5 rounded-2xl border border-slate-100 transition-transform hover:scale-105`}>
+                                <div className="flex justify-between items-start mb-2">
+                                    <h4 className={`font-bold text-lg uppercase ${info.color}`}>{key.replace('_', '.')}</h4>
+                                    <span className="bg-white/60 px-2 py-1 rounded-lg text-xs font-bold text-slate-600 shadow-sm">
+                                        {value} µg/m³
+                                    </span>
                                 </div>
-                                <h5 className="font-bold text-[#0e4a6b] mb-1 text-sm">Filtrasi Udara</h5>
-                                <p className="text-xs text-slate-600">Pemasangan teknologi penyaring asap (Scrubber) pada cerobong.</p>
+                                <h5 className="text-sm font-bold text-slate-800 mb-1">{info.name}</h5>
+                                <p className="text-xs text-slate-600 leading-relaxed">{info.desc}</p>
                             </div>
-                            {/* Card 2 - Energi */}
-                            <div className="bg-amber-50/50 rounded-xl p-4 border border-amber-100">
-                                <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center mb-3 text-amber-600">
-                                    <Zap className="w-5 h-5" />
-                                </div>
-                                <h5 className="font-bold text-[#0e4a6b] mb-1 text-sm">Transisi Energi</h5>
-                                <p className="text-xs text-slate-600">Beralih dari batu bara ke sumber energi yang lebih ramah lingkungan.</p>
-                            </div>
-                            {/* Card 3 - Penghijauan */}
-                            <div className="bg-emerald-50/50 rounded-xl p-4 border border-emerald-100">
-                                <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center mb-3 text-emerald-600">
-                                    <Leaf className="w-5 h-5" />
-                                </div>
-                                <h5 className="font-bold text-[#0e4a6b] mb-1 text-sm">Sabuk Hijau</h5>
-                                <p className="text-xs text-slate-600">Menanam pohon penyerap karbon di sekeliling area pabrik.</p>
-                            </div>
-                        </div>
-                    </div>
-
+                        );
+                    })}
                 </div>
-            </motion.div>
-            )}
-        </AnimatePresence>
-        </>
+
+            </div>
+        </motion.div>
     )
 }
 
