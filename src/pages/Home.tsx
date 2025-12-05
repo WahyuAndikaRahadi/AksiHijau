@@ -417,22 +417,25 @@ const Home = () => {
       </section>
 
       {/* 2. Filosofi AksiHijau */}
-      <section className="px-10 py-20 md:my-24 bg-white relative overflow-hidden">
+      <section className="px-10 py-20 md:my-24 bg-white relative">
         
         {/* Dekorasi Pohon Kiri (Filosofi) - FLIPPED */}
-        <div className="absolute top-0 -left-16 bottom-0 w-1/4 h-full hidden lg:block  pointer-events-none">
+        {/* Perubahan: w-1/4 diubah menjadi w-96 dan -left-16 diubah menjadi -left-32 */}
+        <div className="absolute top-0 -left-72 bottom-0  w-[650px]  hidden lg:block pointer-events-none">
           <img
             src="./img/pohon.png" // PASTIKAN PATH INI BENAR SESUAI PROJECT ANDA
             alt="Ilustrasi Pohon Hijau"
-            className="w-full h-full object-cover transform scale-x-[-1]" // scale-x-[-1] untuk flip horizontal
+            className="w-full h-full object-cover transform scale-x-[-1]" // Ditambah opacity-70
           />
         </div>
 
-        <div className="absolute top-0 -right-16 bottom-0 w-1/4 h-full hidden lg:block  pointer-events-none">
+        {/* Dekorasi Pohon Kanan (Filosofi) */}
+        {/* Perubahan: w-1/4 diubah menjadi  w-[500px] dan -right-16 diubah menjadi -right-32 */}
+        <div className="absolute top-0 -right-72 bottom-0  w-[650px] h-full hidden lg:block pointer-events-none">
           <img
             src="./img/pohon.png" // PASTIKAN PATH INI BENAR SESUAI PROJECT ANDA
             alt="Ilustrasi Pohon Hijau"
-            className="w-full h-full object-cover" // scale-x-[-1] untuk flip horizontal
+            className="w-full h-full object-cover" // Ditambah opacity-70
           />
         </div>
 
@@ -618,6 +621,7 @@ const Home = () => {
         transition={{ duration: 0.8 }}
         className="px-5 py-15 sm:px-10 sm:py-20 bg-white"
       >
+        
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
             className="rounded-3xl p-8 md:p-12 lg:p-16 lg:my-12"
@@ -635,9 +639,9 @@ const Home = () => {
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/50 to-green-300/50 rounded-full opacity-70 scale-110"></div>
 
                 <img
-                  src="/public/img/dslr-camera.png"
+                  src="/public/img/qr-scanner.png"
                   alt="AI Eco Assistant"
-                  className="relative z-10 w-1/2 h-1/2 object-contain drop-shadow-2xl animate-[bounce_3s_infinite]"
+                  className="relative z-10 w-3/4 h-3/4 object-contain drop-shadow-2xl animate-[bounce_3s_infinite]"
                 />
               </motion.div>
 
