@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 // PERBAIKAN: RotateCw digunakan untuk tombol reset
 import { Camera, Upload, X, Recycle, Leaf, AlertCircle, Sparkles, RotateCw, ArrowLeft } from 'lucide-react';
 import Webcam from 'react-webcam';
+// BARU: Import SweetAlert2
+import Swal from 'sweetalert2'; 
 
 // Interface untuk hasil deteksi
 interface DetectionResult {
@@ -92,7 +94,7 @@ const WasteDetection: React.FC = () => {
     }
   };
 
-  // Analisis dengan Gemini AI
+  // Analisis dengan Gemini AI (DIMODIFIKASI UNTUK SWEETALERT2)
   const analyzeWithGemini = async (imageBase64: string): Promise<void> => {
     setIsAnalyzingWithAI(true);
     setIsDetecting(true);
@@ -167,12 +169,48 @@ const WasteDetection: React.FC = () => {
         };
 
         setDetectionResult(result);
+
+        // --- SweetAlert2 Success ---
+        const categoryColor = analysisData.category === 'Organik' ? '#10B981' : 
+                              analysisData.category === 'Anorganik' ? '#3B82F6' : 
+                              analysisData.category === 'B3' ? '#EF4444' : '#6B7280';
+                              
+        const recyclableText = analysisData.recyclable ? 'Dapat Didaur Ulang' : 'Tidak Didaur Ulang';
+
+        await Swal.fire({
+          title: '✅ Analisis Berhasil!',
+          html: `
+            <div style="text-align: left; padding: 10px;">
+              <p><strong>Ditemukan:</strong> ${result.detectedObject}</p>
+              <p><strong>Jenis:</strong> ${analysisData.wasteType}</p>
+              <p><strong>Kategori:</strong> <span style="font-weight: bold; color: ${categoryColor};">${analysisData.category}</span></p>
+              <p><strong>Daur Ulang:</strong> <span style="font-weight: bold; color: ${analysisData.recyclable ? '#10B981' : '#EF4444'};">${recyclableText}</span></p>
+            </div>
+          `,
+          icon: 'success',
+          confirmButtonText: 'Lihat Panduan',
+          confirmButtonColor: '#10B981', // green-500
+          timer: 15000,
+        });
+        // --- AKHIR SweetAlert2 Success ---
+
       } else {
         throw new Error('Invalid Gemini response format. Could not extract JSON.');
       }
     } catch (error) {
       console.error('Error analyzing with Gemini:', error);
-      setError('Gagal menganalisis dengan AI. Pastikan API Key Gemini valid dan gambar jelas.');
+      // Set error state untuk ditampilkan di UI
+      setError('Gagal menganalisis dengan AI. Pastikan API Key Gemini valid dan gambar jelas.'); 
+
+      // --- SweetAlert2 Error ---
+      await Swal.fire({
+        title: 'Gagal Menganalisis!',
+        text: 'Terjadi kesalahan saat menghubungi atau memproses respon dari Gemini AI. Cek API Key dan format gambar.',
+        icon: 'error',
+        confirmButtonColor: '#EF4444', // red-500
+      });
+      // --- AKHIR SweetAlert2 Error ---
+      
     } finally {
       setIsAnalyzingWithAI(false);
       setIsDetecting(false);
@@ -203,7 +241,7 @@ const WasteDetection: React.FC = () => {
 
   return (
     // PERBAIKAN UTAMA 2: Tambahkan overflow-x-hidden untuk mencegah scroll horizontal
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-blue-50 py-12 px-4 pt-28 sm:pt-32 **overflow-x-hidden**">
+    <div className="min-h-screen bg-gradient-to-b from-green-50 to-blue-50 py-12 px-4 pt-28 sm:pt-32 overflow-x-hidden">
       
       {/* PERBAIKAN UTAMA 1: Tambahkan left-0 right-0 (atau inset-x-0) 
         untuk memastikan elemen absolute w-full tidak meluber saat ada padding/margin
@@ -303,7 +341,7 @@ const WasteDetection: React.FC = () => {
                 <div className="p-6 bg-green-50 rounded-xl">
                   <Recycle className="w-8 h-8 text-green-500 mb-3" />
                   <h3 className="font-semibold text-gray-900 mb-2">3. Panduan Pengelolaan</h3>
-                  <p className className="text-sm text-gray-600">Tips pengelolaan terbaik dari AI</p>
+                  <p className="text-sm text-gray-600">Tips pengelolaan terbaik dari AI</p>
                 </div>
               </div>
 
