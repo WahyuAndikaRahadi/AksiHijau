@@ -779,7 +779,7 @@ const WaterFootprintCalculatorSection: React.FC = () => {
                 
                 <CustomInputButtons
                   min={1}
-                  max={30}
+                  max={60}
                   value={data.showerMinutes}
                   onChange={(v) => handleChange('showerMinutes', v)}
                   colorClass="bg-cyan-500"
