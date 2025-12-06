@@ -300,7 +300,8 @@ const Home = () => {
 
 
   return (
-    <div>
+    // PERBAIKAN UTAMA: Tambahkan overflow-x-hidden untuk menghilangkan scroll horizontal
+    <div className="overflow-x-hidden">
       {/* 1. Hero Section */}
       <section className="relative bg-gradient-to-br from-green-50 via-white to-sky-50 py-20 sm:py-32 overflow-hidden px-10">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
@@ -420,7 +421,7 @@ const Home = () => {
       <section className="px-10 py-20 md:my-24 bg-white relative">
         
         {/* Dekorasi Pohon Kiri (Filosofi) - FLIPPED */}
-        {/* Perubahan: w-1/4 diubah menjadi w-96 dan -left-16 diubah menjadi -left-32 */}
+        {/* MENGGUNAKAN KODE ASLI PENGGUNA UNTUK POHON INI */}
         <div className="absolute top-0 -left-72 bottom-0  w-[650px]  hidden lg:block pointer-events-none">
           <img
             src="./img/pohon.png" // PASTIKAN PATH INI BENAR SESUAI PROJECT ANDA
@@ -430,7 +431,7 @@ const Home = () => {
         </div>
 
         {/* Dekorasi Pohon Kanan (Filosofi) */}
-        {/* Perubahan: w-1/4 diubah menjadi  w-[500px] dan -right-16 diubah menjadi -right-32 */}
+        {/* MENGGUNAKAN KODE ASLI PENGGUNA UNTUK POHON INI */}
         <div className="absolute top-0 -right-72 bottom-0  w-[650px] h-full hidden lg:block pointer-events-none">
           <img
             src="./img/pohon.png" // PASTIKAN PATH INI BENAR SESUAI PROJECT ANDA
@@ -523,7 +524,7 @@ const Home = () => {
               viewport={{ once: true, amount: 0.4 }}
               transition={{ duration: 0.7 }}
             >
-              <div className="bg-primary/90 text-white text-sm font-bold uppercase tracking-wider px-4 py-1 rounded-full w-fit mb-6 shadow-md">
+              <div className="bg-primary/90 text-white text-[12px] sm:text-sm font-bold uppercase tracking-wider px-4 py-1 rounded-full w-fit mb-6 shadow-md">
                 Kenapa Memilih AksiHijau?
               </div>
 
