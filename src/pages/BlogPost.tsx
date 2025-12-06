@@ -12,13 +12,14 @@ interface BlogItem {
   author: string;
   date: string;
   bannerImage: string;
+  KeteranganGambarBanner: string;
   description: string;
   detailDescription: string;
   galleryImages: string[];
 }
 
 const BlogPost: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>(); // Menggunakan slug untuk URL
+  const { slug } = useParams<{ slug: string }>(); 
   const [blog, setBlog] = useState<BlogItem | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +29,7 @@ const BlogPost: React.FC = () => {
     const fetchBlogDetail = async () => {
       try {
         setLoading(true);
-        // Ambil semua data blog
+        // Pastikan path ini sesuai dengan lokasi file JSON Anda
         const response = await fetch('/blogData.json');
         
         if (!response.ok) {
@@ -36,7 +37,6 @@ const BlogPost: React.FC = () => {
         }
 
         const data: BlogItem[] = await response.json();
-        // Cari blog berdasarkan slug
         const foundBlog = data.find(item => item.slug === slug);
         
         if (foundBlog) {
@@ -114,17 +114,26 @@ const BlogPost: React.FC = () => {
             </span>
           </div>
 
-          <div className="relative w-full h-96 rounded-xl overflow-hidden shadow-lg mb-10">
-            <img
-              src={blog.bannerImage}
-              alt={blog.title}
-              className="w-full h-full object-cover"
-            />
+          {/* Wrapper Gambar Banner + Caption */}
+          <div className="mb-10">
+            <div className="relative w-full h-96 rounded-xl overflow-hidden shadow-lg">
+              <img
+                src={blog.bannerImage}
+                alt={blog.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {/* Keterangan Gambar (Caption) - UPDATE: Rata Kiri (text-left) */}
+            {blog.KeteranganGambarBanner && (
+              <p className="mt-3 text-left text-sm text-gray-500 italic">
+                {blog.KeteranganGambarBanner}
+              </p>
+            )}
           </div>
 
           <div className="prose prose-lg max-w-none text-gray-700">
             <p className="lead font-medium text-xl mb-6">{blog.description}</p>
-            {/* Split description for paragraphs, assuming detailDescription might contain line breaks */}
+            {/* Split description for paragraphs */}
             {blog.detailDescription.split('\n').map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}
@@ -171,7 +180,7 @@ const BlogPost: React.FC = () => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
             className="max-w-4xl max-h-full w-full relative"
-            onClick={(e) => e.stopPropagation()} // Mencegah klik di dalam modal menutup modal
+            onClick={(e) => e.stopPropagation()} 
           >
             <button
               onClick={() => setSelectedImage(null)}

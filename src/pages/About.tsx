@@ -185,7 +185,7 @@ const processSteps = [
     desc: 'Dapatkan poin dari setiap partisipasi, naikkan Eco Level-mu, dan koleksi Badge penghargaan eksklusif.',
     // Mengacu pada sistem gamifikasi (Eco Level & Badge) di dashboardAdmin.tsx
     image:
-      'https://plus.unsplash.com/premium_photo-1718560021014-b2464cd8021d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8TGF5YXIlMjBwb25zZWwlMjBtZW5hbXBpbGthbiUyMHVjYXBhbiUyMHNlbGFtYXQlMjBkYW4lMjBwb2luJTIweWFuZyUyMGRpZGFwYXQufGVufDB8fDB8fHww',
+      './img/Badge.jpg',
     color: 'bg-emerald-100',
   },
 ];

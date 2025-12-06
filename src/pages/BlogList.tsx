@@ -1,7 +1,7 @@
-import { useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Tag, User, Loader2, ArrowRight } from 'lucide-react';
+import { Calendar, Tag, User, Loader2, ArrowRight, Search } from 'lucide-react';
 
 interface BlogItem {
   id: number;
@@ -37,6 +37,9 @@ const BlogList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  // Tambahan state untuk pencarian
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  
   const itemsPerPage: number = 9;
 
   useEffect(() => {
@@ -63,12 +66,24 @@ const BlogList: React.FC = () => {
     fetchBlogs();
   }, []);
 
-  const totalItems: number = allBlogs.length;
+  // Reset ke halaman 1 setiap kali user mengetik sesuatu di kolom search
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  // Logika Filter
+  const filteredBlogs = allBlogs.filter((blog) => 
+    blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    blog.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Kalkulasi Pagination berdasarkan hasil Filter
+  const totalItems: number = filteredBlogs.length;
   const totalPages: number = Math.ceil(totalItems / itemsPerPage);
   const indexOfLastItem: number = currentPage * itemsPerPage;
   const indexOfFirstItem: number = indexOfLastItem - itemsPerPage;
 
-  const currentBlogs: BlogItem[] = allBlogs.slice(indexOfFirstItem, indexOfLastItem);
+  const currentBlogs: BlogItem[] = filteredBlogs.slice(indexOfFirstItem, indexOfLastItem);
 
   const handlePageChange = (pageNumber: number): void => {
     setCurrentPage(pageNumber);
@@ -112,73 +127,117 @@ const BlogList: React.FC = () => {
   return (
     <div className="py-16 bg-gradient-to-br from-blue-50 to-gray-50">
       <div className="container mx-auto px-4">
-        <motion.h1
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-4xl font-extrabold text-gray-900 text-center mb-12"
+          className="text-center mb-10"
         >
-          📰 Blog Lestari Bumi
-        </motion.h1>
+          <h1 className="text-4xl font-extrabold text-gray-900 mb-4">
+            📰 Blog Lestari Bumi 
+          </h1>
+          <p className="text-gray-600">
+            Ikuti perkembangan terbaru seputar lingkungan dan bumi.
+          </p>
+        </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {currentBlogs.map((blog, index) => (
-            <motion.article
-              key={blog.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="relative bg-white rounded-3xl overflow-hidden shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] group border border-blue-100 pb-20"
+        {/* --- BAGIAN SEARCH BAR (Sesuai Gambar) --- */}
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+          className="max-w-2xl mx-auto mb-12"
+        >
+          <div className="relative group">
+            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400 group-focus-within:text-green-500 transition-colors duration-300" />
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="block w-full pl-11 pr-4 py-3 rounded-full border border-gray-300 leading-5 bg-white placeholder-gray-400 focus:outline-none focus:border-green-400 focus:ring-4 focus:ring-green-100 transition-all duration-300 shadow-sm"
+              placeholder="Cari berita berdasarkan judul atau deskripsi..."
+            />
+          </div>
+          <div className="text-center mt-4 text-sm text-gray-600 font-medium">
+            Total Blog ditemukan: <span className="text-green-600 font-bold">{totalItems}</span> 
+            <span className="mx-2 text-gray-300">|</span> 
+            Halaman <span className="text-green-600 font-bold">{totalItems > 0 ? currentPage : 0}</span> dari <span className="text-green-600 font-bold">{totalPages || 0}</span>
+          </div>
+        </motion.div>
+        {/* --- END SEARCH BAR --- */}
+
+        {totalItems === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-xl text-gray-500">Tidak ada berita yang ditemukan dengan kata kunci "{searchQuery}"</p>
+            <button 
+              onClick={() => setSearchQuery('')}
+              className="mt-4 text-blue-600 hover:underline"
             >
-              <Tag className="absolute top-0 right-0 w-20 h-20 text-blue-100 opacity-60 rotate-[10deg] transition-transform duration-500 group-hover:rotate-[30deg] z-0" />
-              <Tag className="absolute top-1/2 left-0 w-16 h-16 text-blue-50 opacity-80 -rotate-[30deg] transition-transform duration-500 group-hover:-rotate-[50deg] z-0" />
+              Tampilkan semua berita
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {currentBlogs.map((blog, index) => (
+              <motion.article
+                key={blog.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className="relative bg-white rounded-3xl overflow-hidden shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] group border border-blue-100 pb-20"
+              >
+                <Tag className="absolute top-0 right-0 w-20 h-20 text-blue-100 opacity-60 rotate-[10deg] transition-transform duration-500 group-hover:rotate-[30deg] z-0" />
+                <Tag className="absolute top-1/2 left-0 w-16 h-16 text-blue-50 opacity-80 -rotate-[30deg] transition-transform duration-500 group-hover:-rotate-[50deg] z-0" />
 
-              <div className="relative h-52 overflow-hidden">
-                <img
-                  src={blog.bannerImage}
-                  alt={blog.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 to-transparent"></div>
-              </div>
-
-              <div className="p-6 relative z-10">
-                <h2 className="text-2xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300 leading-snug">
-                  {blog.title}
-                </h2>
-
-                <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4 border-b border-blue-100 pb-3">
-                  <span className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-1 text-blue-500" />
-                    {blog.date}
-                  </span>
-                  <span className="flex items-center">
-                    <User className="w-4 h-4 mr-1 text-blue-500" />
-                    {blog.author}
-                  </span>
-                  <span className="flex items-center">
-                    <Tag className="w-4 h-4 mr-1 text-blue-500" />
-                    {blog.category}
-                  </span>
+                <div className="relative h-52 overflow-hidden">
+                  <img
+                    src={blog.bannerImage}
+                    alt={blog.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-blue-900/40 to-transparent"></div>
                 </div>
 
-                <p className="text-gray-700 text-base mb-4 line-clamp-3">
-                  {blog.description}
-                </p>
+                <div className="p-6 relative z-10">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300 leading-snug">
+                    {blog.title}
+                  </h2>
 
-                <Link
-                  to={`/blog/${blog.slug}`}
-                  className="inline-flex items-center text-blue-600 font-semibold group-hover:gap-2 transition-all duration-300 hover:text-blue-700"
-                >
-                  Baca Selengkapnya
-                  <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" />
-                </Link>
-              </div>
+                  <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4 border-b border-blue-100 pb-3">
+                    <span className="flex items-center">
+                      <Calendar className="w-4 h-4 mr-1 text-blue-500" />
+                      {blog.date}
+                    </span>
+                    <span className="flex items-center">
+                      <User className="w-4 h-4 mr-1 text-blue-500" />
+                      {blog.author}
+                    </span>
+                    <span className="flex items-center">
+                      <Tag className="w-4 h-4 mr-1 text-blue-500" />
+                      {blog.category}
+                    </span>
+                  </div>
 
-              <BlogCardWave />
-            </motion.article>
-          ))}
-        </div>
+                  <p className="text-gray-700 text-base mb-4 line-clamp-3">
+                    {blog.description}
+                  </p>
+
+                  <Link
+                    to={`/blog/${blog.slug}`}
+                    className="inline-flex items-center text-blue-600 font-semibold group-hover:gap-2 transition-all duration-300 hover:text-blue-700"
+                  >
+                    Baca Selengkapnya
+                    <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform duration-300" />
+                  </Link>
+                </div>
+
+                <BlogCardWave />
+              </motion.article>
+            ))}
+          </div>
+        )}
 
         {totalPages > 1 && totalItems > 0 && (
           <motion.div
