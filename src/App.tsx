@@ -7,7 +7,6 @@ import SoilHealth from './pages/SoilHealth';
 import WaterQuality from './pages/WaterQuality';
 import Home from './pages/Home';
 import About from './pages/About';
-import Features from './pages/Features';
 import News from './pages/News';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
@@ -22,7 +21,7 @@ import EcoBot from './pages/EcoBot';
 import Profile from './pages/Profile';
 // Import komponen loading dan 404
 import FirstLoadAnimation from './components/FirstLoadAnimation'; // 👈 Import FirstLoadAnimation
-import NotFound from './pages/NotFound'; // 👈 Import NotFound
+import NotFound from './pages/Notfound'; // 👈 Import NotFound
 
 // --- ScrollToTop Component ---
 const ScrollToTop = () => {
@@ -51,7 +50,6 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
-          <Route path="/features" element={<Features />} />
           <Route path="/air-quality" element={<AirQuality />} />
           <Route path="/soil-health" element={<SoilHealth />} />
           <Route path="/water-quality" element={<WaterQuality />} />
