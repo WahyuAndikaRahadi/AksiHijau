@@ -217,26 +217,36 @@ app.get('/auth/me', authenticateToken, async (req, res) => {
 
 
 app.get('/users/profile', authenticateToken, async (req, res) => {
-    console.log(`GET /users/profile hit! User ID: ${req.user.user_id}`);
-    const userId = req.user.user_id;
-
+    console.log('GET /users/profile hit! (Mengambil dengan Badges)');
     try {
-        const result = await pool.query(
-            'SELECT user_id, username, email, is_admin, created_at, eco_level FROM users WHERE user_id = $1',
-            [userId]
+        const userResult = await pool.query(
+            `SELECT user_id, username, email, eco_level, is_admin, created_at
+             FROM users WHERE user_id = $1`,
+            [req.user.user_id]
         );
 
-        if (result.rowCount === 0) {
-            console.warn(`Profile not found for user_id: ${userId}`);
-            return res.status(404).json({ error: 'Profil pengguna tidak ditemukan.' });
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({ error: 'User tidak ditemukan' });
         }
 
-        const profileData = result.rows[0];
-        res.json(profileData);
-        
+        const user = userResult.rows[0];
+
+        const badges = await pool.query(
+            `SELECT b.badge_id, b.badge_name, b.description, b.required_level, ub.awarded_at
+             FROM user_badges ub
+             JOIN badges b ON ub.badge_id = b.badge_id
+             WHERE ub.user_id = $1
+             ORDER BY b.required_level`,
+            [req.user.user_id]
+        );
+
+        res.json({
+            user: user,
+            badges: badges.rows
+        });
     } catch (err) {
-        console.error('Error fetching user profile:', err);
-        res.status(500).json({ error: 'Gagal mengambil data profil dari database', details: err.message });
+        console.error('Error fetching user profile with badges:', err);
+        res.status(500).json({ error: 'Internal server error', details: err.message });
     }
 });
 

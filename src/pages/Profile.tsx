@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
-// Hapus Hash dari import
-import { User, Mail, Shield, Zap, Clock, Loader2, AlertTriangle, Edit, Save, X, Lock, Eye, EyeOff, LucideIcon, Calendar } from 'lucide-react'; 
+import { User, Mail, Shield, Zap, Clock, Loader2, AlertTriangle, Edit, Save, X, Lock, Eye, EyeOff, LucideIcon, Calendar, TrendingUp } from 'lucide-react'; 
 import { useState, useEffect, useCallback, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -8,7 +7,16 @@ import Swal from 'sweetalert2';
 // Ganti dengan Base URL API Anda yang sebenarnya
 const API_BASE_URL = 'http://localhost:5000'; 
 
-// Definisi Tipe untuk Data Profil Pengguna
+// 1. Definisi Tipe untuk Badge
+interface Badge {
+  badge_id: number;
+  badge_name: string;
+  description: string;
+  required_level: number;
+  awarded_at: string;
+}
+
+// 2. Definisi Tipe untuk Data Profil Pengguna
 interface UserProfile {
   user_id: number;
   username: string;
@@ -16,6 +24,12 @@ interface UserProfile {
   is_admin: boolean;
   eco_level: number;
   created_at: string;
+}
+
+// 3. Definisi Tipe untuk Data yang di-fetch dari API (Respons baru dari /users/profile)
+interface ProfileData {
+  user: UserProfile;
+  badges: Badge[];
 }
 
 // --- KOMPONEN HELPER: ProfileStatCard ---
@@ -28,7 +42,7 @@ interface ProfileStatCardProps {
 }
 
 const ProfileStatCard = ({ Icon, label, value, color, bgColor }: ProfileStatCardProps) => (
-    <div className={`p-4 rounded-xl shadow-sm flex items-center space-x-4 ${bgColor} transition duration-150 hover:shadow-md`}>
+    <div className={`p-4 rounded-xl shadow-sm flex items-center space-x-4 ${bgColor} transition duration-150 hover:shadow-md border border-gray-100`}>
         <div className={`p-2 rounded-lg ${color} ${bgColor.replace('50', '200')} bg-opacity-70`}>
             <Icon className="w-5 h-5" />
         </div>
@@ -42,6 +56,7 @@ const ProfileStatCard = ({ Icon, label, value, color, bgColor }: ProfileStatCard
 
 const Profile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [badges, setBadges] = useState<Badge[]>([]); // State baru untuk menyimpan badges
   const [loading, setLoading] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [formData, setFormData] = useState({ 
@@ -49,12 +64,24 @@ const Profile = () => {
     email: '',
     newPassword: '', 
     confirmNewPassword: '', 
+    currentPassword: '', // Tambahkan currentPassword untuk PATCH /auth/profile/password
   });
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false); // State baru
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  // Fungsi untuk mendapatkan nama badge tertinggi (badge terakhir dalam array yang sudah diurutkan)
+  const getTopBadgeName = (): string => {
+      if (badges.length > 0) {
+          // Badge terakhir di array adalah yang required_level tertinggi (sesuai backend)
+          const topBadge = badges[badges.length - 1]; 
+          return topBadge.badge_name;
+      }
+      return "Eco Warrior Pemula"; 
+  };
 
   // Memuat data profil
   const fetchProfile = useCallback(async () => {
@@ -83,12 +110,17 @@ const Profile = () => {
         throw new Error(errorMessage);
       }
 
-      const data: UserProfile = await response.json();
-      setProfile(data);
+      // Menangani respons baru: { user, badges }
+      const data: ProfileData = await response.json(); 
+      setProfile(data.user);
+      setBadges(data.badges);
       setFormData(prev => ({ 
           ...prev, 
-          username: data.username, 
-          email: data.email 
+          username: data.user.username, 
+          email: data.user.email,
+          currentPassword: '', // Pastikan ini direset
+          newPassword: '',
+          confirmNewPassword: '',
       }));
       
     } catch (err) {
@@ -107,56 +139,18 @@ const Profile = () => {
     }
   }, [navigate]);
 
-  // Fungsi untuk update profil (Sama seperti sebelumnya)
-  const handleUpdateProfile = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsUpdating(true);
-    setError(null);
-
+  // Fungsi untuk update data dasar profil (username/email)
+  const handleUpdateProfileData = async () => {
     const token = localStorage.getItem('token');
-    if (!token) {
-      Swal.fire('Sesi Habis', 'Anda perlu login kembali.', 'warning');
-      navigate('/login');
-      setIsUpdating(false);
-      return;
-    }
+    const { username, email } = formData;
     
-    const { username, email, newPassword, confirmNewPassword } = formData;
-    
-    const isProfileChanged = username !== profile?.username || email !== profile?.email;
-    const isPasswordChanged = newPassword.length > 0;
+    if (!profile) return;
 
-    if (!isProfileChanged && !isPasswordChanged) {
-        Swal.fire('Info', 'Tidak ada perubahan yang terdeteksi.', 'info');
-        setIsUpdating(false);
-        setIsEditing(false);
-        return;
+    if (username === profile.username && email === profile.email) {
+        return; // Tidak ada perubahan data dasar
     }
 
-    if (isPasswordChanged) {
-        if (newPassword.length < 6) {
-            setError('Password baru harus minimal 6 karakter.');
-            setIsUpdating(false);
-            return;
-        }
-        if (newPassword !== confirmNewPassword) {
-            setError('Konfirmasi password baru tidak cocok.');
-            setIsUpdating(false);
-            return;
-        }
-    }
-    
-    if (!username || !email) {
-        setError('Username dan Email tidak boleh kosong.');
-        setIsUpdating(false);
-        return;
-    }
-
-    const payload = {
-        username,
-        email,
-        newPassword: isPasswordChanged ? newPassword : undefined, 
-    };
+    const payload = { username, email };
 
     try {
       const response = await fetch(`${API_BASE_URL}/users/profile`, {
@@ -170,36 +164,114 @@ const Profile = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        const errorMessage = errorData.error || `Gagal memperbarui profil. Status: ${response.status}`;
-        throw new Error(errorMessage);
+        throw new Error(errorData.error || `Gagal memperbarui data dasar. Status: ${response.status}`);
       }
       
       const updatedData: UserProfile = await response.json();
-      
-      setProfile(updatedData);
-      setFormData({ 
-          username: updatedData.username, 
-          email: updatedData.email, 
-          newPassword: '', 
-          confirmNewPassword: '' 
-      });
-      setIsEditing(false); 
+      setProfile(prev => prev ? { ...prev, username: updatedData.username, email: updatedData.email } : null);
+      setFormData(prev => ({ ...prev, username: updatedData.username, email: updatedData.email }));
 
-      Swal.fire('Berhasil!', 'Profil Anda berhasil diperbarui.', 'success');
+      return true;
 
     } catch (err) {
       const e = err as Error;
-      console.error('Error updating profile:', e.message);
-      setError('Gagal memperbarui profil. Coba periksa koneksi atau input Anda.');
-      Swal.fire({
-        icon: 'error',
-        title: 'Gagal Memperbarui',
-        text: e.message,
-        confirmButtonColor: '#16a34a',
-      });
-      
+      throw new Error(e.message);
+    }
+  };
+
+  // Fungsi untuk update password
+  const handleUpdatePassword = async () => {
+    const token = localStorage.getItem('token');
+    const { currentPassword, newPassword, confirmNewPassword } = formData;
+
+    if (newPassword.length === 0) {
+        return; // Tidak ada perubahan password
+    }
+
+    if (newPassword.length < 6) {
+        throw new Error('Password baru harus minimal 6 karakter.');
+    }
+    if (newPassword !== confirmNewPassword) {
+        throw new Error('Konfirmasi password baru tidak cocok.');
+    }
+    if (!currentPassword) {
+        throw new Error('Password saat ini harus diisi untuk mengubah password.');
+    }
+
+    const payload = { currentPassword, newPassword };
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/auth/profile/password`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `Gagal memperbarui password. Status: ${response.status}`);
+        }
+        
+        // Bersihkan field password setelah berhasil
+        setFormData(prev => ({ ...prev, currentPassword: '', newPassword: '', confirmNewPassword: '' }));
+        return true;
+
+    } catch (err) {
+        const e = err as Error;
+        throw new Error(e.message);
+    }
+  };
+
+  // Handler utama untuk menyimpan semua perubahan
+  const handleSaveChanges = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsUpdating(true);
+    setError(null);
+
+    const isProfileChanged = formData.username !== profile?.username || formData.email !== profile?.email;
+    const isPasswordChanged = formData.newPassword.length > 0;
+    
+    if (!isProfileChanged && !isPasswordChanged) {
+        Swal.fire('Info', 'Tidak ada perubahan yang terdeteksi.', 'info');
+        setIsUpdating(false);
+        setIsEditing(false);
+        return;
+    }
+
+    const updatePromises: Promise<any>[] = [];
+    
+    if (isProfileChanged) {
+        updatePromises.push(handleUpdateProfileData());
+    }
+
+    if (isPasswordChanged) {
+        updatePromises.push(handleUpdatePassword());
+    }
+
+    try {
+        await Promise.all(updatePromises);
+
+        setIsEditing(false);
+        Swal.fire('Berhasil!', 'Profil Anda berhasil diperbarui.', 'success');
+        // Refresh data setelah update, terutama untuk password agar last_password_change terupdate
+        fetchProfile(); 
+
+    } catch (err) {
+        const e = err as Error;
+        console.error('Error during save:', e.message);
+        setError(e.message);
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal Memperbarui',
+            text: e.message,
+            confirmButtonColor: '#16a34a',
+        });
+        
     } finally {
-      setIsUpdating(false);
+        setIsUpdating(false);
     }
   };
 
@@ -228,11 +300,13 @@ const Profile = () => {
           username: profile.username, 
           email: profile.email,
           newPassword: '',
-          confirmNewPassword: ''
+          confirmNewPassword: '',
+          currentPassword: '',
       });
     }
     setError(null);
     setIsEditing(false);
+    setShowCurrentPassword(false);
     setShowNewPassword(false);
     setShowConfirmNewPassword(false);
   }
@@ -306,7 +380,7 @@ const Profile = () => {
             // ===================================
             // MODE EDIT
             // ===================================
-            <form onSubmit={handleUpdateProfile} className="space-y-8">
+            <form onSubmit={handleSaveChanges} className="space-y-8">
                 
                 {/* Bagian 1: Informasi Dasar */}
                 <div className="space-y-4 p-5 border border-gray-200 rounded-xl shadow-inner bg-gray-50">
@@ -352,8 +426,35 @@ const Profile = () => {
                 {/* Bagian 2: Ubah Password */}
                 <div className="space-y-4 p-5 border border-gray-200 rounded-xl shadow-inner bg-red-50/50">
                     <h3 className="text-xl font-bold text-red-700 flex items-center"><Lock className="w-5 h-5 mr-2"/> Ubah Password</h3>
-                    <p className="text-sm text-gray-600 -mt-2">Kosongkan kolom di bawah jika Anda tidak ingin mengubah password saat ini.</p>
+                    <p className="text-sm text-gray-600 -mt-2">Isi kolom di bawah HANYA jika Anda ingin mengubah password Anda. Perlu password saat ini untuk konfirmasi.</p>
                 
+                    {/* Current Password */}
+                    <div className="space-y-1">
+                        <label htmlFor="currentPassword" className="text-sm font-medium text-gray-700 flex items-center">
+                             Password Saat Ini (Wajib jika ingin ubah password)
+                        </label>
+                        <div className="relative">
+                            <motion.input
+                                id="currentPassword"
+                                name="currentPassword"
+                                type={showCurrentPassword ? 'text' : 'password'}
+                                value={formData.currentPassword}
+                                onChange={handleInputChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition duration-200 pr-10 shadow-inner"
+                                placeholder="Masukkan password Anda saat ini"
+                                whileFocus={{ scale: 1.01 }}
+                            />
+                            <button
+                                type="button"
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-red-500 transition"
+                                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                aria-label={showCurrentPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                            >
+                                {showCurrentPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                            </button>
+                        </div>
+                    </div>
+
                     {/* New Password */}
                     <div className="space-y-1">
                         <label htmlFor="newPassword" className="text-sm font-medium text-gray-700 flex items-center">
@@ -367,7 +468,7 @@ const Profile = () => {
                                 value={formData.newPassword}
                                 onChange={handleInputChange}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition duration-200 pr-10 shadow-inner"
-                                placeholder="Tinggalkan kosong jika tidak ada perubahan"
+                                placeholder="Masukkan password baru"
                                 whileFocus={{ scale: 1.01 }}
                             />
                             <button
@@ -442,15 +543,15 @@ const Profile = () => {
             // ===================================
             <div className="flex flex-col md:flex-row gap-8">
                 
-                {/* Sidebar Statistik Kunci */}
+                {/* Sidebar Statistik Kunci dan Badge */}
                 <div className="w-full md:w-1/3 space-y-4">
-                    <h3 className="text-lg font-bold text-gray-700 border-b pb-2 mb-2 flex items-center"><Zap className="w-4 h-4 mr-2 text-yellow-500"/> Pencapaian</h3>
+                    <h3 className="text-lg font-bold text-gray-700 border-b pb-2 mb-2 flex items-center"><Zap className="w-4 h-4 mr-2 text-yellow-500"/> Level & Pencapaian</h3>
 
-                    {/* Stat 1: Eco Level */}
+                    {/* Stat 1: Eco Level & Badge Tertinggi */}
                     <ProfileStatCard 
-                        Icon={Zap} 
-                        label="Level Eco" 
-                        value={`Level ${profile.eco_level}`} 
+                        Icon={TrendingUp} 
+                        label="Level Eco / Badge Tertinggi" 
+                        value={`Lv. ${profile.eco_level} (${getTopBadgeName()})`} 
                         color="text-yellow-700" 
                         bgColor="bg-yellow-50" 
                     />
@@ -464,7 +565,34 @@ const Profile = () => {
                         bgColor="bg-indigo-50" 
                     />
                     
-                    {/* STATISTIK ID PENGGUNA TELAH DIHAPUS SESUAI PERMINTAAN USER */}
+                    {/* Daftar Badge yang Dimiliki */}
+                    <div className="pt-4">
+                        <h3 className="text-lg font-bold text-gray-700 border-b pb-2 mb-2 flex items-center"><Shield className="w-4 h-4 mr-2 text-primary"/> Semua Badge ({badges.length})</h3>
+                        <div className={`space-y-3 max-h-80 overflow-y-auto pr-2`}>
+                            {badges.length > 0 ? (
+                                badges.map(badge => (
+                                    <motion.div 
+                                        key={badge.badge_id} 
+                                        initial={{ opacity: 0, x: -10 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ duration: 0.3, delay: 0.1 * badge.required_level }}
+                                        className="p-3 border-l-4 border-green-500 bg-white rounded-lg shadow-sm hover:shadow-md transition"
+                                    >
+                                        <p className="font-semibold text-green-700 flex justify-between items-center">
+                                            {badge.badge_name}
+                                            <span className="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Lv. {badge.required_level}</span>
+                                        </p>
+                                        <p className="text-xs text-gray-500 mt-1">{badge.description}</p>
+                                        <p className="text-[10px] text-gray-400 mt-1">Diperoleh pada: {formatDate(badge.awarded_at)}</p>
+                                    </motion.div>
+                                ))
+                            ) : (
+                                <div className="p-4 bg-gray-100 rounded-lg text-center">
+                                    <p className="text-sm text-gray-500">Ayo mulai kontribusi! Belum ada badge yang diperoleh.</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
 
                 {/* Main Content Detail Akun & Aksi */}
@@ -491,7 +619,7 @@ const Profile = () => {
                         className="mt-6 w-full py-3 bg-primary text-white font-semibold rounded-lg shadow-lg hover:bg-green-600 transition duration-300 flex items-center justify-center"
                     >
                         <Edit className="w-5 h-5 mr-2" />
-                        Ubah Informasi Profil
+                        Ubah Informasi Profil & Password
                     </motion.button>
                 </div>
             </div>
