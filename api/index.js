@@ -5,7 +5,6 @@ import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-// Muat variabel lingkungan dari .env jika bukan di lingkungan produksi
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
 }
@@ -13,7 +12,6 @@ if (process.env.NODE_ENV !== 'production') {
 const { Pool } = pg;
 const app = express();
 
-// Konfigurasi koneksi database PostgreSQL menggunakan Pool (Neon DB)
 const pool = new Pool({
     connectionString: 'postgresql://neondb_owner:npg_ILAhyxw70zOt@ep-noisy-wave-ad17xbgh-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require',
     ssl: {
@@ -21,23 +19,18 @@ const pool = new Pool({
     }
 });
 
-// JWT Secret
 const JWT_SECRET = 'VqZ3x&Rk7y!pA9sT2uF4gHj8nK0lM1bC6dE5aO$q@W#eYzX%vBnMqZ3xRk7yP9sT2uF4gHj8nK0lM1b';
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Middleware kustom untuk membersihkan URL masuk
 app.use((req, res, next) => {
     console.log(`Original Incoming request: ${req.method} ${req.url}`);
 
-    // Hapus prefiks /api/ jika ada
     if (req.url.startsWith('/api/')) {
         req.url = req.url.substring(4);
     }
 
-    // Hapus parameter query '?path=' jika ada (Vercel)
     const queryParamIndex = req.url.indexOf('?path=');
     if (queryParamIndex !== -1) {
         req.url = req.url.substring(0, queryParamIndex);
@@ -47,15 +40,12 @@ app.use((req, res, next) => {
     next();
 });
 
-// Middleware untuk mencatat setiap permintaan
 app.use((req, res, next) => {
     console.log(`Incoming request (after cleanup): ${req.method} ${req.url}`);
     next();
 });
 
-// ============================================
-// MIDDLEWARE - Authentication
-// ============================================
+
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -73,7 +63,6 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-// Admin Only Middleware
 const adminOnly = (req, res, next) => {
     if (!req.user?.is_admin) {
         return res.status(403).json({ error: 'Akses ditolak. Hanya admin yang diizinkan.' });
@@ -81,17 +70,12 @@ const adminOnly = (req, res, next) => {
     next();
 };
 
-// ============================================
-// AUTH ROUTES
-// ============================================
 
-// POST: Register user baru
 app.post('/auth/register', async (req, res) => {
     console.log('POST /auth/register hit!');
     const { username, email, password } = req.body;
 
     try {
-        // Validasi input
         if (!username || !email || !password) {
             return res.status(400).json({ error: 'Semua field harus diisi' });
         }
@@ -100,7 +84,6 @@ app.post('/auth/register', async (req, res) => {
             return res.status(400).json({ error: 'Password minimal 6 karakter' });
         }
 
-        // Cek apakah email atau username sudah ada
         const checkUser = await pool.query(
             'SELECT * FROM users WHERE email = $1 OR username = $2',
             [email, username]
@@ -110,12 +93,10 @@ app.post('/auth/register', async (req, res) => {
             return res.status(400).json({ error: 'Email atau username sudah terdaftar' });
         }
 
-        // Hash password
         const salt = await bcrypt.genSalt(10);
         const password_hash = await bcrypt.hash(password, salt);
 
-        // Insert user baru
-        // Menambahkan last_password_change dan last_username_change untuk batasan 7 hari
+
         const result = await pool.query(
             `INSERT INTO users (username, email, password_hash, eco_level, is_admin, last_password_change, last_username_change) 
              VALUES ($1, $2, $3, 1, false, NOW(), NOW()) 
@@ -125,7 +106,6 @@ app.post('/auth/register', async (req, res) => {
 
         const newUser = result.rows[0];
 
-        // Berikan badge pertama (Eco Seed - Level 1)
         await pool.query(
             `INSERT INTO user_badges (user_id, badge_id) 
              VALUES ($1, (SELECT badge_id FROM badges WHERE required_level = 1))`,
@@ -148,18 +128,15 @@ app.post('/auth/register', async (req, res) => {
     }
 });
 
-// POST: Login user
 app.post('/auth/login', async (req, res) => {
     console.log('POST /auth/login hit!');
     const { email, password } = req.body;
 
     try {
-        // Validasi input
         if (!email || !password) {
             return res.status(400).json({ error: 'Email dan password harus diisi' });
         }
 
-        // Cari user berdasarkan email
         const result = await pool.query(
             'SELECT * FROM users WHERE email = $1',
             [email]
@@ -171,14 +148,12 @@ app.post('/auth/login', async (req, res) => {
 
         const user = result.rows[0];
 
-        // Verifikasi password
         const validPassword = await bcrypt.compare(password, user.password_hash);
 
         if (!validPassword) {
             return res.status(401).json({ error: 'Email atau password salah' });
         }
 
-        // Buat JWT token
         const token = jwt.sign(
             {
                 user_id: user.user_id,
@@ -208,11 +183,9 @@ app.post('/auth/login', async (req, res) => {
     }
 });
 
-// GET: Mengambil data user yang sedang login
 app.get('/auth/me', authenticateToken, async (req, res) => {
     console.log('GET /auth/me hit!');
     try {
-        // Ambil semua data termasuk timestamp perubahan
         const result = await pool.query(
             `SELECT user_id, username, email, eco_level, is_admin, created_at, last_password_change, last_username_change
              FROM users WHERE user_id = $1`,
@@ -223,7 +196,6 @@ app.get('/auth/me', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'User tidak ditemukan' });
         }
 
-        // Get user badges
         const badges = await pool.query(
             `SELECT b.badge_id, b.badge_name, b.description, b.required_level, ub.awarded_at
              FROM user_badges ub
@@ -250,8 +222,6 @@ app.get('/users/profile', authenticateToken, async (req, res) => {
 
     try {
         const result = await pool.query(
-            // Ambil semua kolom yang relevan dari tabel users
-            // JANGAN sertakan password!
             'SELECT user_id, username, email, is_admin, created_at, eco_level FROM users WHERE user_id = $1',
             [userId]
         );
@@ -273,7 +243,6 @@ app.get('/users/profile', authenticateToken, async (req, res) => {
 app.put('/users/profile', authenticateToken, async (req, res) => {
     console.log(`PUT /users/profile hit! User ID: ${req.user.user_id}`);
     const userId = req.user.user_id;
-    // Hanya izinkan update untuk username dan email
     const { username, email } = req.body; 
 
     if (!username || !email) {
@@ -281,7 +250,6 @@ app.put('/users/profile', authenticateToken, async (req, res) => {
     }
 
     try {
-        // Cek apakah email sudah digunakan oleh pengguna lain
         const emailCheck = await pool.query(
             'SELECT user_id FROM users WHERE email = $1 AND user_id != $2',
             [email, userId]
@@ -291,7 +259,6 @@ app.put('/users/profile', authenticateToken, async (req, res) => {
             return res.status(409).json({ error: 'Email ini sudah digunakan oleh pengguna lain.' });
         }
 
-        // Lakukan update
         const updateResult = await pool.query(
             'UPDATE users SET username = $1, email = $2 WHERE user_id = $3 RETURNING user_id, username, email, is_admin, created_at, eco_level',
             [username, email, userId]
@@ -310,11 +277,6 @@ app.put('/users/profile', authenticateToken, async (req, res) => {
     }
 });
 
-// ============================================
-// NEW: PROFILE UPDATE ROUTES
-// ============================================
-
-// PATCH: Update Password (Max 1x per 7 hari)
 app.patch('/auth/profile/password', authenticateToken, async (req, res) => {
     console.log('PATCH /auth/profile/password hit!');
     const { currentPassword, newPassword } = req.body;
@@ -325,7 +287,6 @@ app.patch('/auth/profile/password', authenticateToken, async (req, res) => {
             return res.status(400).json({ error: 'Password saat ini dan password baru minimal 6 karakter harus diisi' });
         }
 
-        // 1. Ambil data user dan last_password_change
         const userResult = await pool.query(
             'SELECT password_hash, last_password_change FROM users WHERE user_id = $1',
             [userId]
@@ -337,16 +298,14 @@ app.patch('/auth/profile/password', authenticateToken, async (req, res) => {
 
         const user = userResult.rows[0];
 
-        // 2. Verifikasi password saat ini
         const validPassword = await bcrypt.compare(currentPassword, user.password_hash);
         if (!validPassword) {
             return res.status(401).json({ error: 'Password saat ini salah' });
         }
 
-        // 3. Cek batasan waktu (7 hari / 604800000 ms)
         const lastChange = new Date(user.last_password_change).getTime();
         const currentTime = Date.now();
-        const oneWeek = 7 * 24 * 60 * 60 * 1000; // 604800000 ms
+        const oneWeek = 7 * 24 * 60 * 60 * 1000;
 
         if (currentTime - lastChange < oneWeek) {
             const timeRemaining = oneWeek - (currentTime - lastChange);
@@ -357,11 +316,9 @@ app.patch('/auth/profile/password', authenticateToken, async (req, res) => {
             });
         }
 
-        // 4. Hash password baru
         const salt = await bcrypt.genSalt(10);
         const newPasswordHash = await bcrypt.hash(newPassword, salt);
 
-        // 5. Update password dan timestamp
         await pool.query(
             `UPDATE users SET password_hash = $1, last_password_change = NOW() WHERE user_id = $2`,
             [newPasswordHash, userId]
@@ -375,7 +332,6 @@ app.patch('/auth/profile/password', authenticateToken, async (req, res) => {
     }
 });
 
-// PATCH: Update Username (Max 1x per 7 hari)
 app.patch('/auth/profile/username', authenticateToken, async (req, res) => {
     console.log('PATCH /auth/profile/username hit!');
     const { newUsername } = req.body;
@@ -386,7 +342,6 @@ app.patch('/auth/profile/username', authenticateToken, async (req, res) => {
             return res.status(400).json({ error: 'Username baru minimal 3 karakter harus diisi' });
         }
         
-        // 1. Ambil data user dan last_username_change
         const userResult = await pool.query(
             'SELECT username, last_username_change FROM users WHERE user_id = $1',
             [userId]
@@ -398,16 +353,13 @@ app.patch('/auth/profile/username', authenticateToken, async (req, res) => {
 
         const user = userResult.rows[0];
 
-        // Cek apakah username sama
         if (user.username === newUsername) {
             return res.status(400).json({ error: 'Username baru sama dengan username saat ini' });
         }
 
-        // 2. Cek batasan waktu (7 hari / 604800000 ms)
         const lastChange = new Date(user.last_username_change).getTime();
         const currentTime = Date.now();
-        const oneWeek = 7 * 24 * 60 * 60 * 1000; // 604800000 ms
-
+        const oneWeek = 7 * 24 * 60 * 60 * 1000; 
         if (currentTime - lastChange < oneWeek) {
             const timeRemaining = oneWeek - (currentTime - lastChange);
             const remainingHours = Math.ceil(timeRemaining / (1000 * 60 * 60));
@@ -417,7 +369,6 @@ app.patch('/auth/profile/username', authenticateToken, async (req, res) => {
             });
         }
         
-        // 3. Cek apakah username baru sudah digunakan
         const checkUsername = await pool.query(
             'SELECT user_id FROM users WHERE username = $1',
             [newUsername]
@@ -427,15 +378,11 @@ app.patch('/auth/profile/username', authenticateToken, async (req, res) => {
             return res.status(400).json({ error: 'Username ini sudah digunakan oleh pengguna lain' });
         }
 
-        // 4. Update username dan timestamp
         await pool.query(
             `UPDATE users SET username = $1, last_username_change = NOW() WHERE user_id = $2`,
             [newUsername, userId]
         );
-        
-        // Catatan: Token JWT tidak perlu di-refresh segera karena token tetap valid.
-        // Data di client akan di-refresh setelah update berhasil.
-        
+       
         res.json({ message: 'Username berhasil diperbarui.', newUsername });
 
     } catch (err) {
@@ -445,11 +392,6 @@ app.patch('/auth/profile/username', authenticateToken, async (req, res) => {
 });
 
 
-// ============================================
-// EVENTS ROUTES
-// ============================================
-
-// GET: Mengambil semua events
 app.get('/events', async (req, res) => {
     console.log('GET /events hit!');
     try {
@@ -469,7 +411,6 @@ app.get('/events', async (req, res) => {
             query += ` WHERE e.status = $1`;
             params.push(status);
         } else {
-            // Public hanya lihat event yang sudah di-approve
             query += ` WHERE e.status = 'ACCEPTED'`;
         }
 
@@ -486,7 +427,6 @@ app.get('/events', async (req, res) => {
     }
 });
 
-// POST: Membuat event baru
 app.post('/events', authenticateToken, async (req, res) => {
     console.log('POST /events hit!');
     const { title, description, event_date, location } = req.body;
@@ -513,20 +453,17 @@ app.post('/events', authenticateToken, async (req, res) => {
     }
 });
 
-// POST: Upvote/Unupvote event
 app.post('/events/:eventId/upvote', authenticateToken, async (req, res) => {
     console.log(`POST /events/${req.params.eventId}/upvote hit!`);
     const { eventId } = req.params;
 
     try {
-        // Cek apakah sudah upvote
         const check = await pool.query(
             'SELECT * FROM event_upvotes WHERE event_id = $1 AND user_id = $2',
             [eventId, req.user.user_id]
         );
 
         if (check.rows.length > 0) {
-            // Hapus upvote
             await pool.query(
                 'DELETE FROM event_upvotes WHERE event_id = $1 AND user_id = $2',
                 [eventId, req.user.user_id]
@@ -534,7 +471,6 @@ app.post('/events/:eventId/upvote', authenticateToken, async (req, res) => {
             return res.json({ message: 'Upvote dihapus', upvoted: false });
         }
 
-        // Tambah upvote
         await pool.query(
             'INSERT INTO event_upvotes (event_id, user_id) VALUES ($1, $2)',
             [eventId, req.user.user_id]
@@ -549,7 +485,6 @@ app.post('/events/:eventId/upvote', authenticateToken, async (req, res) => {
 
 
 
-// GET: Mengambil semua posts
 app.get('/posts', async (req, res) => {
     console.log('GET /posts hit!');
     try {
@@ -568,12 +503,10 @@ app.get('/posts', async (req, res) => {
         const params = [];
         
         if (status) {
-            // Admin bisa filter, tapi default untuk public adalah SEMUA
             query += ` WHERE p.status = $1`;
             params.push(status);
         } else {
-            // Tidak ada filter status default (semua post terlihat)
-            // Kecuali admin ingin melihat yang pending, dia bisa menggunakan query param ?status=PENDING
+           
         }
 
         query += `
@@ -583,14 +516,13 @@ app.get('/posts', async (req, res) => {
 
         const result = await pool.query(query, params);
         
-        // ✨ FIX 1: Konversi like_count dan comment_count ke number (integer)
         const posts = result.rows.map(post => ({
             ...post,
             like_count: parseInt(post.like_count, 10) || 0,
             comment_count: parseInt(post.comment_count, 10) || 0,
         }));
         
-        res.json(posts); // Mengirim data yang sudah dikonversi
+        res.json(posts); 
 
     } catch (err) {
         console.error('Error fetching posts:', err);
@@ -600,7 +532,6 @@ app.get('/posts', async (req, res) => {
 
 
 
-// POST: Membuat post baru (Tidak ada lagi 'PENDING' status)
 app.post('/posts', authenticateToken, async (req, res) => {
     console.log('POST /posts hit!');
     const { content, image_url } = req.body;
@@ -619,16 +550,14 @@ app.post('/posts', authenticateToken, async (req, res) => {
         
         const newPost = result.rows[0];
 
-        // ✨ FIX 2: Buat objek Post yang lengkap dengan data dari token (req.user)
         const completePost = {
             ...newPost,
-            username: req.user.username, // Ambil dari token
-            eco_level: req.user.eco_level, // Ambil dari token
-            like_count: 0, // Inisialisasi
-            comment_count: 0, // Inisialisasi
+            username: req.user.username, 
+            eco_level: req.user.eco_level, 
+            like_count: 0, 
+            comment_count: 0, 
         };
 
-        // Mengirim objek Post lengkap secara langsung, tidak dibungkus
         res.status(201).json(completePost);
         
     } catch (err) {
@@ -637,20 +566,17 @@ app.post('/posts', authenticateToken, async (req, res) => {
     }
 });
 
-// POST: Like/Unlike post
 app.post('/posts/:postId/like', authenticateToken, async (req, res) => {
     console.log(`POST /posts/${req.params.postId}/like hit!`);
     const { postId } = req.params;
 
     try {
-        // Cek apakah sudah like
         const check = await pool.query(
             'SELECT * FROM post_likes WHERE post_id = $1 AND user_id = $2',
             [postId, req.user.user_id]
         );
 
         if (check.rows.length > 0) {
-            // Unlike
             await pool.query(
                 'DELETE FROM post_likes WHERE post_id = $1 AND user_id = $2',
                 [postId, req.user.user_id]
@@ -658,7 +584,6 @@ app.post('/posts/:postId/like', authenticateToken, async (req, res) => {
             return res.json({ message: 'Like dihapus', liked: false });
         }
 
-        // Like
         await pool.query(
             'INSERT INTO post_likes (post_id, user_id) VALUES ($1, $2)',
             [postId, req.user.user_id]
@@ -674,13 +599,11 @@ app.post('/posts/:postId/like', authenticateToken, async (req, res) => {
 app.get('/user/liked-posts', authenticateToken, async (req, res) => {
     console.log('GET /user/liked-posts hit!');
     try {
-        // Query untuk mengambil semua post_id yang di-like oleh user saat ini (req.user.user_id)
         const result = await pool.query(
             'SELECT post_id FROM post_likes WHERE user_id = $1',
             [req.user.user_id]
         );
         
-        // Mengembalikan array dari post_id (inilah yang dibutuhkan frontend)
         const likedPostIds = result.rows.map(row => row.post_id);
         res.json(likedPostIds);
         
@@ -690,7 +613,6 @@ app.get('/user/liked-posts', authenticateToken, async (req, res) => {
     }
 });
 
-// GET: Mengambil komentar dari post tertentu
 app.get('/posts/:postId/comments', async (req, res) => {
     console.log(`GET /posts/${req.params.postId}/comments hit!`);
     const { postId } = req.params;
@@ -714,7 +636,6 @@ app.get('/posts/:postId/comments', async (req, res) => {
 
 
 
-// POST: Menambahkan komentar ke post
 app.post('/posts/:postId/comments', authenticateToken, async (req, res) => {
     console.log(`POST /posts/${req.params.postId}/comments hit!`);
     const { postId } = req.params;
@@ -732,11 +653,10 @@ app.post('/posts/:postId/comments', authenticateToken, async (req, res) => {
             [postId, req.user.user_id, content]
         );
 
-        // ✨ FIX 3: Hapus kueri database kedua, gunakan data dari token (req.user)
         const newComment = {
             ...result.rows[0],
-            username: req.user.username, // Ambil dari token
-            eco_level: req.user.eco_level // Ambil dari token
+            username: req.user.username, 
+            eco_level: req.user.eco_level 
         };
 
         res.status(201).json(newComment);
@@ -747,16 +667,11 @@ app.post('/posts/:postId/comments', authenticateToken, async (req, res) => {
     }
 });
 
-// ============================================
-// ADMIN ROUTES
-// ============================================
-
-// PATCH: Moderasi event (Accept/Reject)
 
 app.patch('/admin/events/:eventId/moderate', authenticateToken, adminOnly, async (req, res) => {
     console.log(`PATCH /admin/events/${req.params.eventId}/moderate hit!`);
     const { eventId } = req.params;
-    const { status } = req.body; // Diharapkan 'ACCEPTED' atau 'REJECTED'
+    const { status } = req.body;
 
     if (!['ACCEPTED', 'REJECTED'].includes(status)) {
         return res.status(400).json({ error: 'Status tidak valid' });
@@ -801,7 +716,6 @@ app.get('/admin/events', authenticateToken, adminOnly, async (req, res) => {
     }
 });
 
-// PATCH: Moderasi post (Accept/Reject)
 app.get('/admin/posts', authenticateToken, adminOnly, async (req, res) => {
     console.log('GET /admin/posts hit!');
     try {
@@ -823,14 +737,12 @@ app.get('/admin/posts', authenticateToken, adminOnly, async (req, res) => {
     }
 });
 
-// POST: Memberikan badge ke user
 app.post('/admin/users/:userId/badge', authenticateToken, adminOnly, async (req, res) => {
     console.log(`POST /admin/users/${req.params.userId}/badge hit!`);
     const { userId } = req.params;
     const { badge_id } = req.body;
 
     try {
-        // Cek apakah user sudah punya badge ini
         const check = await pool.query(
             'SELECT * FROM user_badges WHERE user_id = $1 AND badge_id = $2',
             [userId, badge_id]
@@ -840,13 +752,11 @@ app.post('/admin/users/:userId/badge', authenticateToken, adminOnly, async (req,
             return res.status(400).json({ error: 'User sudah memiliki badge ini' });
         }
 
-        // Berikan badge
         await pool.query(
             'INSERT INTO user_badges (user_id, badge_id) VALUES ($1, $2)',
             [userId, badge_id]
         );
 
-        // Update user eco_level berdasarkan badge
         const badge = await pool.query(
             'SELECT required_level FROM badges WHERE badge_id = $1',
             [badge_id]
@@ -864,7 +774,6 @@ app.post('/admin/users/:userId/badge', authenticateToken, adminOnly, async (req,
     }
 });
 
-// GET: Mengambil semua users (untuk admin)
 app.get('/admin/users', authenticateToken, adminOnly, async (req, res) => {
     console.log('GET /admin/users hit!');
     try {
@@ -886,7 +795,6 @@ app.get('/admin/users', authenticateToken, adminOnly, async (req, res) => {
     }
 });
 
-// GET: Mengambil semua badges available
 app.get('/badges', async (req, res) => {
     console.log('GET /badges hit!');
     try {
@@ -942,22 +850,18 @@ app.delete('/admin/posts/:postId', authenticateToken, adminOnly, async (req, res
     }
 });
 
-// Middleware penanganan 404
 app.use((req, res, next) => {
     console.warn(`404 Not Found: ${req.method} ${req.url}`);
     res.status(404).json({ error: '404: Route not found' });
 });
 
-// Middleware penanganan error umum
 app.use((err, req, res, next) => {
     console.error('Unhandled backend error:', err);
     res.status(500).json({ error: '500: Internal Server Error' });
 });
 
-// Export aplikasi Express untuk Vercel
 export default app;
 
-// Jalankan server hanya jika file ini dieksekusi langsung
 if (import.meta.url === (await import('url')).pathToFileURL(process.argv[1]).href) {
     const port = process.env.PORT || 5000;
     app.listen(port, () => {
