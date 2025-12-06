@@ -147,39 +147,43 @@ const impactStats = [
 const processSteps = [
   {
     id: 1,
-    title: 'Gabung Gerakan',
-    desc: 'Buat akun AksiHijau dan mulai login untuk mengikuti acara komunitas.',
+    title: 'Gabung Komunitas',
+    desc: 'Buat akun AksiHijau untuk mengakses fitur eksklusif, bergabung dengan event, dan terhubung dengan relawan lain.',
+    // Mengacu pada fitur Login/Register di Login.tsx
     image:
       'https://media.istockphoto.com/id/2151209290/id/foto/ilustrasi-3d-pria-pria-qadir-online-konsep-medis-seluler-aplikasi-untuk-perawatan-kesehatan.webp?a=1&b=1&s=612x612&w=0&k=20&c=rQfCWIKZgpKb2_2wwSVDEx8i5z6sNc6eZ08zHJmGOzA=',
     color: 'bg-blue-100',
   },
   {
     id: 2,
-    title: 'Pilih Tantangan',
-    desc: 'Telusuri berbagai tantangan harian, mulai dari hemat energi hingga olah sampah.',
-    image: 'https://i.pinimg.com/736x/24/66/6b/24666b39c23712cb7b9d42c51703b808.jpg',
+    title: 'Gunakan Fitur AI',
+    desc: 'Manfaatkan EcoScan untuk mendeteksi jenis sampah atau konsultasi masalah lingkungan dengan EcoBot cerdas.',
+    // Mengacu pada EcoBot.tsx dan fitur EcoScan di Home.tsx
+    image: './img/Robot.png',
     color: 'bg-orange-100',
   },
   {
     id: 3,
-    title: 'Lakukan Aksi',
-    desc: 'Jalankan misi di dunia nyata. Tanam pohon, pilah sampah, atau gunakan tumbler.',
-    image:
-      'https://media.istockphoto.com/id/1329055727/id/foto/seorang-pria-memegang-pohon-untuk-ditanam-di-tanah-ilustrasi.webp?a=1&b=1&s=612x612&w=0&k=20&c=lj9qglZNapiHHUp7zKS88XIjmojeyuW2azfewJ1W3eI=',
-    color: 'bg-purple-100',
-  },
-  {
-    id: 4,
-    title: 'Verifikasi',
-    desc: 'Unggah bukti aksimu. Sistem kami dan komunitas akan memverifikasi kontribusimu.',
-    image:
-      'https://media.istockphoto.com/id/819929090/id/foto/konsep-tanda-centang-3d.webp?a=1&b=1&s=612x612&w=0&k=20&c=SF8G2TiebZCX_0xxCUBCOhBthUksMsYShK_IGXpJmXk=',
+    title: 'Pantau Lingkungan',
+    desc: 'Cek kualitas udara (AQI) dan cuaca real-time di sekitarmu untuk mengantisipasi dampak polusi.',
+    // Mengacu pada fitur di AirQuality.tsx
+    image:'./img/PantauLingkungan.jpg',
     color: 'bg-cyan-100',
   },
   {
+    id: 4,
+    title: 'Ikuti Event Nyata',
+    desc: 'Temukan dan hadiri kegiatan positif seperti penanaman pohon atau clean-up day di lokasi terdekat.',
+    // Mengacu pada fitur di CommunityEvents.tsx
+    image:
+      './img/KegiatanPositif.jpg',
+    color: 'bg-purple-100',
+  },
+  {
     id: 5,
-    title: 'Raih Apresiasi',
-    desc: 'Dapatkan poin, lencana hijau, dan naikkan peringkatmu di Leaderboard Komunitas.',
+    title: 'Raih Level & Badge',
+    desc: 'Dapatkan poin dari setiap partisipasi, naikkan Eco Level-mu, dan koleksi Badge penghargaan eksklusif.',
+    // Mengacu pada sistem gamifikasi (Eco Level & Badge) di dashboardAdmin.tsx
     image:
       'https://plus.unsplash.com/premium_photo-1718560021014-b2464cd8021d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8TGF5YXIlMjBwb25zZWwlMjBtZW5hbXBpbGthbiUyMHVjYXBhbiUyMHNlbGFtYXQlMjBkYW4lMjBwb2luJTIweWFuZyUyMGRpZGFwYXQufGVufDB8fDB8fHww',
     color: 'bg-emerald-100',
@@ -196,7 +200,7 @@ const About = () => {
     datasets: [
       {
         label: 'Total Sampah (Juta Ton)',
-        data: [27.6, 27.5, 28.5, 38.5, 43.2, 34.0],
+        data: [27.6, 28.1, 29.0, 38.8, 38.6, 33.8],
         borderColor: '#10B981',
         backgroundColor: (context: any) => {
           const { ctx, chartArea } = context.chart;
@@ -767,7 +771,7 @@ const About = () => {
                   </div>
 
                   <div className="text-center">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 transition-colors">
                       {step.title}
                     </h3>
                     <p className="text-gray-500 text-sm leading-relaxed">
@@ -809,7 +813,7 @@ const About = () => {
             </div>
           </div>
 
-          <div className="mb-8 p-4 bg-cyan-100 rounded-lg shadow-sm">
+          <div className="mb-8 p-4 rounded-lg shadow-sm">
             <p className="text-lg text-gray-700">
               Berikut adalah visualisasi data timbulan sampah nasional di
               Indonesia berdasarkan laporan kabupaten/kota.

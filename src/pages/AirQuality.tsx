@@ -8,7 +8,9 @@ import L from "leaflet";
 import { 
   CloudSun, Droplets, Wind, Thermometer, Sun, CloudRain, Navigation, Eye, MapPin, 
   BookOpen, AlertTriangle, HeartPulse, Zap, Leaf, ShieldCheck, Sparkles,
-  Loader2, LocateFixed, Circle, CheckCircle, Skull, Info, ArrowRight
+  Loader2, LocateFixed, Circle, CheckCircle, Skull, Info, ArrowRight,
+  // Icon tambahan untuk fitur baru
+  Bus, Factory, Trash2, ChevronUp
 } from 'lucide-react';
 
 // ==========================================
@@ -73,13 +75,13 @@ const airQualityMap = {
 
 // Fungsi untuk mendapatkan icon cuaca yang sesuai
 const getWeatherIcon = (iconCode) => {
-    const code = iconCode?.toString().slice(0, 2); // Ambil hanya dua digit pertama
+    const code = iconCode?.toString().slice(0, 2); 
     if (code === '01') return Sun; 
     if (code === '02' || code === '03' || code === '04') return CloudSun; 
     if (code === '09' || code === '10') return CloudRain; 
     if (code === '11') return Zap; 
-    if (code === '13') return Droplets; // Untuk snow
-    if (code === '50') return Eye; // Untuk mist/kabut
+    if (code === '13') return Droplets; 
+    if (code === '50') return Eye; 
     return CloudSun;
 };
 
@@ -102,10 +104,10 @@ const translateWeatherDescription = (desc) => {
 };
 
 // ==========================================
-// 1. WEATHER DASHBOARD COMPONENT (REAL-TIME + DYNAMIC FORECAST)
+// 1. WEATHER DASHBOARD COMPONENT
 // ==========================================
 
-const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoading: boolean }> = ({ weatherData, locationName, isLoading }) => {
+const WeatherDashboard = ({ weatherData, locationName, isLoading }) => {
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -116,7 +118,6 @@ const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoa
   const formattedTime = time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
   const formattedDate = time.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
-  // Data real-time (Suhu sudah dalam Celsius dari API)
   const mainTemp = weatherData?.main?.temp ? Math.round(weatherData.main.temp) : 30;
   const feelsLike = weatherData?.main?.feels_like ? Math.round(weatherData.main.feels_like) : 30;
   const description = weatherData?.weather?.[0]?.description || 'Cerah Berawan';
@@ -126,35 +127,30 @@ const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoa
   const iconCode = weatherData?.weather?.[0]?.icon || '04d';
   const WeatherIcon = getWeatherIcon(iconCode);
   
-  // Data tetap/wajar untuk tampilan
   const uvIndex = 8;
   const isHighUV = uvIndex > 7;
   const windDirection = 'Tenggara';
   const weatherDescriptionID = translateWeatherDescription(description);
 
-  // --- LOGIKA UNTUK PRAKIRAAN 4 HARI ---
-  
   const dailyForecasts = useMemo(() => {
     const today = new Date();
-    
-    // Logika Prediksi Sederhana berdasarkan Hari Ini
     const getForecastVariation = (currentTemp, index) => {
-        const offset = index % 4; // 1, 2, 3, 0
+        const offset = index % 4; 
         let tempChange = 0;
         let condition = { label: 'Berawan', icon: CloudSun, color: 'bg-slate-100 text-slate-600' };
 
-        if (offset === 1) { // Besok
+        if (offset === 1) { 
             tempChange = -1; 
             condition = { label: 'Hujan Ringan', icon: CloudRain, color: 'bg-blue-100 text-blue-600' };
-        } else if (offset === 2) { // Lusa
+        } else if (offset === 2) { 
             tempChange = 1;
             condition = { label: 'Cerah Berawan', icon: CloudSun, color: 'bg-yellow-100 text-yellow-600' };
-        } else if (offset === 3) { // Hari ke-3
+        } else if (offset === 3) { 
             tempChange = 2;
             condition = { label: 'Cerah Penuh', icon: Sun, color: 'bg-orange-100 text-orange-600' };
         }
 
-        const newTemp = Math.max(28, Math.min(34, currentTemp + tempChange)); // Batasi suhu
+        const newTemp = Math.max(28, Math.min(34, currentTemp + tempChange)); 
         return { temp: `${newTemp}°`, ...condition };
     };
 
@@ -170,7 +166,7 @@ const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoa
         });
     }
     return forecasts;
-  }, [mainTemp]); // Recalculate if the main temperature changes
+  }, [mainTemp]);
 
   const blobVariants = {
     animate: {
@@ -180,11 +176,8 @@ const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoa
     }
   };
 
-  
-
   return (
     <section className="py-10 px-4 w-full max-w-7xl mx-auto font-sans">
-       {/* Header Section */}
        <div className="flex flex-col md:flex-row justify-between items-end mb-10 ml-2">
          <div>
            <h2 className="text-4xl font-extrabold text-slate-800 tracking-tight">
@@ -193,7 +186,6 @@ const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoa
            <p className="text-slate-500 mt-2 text-lg">Pantauan cuaca dan atmosfer kawasan industri.</p>
          </div>
          
-         {/* Live Indicator */}
          <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100 mt-4 md:mt-0">
            {isLoading ? (
                <Loader2 className="w-4 h-4 animate-spin text-amber-500" />
@@ -208,22 +200,17 @@ const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoa
        </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        {/* === LEFT: MAIN WEATHER CARD (Span 7 columns) === */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="lg:col-span-7 relative overflow-hidden rounded-[3rem] text-white shadow-2xl shadow-blue-200/50 min-h-[400px] flex flex-col justify-between p-10 group"
         >
-          {/* Dynamic Animated Background */}
           <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-500 to-cyan-500 z-0"></div>
           <motion.div variants={blobVariants} animate="animate" className="absolute top-[-20%] right-[-20%] w-96 h-96 bg-cyan-300 rounded-full blur-[100px] mix-blend-overlay"></motion.div>
           <motion.div variants={blobVariants} animate="animate" transition={{ delay: 2 }} className="absolute bottom-[-20%] left-[-20%] w-80 h-80 bg-blue-400 rounded-full blur-[80px] mix-blend-overlay"></motion.div>
-          
           <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] z-0"></div>
 
-          {/* Content Top */}
           <div className="relative z-10 flex justify-between items-start">
             <div className="bg-white/20 backdrop-blur-md border border-white/30 px-5 py-2 rounded-full flex items-center gap-2 transition-transform group-hover:scale-105">
               <MapPin className="w-4 h-4 text-white" />
@@ -235,7 +222,6 @@ const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoa
             </div>
           </div>
 
-          {/* Content Center/Bottom */}
           <div className="relative z-10 flex flex-col md:flex-row items-end md:items-center justify-between mt-8">
             <div>
               <div className="flex items-start">
@@ -256,11 +242,8 @@ const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoa
           </div>
         </motion.div>
 
-
-        {/* === RIGHT: GRID DETAILS (Span 5 columns) === */}
         <div className="lg:col-span-5 grid grid-cols-2 gap-4">
             
-            {/* Kelembaban Card */}
             <motion.div 
               whileHover={{ y: -5 }}
               className="bg-white rounded-[2.5rem] p-6 shadow-lg shadow-slate-100 border border-slate-100 flex flex-col justify-between"
@@ -279,7 +262,6 @@ const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoa
                </div>
             </motion.div>
 
-            {/* Angin Card */}
             <motion.div 
               whileHover={{ y: -5 }}
               className="bg-slate-900 text-white rounded-[2.5rem] p-6 shadow-lg flex flex-col justify-between relative overflow-hidden"
@@ -300,7 +282,6 @@ const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoa
                </div>
             </motion.div>
 
-            {/* UV Index Card (Data Tetap/Wajar) */}
             <motion.div 
               whileHover={{ y: -5 }}
               className="bg-white rounded-[2.5rem] p-6 shadow-lg shadow-slate-100 border border-slate-100 flex flex-col justify-between"
@@ -322,7 +303,6 @@ const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoa
                </div>
             </motion.div>
 
-            {/* Visibility Card */}
             <motion.div 
               whileHover={{ y: -5 }}
               className="bg-white rounded-[2.5rem] p-6 shadow-lg shadow-slate-100 border border-slate-100 flex flex-col justify-between"
@@ -342,7 +322,6 @@ const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoa
         </div>
       </div>
 
-      {/* === BOTTOM: INFORMASI FORECAST (Dynamic) === */}
       <div className="mt-8 bg-slate-50 p-4 rounded-xl border border-slate-100">
         <h3 className="text-lg font-bold text-slate-700 mb-4 flex items-center">
             <CloudSun className="w-5 h-5 mr-2 text-cyan-500" /> Prakiraan 4 Hari Mendatang
@@ -374,9 +353,125 @@ const WeatherDashboard: React.FC<{ weatherData: any, locationName: string, isLoa
 
 
 // ==========================================
-// 2. AIR QUALITY BANNER (NEW COMPONENT - SEPERTI GAMBAR)
+// 2. KOMPONEN DETAIL DAMPAK (BARU - SESUAI GAMBAR)
 // ==========================================
-const AirQualityBanner: React.FC = () => {
+const ImpactDetails = ({ onClose }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+      className="overflow-hidden"
+    >
+      {/* Tombol Tutup di atas card */}
+     
+      <div className="bg-white border-2 border-cyan-100 rounded-[2.5rem] p-8 md:p-10 shadow-xl mb-12 relative overflow-hidden mx-1">
+        <h3 className="text-2xl font-bold text-[#0e4a6b] mb-8">
+          Dampak Mendalam Polusi Udara
+        </h3>
+
+        {/* Grid: Sumber & Efek */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+          
+          {/* Kolom Kiri: Sumber Polusi */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <AlertTriangle className="w-5 h-5 text-red-500" />
+              <h4 className="font-bold text-slate-800">Sumber Polusi</h4>
+            </div>
+            <ul className="space-y-4 text-slate-600 text-sm md:text-base">
+              {[
+                { text: "Emisi kendaraan bermotor (40% kontribusi)", icon: Bus },
+                { text: "Pembangkit listrik berbahan bakar fosil", icon: Zap },
+                { text: "Industri manufaktur dan konstruksi", icon: Factory },
+                { text: "Pembakaran sampah dan pertanian", icon: Trash2 }
+              ].map((item, idx) => (
+                <li key={idx} className="flex items-start gap-3">
+                  <div className="w-2 h-2 rounded-full border border-cyan-400 mt-2 shrink-0 bg-transparent" />
+                  <span>{item.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Kolom Kanan: Efek Kesehatan */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <HeartPulse className="w-5 h-5 text-orange-500" />
+              <h4 className="font-bold text-slate-800">Efek Kesehatan</h4>
+            </div>
+            <ul className="space-y-4 text-slate-600 text-sm md:text-base">
+              {[
+                "Penyakit pernapasan kronis (PPOK, asma)",
+                "Peningkatan risiko stroke dan penyakit jantung",
+                "Gangguan perkembangan kognitif pada anak",
+                "Komplikasi kehamilan dan kelahiran prematur"
+              ].map((text, idx) => (
+                <li key={idx} className="flex items-start gap-3">
+                   <div className="w-2 h-2 rounded-full border border-cyan-400 mt-2 shrink-0 bg-transparent" />
+                  <span>{text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* Section Bawah: Solusi Nyata */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="w-5 h-5 text-cyan-500" />
+            <h4 className="font-bold text-slate-800">Solusi Nyata</h4>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Card 1: Transportasi */}
+            <div className="bg-cyan-50/50 p-6 rounded-2xl border border-cyan-100 hover:bg-cyan-50 transition-colors">
+              <div className="mb-4 bg-white w-fit p-2 rounded-lg shadow-sm">
+                 <Bus className="w-6 h-6 text-blue-600" />
+              </div>
+              <h5 className="font-bold text-blue-700 mb-2">Transportasi</h5>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                Gunakan transportasi umum, kendaraan listrik, atau bersepeda
+              </p>
+            </div>
+
+            {/* Card 2: Energi */}
+            <div className="bg-cyan-50/50 p-6 rounded-2xl border border-cyan-100 hover:bg-cyan-50 transition-colors">
+              <div className="mb-4 bg-white w-fit p-2 rounded-lg shadow-sm">
+                 <Zap className="w-6 h-6 text-orange-500" />
+              </div>
+              <h5 className="font-bold text-[#0e4a6b] mb-2">Energi</h5>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                Beralih ke energi terbarukan dan efisiensi energi
+              </p>
+            </div>
+
+            {/* Card 3: Penghijauan */}
+            <div className="bg-cyan-50/50 p-6 rounded-2xl border border-cyan-100 hover:bg-cyan-50 transition-colors">
+              <div className="mb-4 bg-white w-fit p-2 rounded-lg shadow-sm">
+                 <Leaf className="w-6 h-6 text-emerald-600" />
+              </div>
+              <h5 className="font-bold text-[#0e4a6b] mb-2">Penghijauan</h5>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                Tanam pohon dan pertahankan ruang terbuka hijau
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+
+// ==========================================
+// 3. AIR QUALITY BANNER (DENGAN INTERAKSI)
+// ==========================================
+const AirQualityBanner = () => {
+    // State untuk mengatur visibilitas detail
+    const [showDetail, setShowDetail] = useState(false);
+
     return (
         <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -384,17 +479,17 @@ const AirQualityBanner: React.FC = () => {
             viewport={{ once: true }}
             className="w-full max-w-7xl mx-auto mt-12 mb-8"
         >
-            <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl border border-slate-100 flex flex-col md:flex-row gap-10 items-center overflow-hidden">
+            <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl border border-slate-100 flex flex-col md:flex-row gap-10 items-center overflow-hidden mb-8">
                 {/* Bagian Gambar (Kiri) */}
                 <div className="w-full md:w-1/2 relative group">
-                    <div className="absolute inset-0 bg-blue-500 rounded-3xl rotate-2 opacity-10 group-hover:rotate-6 transition-transform"></div>
+                    <div className="absolute inset-0  opacity-10 group-hover:rotate-6 transition-transform"></div>
                     <img 
-                        src="https://images.unsplash.com/photo-1534088568595-a066f410bcda?q=80&w=1000&auto=format&fit=crop" 
+                        src="./img/Polusi-Udara-Industri.jpg" 
                         alt="Udara Bersih" 
                         className="relative z-10 rounded-3xl shadow-lg w-full h-[320px] object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                     />
                     
-                    {/* Floating Badge (seperti di gambar user) */}
+                    {/* Floating Badge */}
                     <div className="absolute z-20 -bottom-6 -right-4 md:-right-6 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce-slow border border-slate-100">
                         <div className="bg-orange-50 p-3 rounded-xl">
                             <Wind className="w-6 h-6 text-orange-500" />
@@ -436,22 +531,31 @@ const AirQualityBanner: React.FC = () => {
                         </div>
                     </div>
 
-                    <button className="bg-[#0e4a6b] text-white px-8 py-4 rounded-full font-bold text-sm md:text-base flex items-center gap-2 hover:bg-slate-800 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-cyan-900/20 group">
+                    {/* Tombol dengan OnClick Event */}
+                    <button 
+                        onClick={() => setShowDetail(!showDetail)}
+                        className="bg-[#0e4a6b] text-white px-8 py-4 rounded-full font-bold text-sm md:text-base flex items-center gap-2 hover:bg-slate-800 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-cyan-900/20 group"
+                    >
                         <BookOpen className="w-5 h-5" /> 
-                        Pelajari Dampaknya
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        {showDetail ? 'Tutup Penjelasan' : 'Pelajari Dampaknya'}
+                        <ArrowRight className={`w-4 h-4 transition-transform duration-300 ${showDetail ? 'rotate-90' : 'group-hover:translate-x-1'}`} />
                     </button>
                 </div>
             </div>
+
+            {/* Render Komponen Detail dengan Animasi */}
+            <AnimatePresence>
+                {showDetail && <ImpactDetails onClose={() => setShowDetail(false)} />}
+            </AnimatePresence>
         </motion.div>
     );
 }
 
 
 // ==========================================
-// 3. AIR QUALITY COMPONENT (MAIN LOGIC & API)
+// 4. AIR QUALITY COMPONENT (MAIN LOGIC & API)
 // ==========================================
-const AirQuality: React.FC = () => {
+const AirQuality = () => {
     // Kunci API sudah terpasang
     const OPENWEATHER_API_KEY = "f2c01965f5cc81db1486d398e1cdcf81";
     
@@ -466,7 +570,6 @@ const AirQuality: React.FC = () => {
     const [error, setError] = useState(null);
 
     const handleLocationSearchResult = (newLocation) => {
-        // Ketika lokasi baru dicari di peta, segera update state dan fetch data
         setLocation(newLocation);
         fetchEnvironmentalData(newLocation); 
         if (mapRef.current) {
@@ -480,7 +583,6 @@ const AirQuality: React.FC = () => {
         setPollutionData(null);
         setWeatherData(null);
         
-        // Cek jika API Key valid (Anda sudah memasangnya)
         if (!OPENWEATHER_API_KEY || OPENWEATHER_API_KEY.length < 30) {
              setError("ERROR: Kunci API OpenWeatherMap tidak valid.");
              setIsDataLoading(false);
@@ -508,7 +610,6 @@ const AirQuality: React.FC = () => {
 
             const [pollutionDataResult, weatherDataResult] = await Promise.all([pollutionPromise, weatherPromise]);
             
-            // Dapatkan nama lokasi yang lebih baik dari respons cuaca
             const finalLocationName = weatherDataResult?.name || loc.name;
             
             setPollutionData(
@@ -516,10 +617,9 @@ const AirQuality: React.FC = () => {
             );
             setWeatherData(weatherDataResult);
             
-            // Perbarui state lokasi dengan nama yang lebih akurat
             setLocation({
                 ...loc, 
-                name: finalLocationName // Menggunakan nama dari respons API
+                name: finalLocationName 
             });
 
         } catch (err) {
@@ -530,7 +630,6 @@ const AirQuality: React.FC = () => {
         }
     };
 
-    // === REWRITE UTAMA: Geolocation Saat Komponen Dimuat dengan Log Diagnostik ===
     useEffect(() => {
         setIsDataLoading(true);
         setError(null);
@@ -555,20 +654,16 @@ const AirQuality: React.FC = () => {
                     let errMsg = "Akses lokasi ditolak. Menggunakan lokasi default.";
                     
                     if (err.code === 1) {
-                        // Permission denied
                         errMsg = "ERROR GPS (Code 1): Akses lokasi DITOLAK. Pastikan Anda mengizinkan lokasi di browser/sistem. Menggunakan lokasi default.";
                     } else if (err.code === 3) {
-                        // Timeout
                         errMsg = "ERROR GPS (Code 3): Gagal mendapatkan lokasi (Timeout 15 detik). Cek koneksi Anda. Menggunakan lokasi default.";
                     } else {
-                        // Other error
                         errMsg = `ERROR GPS (Code ${err.code}): Terjadi kesalahan tidak terduga. Menggunakan lokasi default.`;
                     }
 
                     console.error("DIAGNOSIS:", errMsg, err);
                     setError(errMsg);
                     
-                    // Gunakan fallback jika Geolocation gagal
                     fetchEnvironmentalData(fallbackLocation);
                     setLocation(fallbackLocation);
                 },
@@ -588,7 +683,6 @@ const AirQuality: React.FC = () => {
 
     const aqi = pollutionData?.main?.aqi || 0;
     
-    // PERBAIKAN BUG FALLBACK AQI: Jika AQI adalah 0, gunakan status "Tidak Tersedia"
     const aqiStatus = aqi > 0 ? airQualityMap[aqi] : { 
         label: "Tidak Tersedia", 
         color: "text-slate-500", 
@@ -601,11 +695,13 @@ const AirQuality: React.FC = () => {
 
     return (
         <section className="py-12 px-4 w-full">
+                            <AirQualityBanner />
             <WeatherDashboard 
                 weatherData={weatherData} 
                 locationName={location.name} 
                 isLoading={isDataLoading}
             />
+            
             
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -730,8 +826,8 @@ const AirQuality: React.FC = () => {
                     </motion.div>
                 </div>
                 
-                {/* --- BANNER BARU (MENYERUPAI GAMBAR) --- */}
-                <AirQualityBanner />
+                {/* --- BANNER BARU (DENGAN TOMBOL KLIK) --- */}
+
 
                 {/* --- ANALISIS/PENJELASAN POLUTAN --- */}
                 <AirQualityDetails components={components} />
@@ -742,9 +838,9 @@ const AirQuality: React.FC = () => {
 };
 
 // ==========================================
-// 4. AIR QUALITY DETAILS (PENJELASAN POLUTAN)
+// 5. AIR QUALITY DETAILS (PENJELASAN POLUTAN)
 // ==========================================
-const AirQualityDetails: React.FC<{ components: any }> = ({ components }) => {
+const AirQualityDetails = ({ components }) => {
     
     // Definisi dan penjelasan setiap polutan
     const pollutantInfo = {
@@ -813,7 +909,6 @@ const AirQualityDetails: React.FC<{ components: any }> = ({ components }) => {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {Object.entries(pollutantInfo).map(([key, info]) => {
-                        // Mengambil nilai dari props components, default ke 0 jika tidak ada
                         const value = components && components[key] ? components[key] : 0;
                         
                         return (
