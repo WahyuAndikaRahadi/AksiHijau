@@ -422,7 +422,7 @@ const Home = () => {
         
         {/* Dekorasi Pohon Kiri (Filosofi) - FLIPPED */}
         {/* MENGGUNAN KODE ASLI PENGGUNA UNTUK POHON INI */}
-        <div className="absolute top-0 -left-72 bottom-0  w-[650px]  hidden lg:block pointer-events-none">
+        <div className="absolute top-0 -left-72 bottom-0  w-[650px]  hidden md:block pointer-events-none">
           <img
             src="./img/pohon.png" // PASTIKAN PATH INI BENAR SESUAI PROJECT ANDA
             alt="Ilustrasi Pohon Hijau"
@@ -432,7 +432,7 @@ const Home = () => {
 
         {/* Dekorasi Pohon Kanan (Filosofi) */}
         {/* MENGGUNAKAN KODE ASLI PENGGUNA UNTUK POHON INI */}
-        <div className="absolute top-0 -right-72 bottom-0  w-[650px] h-full hidden lg:block pointer-events-none">
+        <div className="absolute top-0 -right-72 bottom-0  w-[650px] h-full hidden md:block pointer-events-none">
           <img
             src="./img/pohon.png" // PASTIKAN PATH INI BENAR SESUAI PROJECT ANDA
             alt="Ilustrasi Pohon Hijau"
