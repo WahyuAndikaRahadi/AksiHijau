@@ -1,18 +1,18 @@
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Mail, Lock, User, Leaf, Eye, EyeOff } from 'lucide-react'; // Tambahkan Eye dan EyeOff
-import { useState } from 'react';
-import Swal from 'sweetalert2'; // Tambahkan import SweetAlert2
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { Mail, Lock, User, Leaf, Eye, EyeOff } from "lucide-react"; // Tambahkan Eye dan EyeOff
+import { useState } from "react";
+import Swal from "sweetalert2"; // Tambahkan import SweetAlert2
 
 // Ganti dengan Base URL API Anda yang sebenarnya (misalnya, URL Vercel)
-const API_BASE_URL = 'http://localhost:5000/auth'; // Contoh: 'https://aksi-hijau-api.vercel.app/auth'
+const API_BASE_URL = "http://localhost:5000/auth"; // Contoh: 'https://aksi-hijau-api.vercel.app/auth'
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    username: '', // Diubah dari 'name' menjadi 'username' agar sesuai dengan backend
-    email: '',
-    password: '',
-    confirmPassword: '',
+    username: "", // Diubah dari 'name' menjadi 'username' agar sesuai dengan backend
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false); // State untuk toggle password visibility
@@ -24,10 +24,10 @@ const Register = () => {
 
     if (formData.password !== formData.confirmPassword) {
       Swal.fire({
-        icon: 'error',
-        title: 'Gagal',
-        text: 'Konfirmasi password tidak cocok dengan password.',
-        confirmButtonColor: '#16a34a',
+        icon: "error",
+        title: "Gagal",
+        text: "Konfirmasi password tidak cocok dengan password.",
+        confirmButtonColor: "#16a34a",
       });
       setLoading(false);
       return;
@@ -35,9 +35,9 @@ const Register = () => {
 
     try {
       const response = await fetch(`${API_BASE_URL}/register`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         // Backend Anda mengharapkan 'username', 'email', dan 'password'
         body: JSON.stringify({
@@ -52,10 +52,10 @@ const Register = () => {
       if (!response.ok) {
         // Jika status kode 4xx atau 5xx
         Swal.fire({
-          icon: 'error',
-          title: 'Gagal',
-          text: data.error || 'Pendaftaran gagal. Coba lagi.',
-          confirmButtonColor: '#16a34a',
+          icon: "error",
+          title: "Gagal",
+          text: data.error || "Pendaftaran gagal. Coba lagi.",
+          confirmButtonColor: "#16a34a",
         });
         setLoading(false);
         return;
@@ -63,26 +63,25 @@ const Register = () => {
 
       // Jika pendaftaran berhasil (status 201)
       Swal.fire({
-        icon: 'success',
-        title: 'Berhasil',
-        text: 'Pendaftaran berhasil! Silakan login.',
-        confirmButtonColor: '#16a34a',
+        icon: "success",
+        title: "Berhasil",
+        text: "Pendaftaran berhasil! Silakan login.",
+        confirmButtonColor: "#16a34a",
       });
       // Kosongkan form setelah berhasil
       setFormData({
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
       });
-
     } catch (err) {
-      console.error('Error saat proses registrasi:', err);
+      console.error("Error saat proses registrasi:", err);
       Swal.fire({
-        icon: 'error',
-        title: 'Gagal',
-        text: 'Terjadi kesalahan jaringan atau server. Coba lagi nanti.',
-        confirmButtonColor: '#16a34a',
+        icon: "error",
+        title: "Gagal",
+        text: "Terjadi kesalahan jaringan atau server. Coba lagi nanti.",
+        confirmButtonColor: "#16a34a",
       });
     } finally {
       setLoading(false);
@@ -108,12 +107,14 @@ const Register = () => {
           {/* ... (Header dan Logo tetap sama) ... */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                <Leaf className="w-8 h-8 text-primary" />
-              </div>
+              <img
+                src="/public/img/logo.png" // Ganti dengan URL/path gambar logo kamu
+                alt="Logo Aksi Hijau"
+                className="w-24 h-24 text-primary group-hover:rotate-12 transition-transform duration-300"
+              />
             </div>
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Bergabung dengan AksiHijau
+              Bergabung dengan Aksi Hijau
             </h2>
             <p className="text-gray-600">
               Buat akun dan mulai aksi nyata untuk bumi
@@ -126,7 +127,10 @@ const Register = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.5 }}
             >
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Nama Pengguna
               </label>
               <div className="relative">
@@ -151,7 +155,10 @@ const Register = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
             >
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Email
               </label>
               <div className="relative">
@@ -176,7 +183,10 @@ const Register = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.5 }}
             >
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Password
               </label>
               <div className="relative">
@@ -184,10 +194,10 @@ const Register = () => {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
-                
+
                 <input
                   // Tipe input dinamis
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
                   value={formData.password}
@@ -202,7 +212,9 @@ const Register = () => {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-primary focus:outline-none"
-                  aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                  aria-label={
+                    showPassword ? "Sembunyikan password" : "Tampilkan password"
+                  }
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5" />
@@ -212,13 +224,16 @@ const Register = () => {
                 </button>
               </div>
             </motion.div>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.5 }}
             >
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Konfirmasi Password
               </label>
               <div className="relative">
@@ -226,10 +241,10 @@ const Register = () => {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
-                
+
                 <input
                   // Tipe input dinamis
-                  type={showConfirmPassword ? 'text' : 'password'}
+                  type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
                   name="confirmPassword"
                   value={formData.confirmPassword}
@@ -244,7 +259,11 @@ const Register = () => {
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-primary focus:outline-none"
-                  aria-label={showConfirmPassword ? 'Sembunyikan password' : 'Tampilkan password'}
+                  aria-label={
+                    showConfirmPassword
+                      ? "Sembunyikan password"
+                      : "Tampilkan password"
+                  }
                 >
                   {showConfirmPassword ? (
                     <EyeOff className="h-5 w-5" />
@@ -262,10 +281,12 @@ const Register = () => {
               type="submit"
               disabled={loading}
               className={`w-full px-6 py-3 text-white rounded-lg transition-all duration-300 hover:shadow-lg font-semibold ${
-                loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary hover:bg-green-600'
+                loading
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-primary hover:bg-green-600"
               }`}
             >
-              {loading ? 'Mendaftarkan...' : 'Daftar Akun'}
+              {loading ? "Mendaftarkan..." : "Daftar Akun"}
             </motion.button>
           </form>
 
@@ -276,8 +297,11 @@ const Register = () => {
             className="mt-6 text-center"
           >
             <p className="text-gray-600">
-              Sudah punya akun?{' '}
-              <Link to="/login" className="text-primary hover:text-green-600 font-semibold transition-colors duration-300">
+              Sudah punya akun?{" "}
+              <Link
+                to="/login"
+                className="text-primary hover:text-green-600 font-semibold transition-colors duration-300"
+              >
                 Masuk
               </Link>
             </p>

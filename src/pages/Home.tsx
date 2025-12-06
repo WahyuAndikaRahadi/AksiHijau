@@ -27,7 +27,7 @@ const testimonials = [
   },
   {
     quote:
-      "AksiHijau membuat aksi lingkungan menjadi mudah dan menyenangkan. Dampak nyata dari kegiatan kami terasa sekali.",
+      "Aksi Hijau membuat aksi lingkungan menjadi mudah dan menyenangkan. Dampak nyata dari kegiatan kami terasa sekali.",
     name: "Bima T.",
     title: "Relawan Aktif",
   },
@@ -63,9 +63,9 @@ const testimonialsLine2 = testimonials.slice(Math.ceil(testimonials.length / 2))
 
 const faqData = [
   {
-    question: "Apa itu AksiHijau dan apa misinya?",
+    question: "Apa itu Aksi Hijau dan apa misinya?",
     answer:
-      "AksiHijau adalah platform digital yang didedikasikan untuk memfasilitasi dan mengedukasi masyarakat tentang cara hidup berkelanjutan. Misi kami adalah membuat aksi lingkungan menjadi mudah diakses, informatif, dan menyenangkan bagi semua orang, dari pemula hingga aktivis berpengalaman.",
+      "Aksi Hijau adalah platform digital yang didedikasikan untuk memfasilitasi dan mengedukasi masyarakat tentang cara hidup berkelanjutan. Misi kami adalah membuat aksi lingkungan menjadi mudah diakses, informatif, dan menyenangkan bagi semua orang, dari pemula hingga aktivis berpengalaman.",
   },
   {
     question: "Bagaimana cara kerja fitur EcoScan?",
@@ -73,14 +73,14 @@ const faqData = [
       "EcoScan menggunakan teknologi AI (Computer Vision) untuk menganalisis foto sampah yang Anda unggah. AI akan mengidentifikasi jenis material (plastik, kertas, kaca, dll.) dan secara instan memberikan panduan langkah demi langkah tentang cara memilah, membersihkan, dan mendaur ulang yang benar di lokasi Anda.",
   },
   {
-    question: "Apakah semua layanan di AksiHijau gratis?",
+    question: "Apakah semua layanan di Aksi Hijau gratis?",
     answer:
-      "Ya, sebagian besar fitur inti AksiHijau, termasuk EcoScan, Konsultasi AI, dan semua konten edukasi, 100% gratis untuk diakses oleh semua pengguna. Kami percaya bahwa edukasi lingkungan harus dapat diakses tanpa hambatan finansial.",
+      "Ya, sebagian besar fitur inti Aksi Hijau, termasuk EcoScan, Konsultasi AI, dan semua konten edukasi, 100% gratis untuk diakses oleh semua pengguna. Kami percaya bahwa edukasi lingkungan harus dapat diakses tanpa hambatan finansial.",
   },
   {
-    question: "Bagaimana AksiHijau memastikan keakuratan informasi lingkungan?",
+    question: "Bagaimana Aksi Hijau memastikan keakuratan informasi lingkungan?",
     answer:
-      "Informasi dan panduan di AksiHijau disusun dan diverifikasi oleh tim ahli lingkungan dan mitra nirlaba terpercaya. Kami secara rutin memperbarui data kami berdasarkan penelitian ilmiah terbaru dan regulasi lingkungan setempat.",
+      "Informasi dan panduan di Aksi Hijau disusun dan diverifikasi oleh tim ahli lingkungan dan mitra nirlaba terpercaya. Kami secara rutin memperbarui data kami berdasarkan penelitian ilmiah terbaru dan regulasi lingkungan setempat.",
   },
   {
     question: "Apa saja jenis kegiatan yang bisa saya ikuti di Komunitas Eco Warrior?",
@@ -417,7 +417,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 2. Filosofi AksiHijau */}
+      {/* 2. Filosofi Aksi Hijau */}
       <section className="px-10 py-20 md:my-24 bg-white relative">
         
         {/* Dekorasi Pohon Kiri (Filosofi) - FLIPPED */}
@@ -459,7 +459,7 @@ const Home = () => {
                 <span className="text-primary font-bold">
                   "Kelestarian Lingkungan
                 </span>{" "}
-                adalah perjalanan, bukan tujuan. AksiHijau berkomitmen menjadi
+                adalah perjalanan, bukan tujuan. Aksi Hijau berkomitmen menjadi
                 pendamping digitalmu yang antusias, aman, dan tanpa penghakiman.
                 Kami percaya setiap individu berhak mendapatkan dukungan terbaik
                 untuk mencapai{" "}
@@ -525,11 +525,11 @@ const Home = () => {
               transition={{ duration: 0.7 }}
             >
               <div className="bg-primary/90 text-white text-[12px] sm:text-sm font-bold uppercase tracking-wider px-4 py-1 rounded-full w-fit mb-6 shadow-md">
-                Kenapa Memilih AksiHijau?
+                Kenapa Memilih Aksi Hijau?
               </div>
 
               <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-8 leading-snug">
-                Bersama AksiHijau, Jalani Perjalanan Hijau dengan{" "}
+                Bersama Aksi Hijau, Jalani Perjalanan Hijau dengan{" "}
                 <span className="text-primary">Dampak Nyata</span>
               </h2>
 
@@ -759,7 +759,7 @@ const Home = () => {
               <br className="hidden sm:inline" /> dengan Layanan Terbaik
             </h2>
             <p className="text-lg text-green-100 max-w-3xl mx-auto">
-              AksiHijau menyediakan berbagai fitur edukatif dan dukungan pintar
+              Aksi Hijau menyediakan berbagai fitur edukatif dan dukungan pintar
               untuk menemani perjalanan lingkungan yang aman, nyaman, dan penuh informasi.
             </p>
           </motion.div>
@@ -794,7 +794,7 @@ const Home = () => {
               Pertanyaan yang Sering Diajukan
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4">
-              Pahami Lebih Lanjut Tentang AksiHijau
+              Pahami Lebih Lanjut Tentang Aksi Hijau
             </h2>
             <p className="text-lg text-gray-600">
               Kami telah merangkum jawaban atas pertanyaan paling umum untuk
@@ -832,7 +832,7 @@ const Home = () => {
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Kisahnya yang sederhana dan tanpa drama, telah membuat mereka
-              nyaman menjalani aksi hijau bersama AksiHijau.
+              nyaman menjalani aksi hijau bersama Aksi Hijau.
             </p>
           </motion.div>
         </div>
@@ -864,7 +864,7 @@ const Home = () => {
               Edukasi Lingkungan Premium, Gratis untuk Semua!
             </h2>
             <p className="text-lg text-green-100 mb-10 max-w-4xl mx-auto">
-              Setiap individu berhak mendapatkan edukasi lingkungan terbaik. AksiHijau hadir dengan fitur pintar dan informasi lengkap yang bisa diakses gratis, kapan saja.
+              Setiap individu berhak mendapatkan edukasi lingkungan terbaik. Aksi Hijau hadir dengan fitur pintar dan informasi lengkap yang bisa diakses gratis, kapan saja.
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">

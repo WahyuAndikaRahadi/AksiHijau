@@ -466,9 +466,6 @@ const SocialCommunity = () => {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                <Leaf className="w-6 h-6 text-green-600" />
-              </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Social Feed</h1>
                 <p className="text-sm text-gray-600">Bagikan aksi hijau Anda</p>

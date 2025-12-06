@@ -1,9 +1,17 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Leaf, Menu, X, LogOut, User as UserIcon, ChevronDown, BookOpen, Newspaper } from 'lucide-react';
-import { useState, useEffect, useCallback, MouseEvent } from 'react';
-import { motion } from 'framer-motion';
-import Swal from 'sweetalert2';
-import { LucideIcon } from 'lucide-react'; // Import tipe untuk ikon
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Menu,
+  X,
+  LogOut,
+  User as UserIcon,
+  ChevronDown,
+  BookOpen,
+  Newspaper,
+} from "lucide-react";
+import { useState, useEffect, useCallback, MouseEvent } from "react";
+import { motion } from "framer-motion";
+import Swal from "sweetalert2";
+import { LucideIcon } from "lucide-react"; // Import tipe untuk ikon
 
 // --- DEFINISI TIPE ---
 
@@ -20,7 +28,7 @@ interface NavLink {
   path?: string; // Path bisa opsional jika ini adalah item dropdown utama
   label: string;
   isDropdown?: boolean;
-  id?: 'features' | 'insight' | 'community'; // ID khusus untuk kontrol state dropdown
+  id?: "features" | "insight" | "community"; // ID khusus untuk kontrol state dropdown
   dropdownLinks?: DropdownLink[];
 }
 
@@ -33,86 +41,90 @@ const Navbar = () => {
   // States
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  
+
   // State Dropdown
-  const [isFeaturesDropdownOpen, setIsFeaturesDropdownOpen] = useState<boolean>(false);
-  const [isInsightDropdownOpen, setIsInsightDropdownOpen] = useState<boolean>(false);
-  const [isCommunityDropdownOpen, setIsCommunityDropdownOpen] = useState<boolean>(false);
+  const [isFeaturesDropdownOpen, setIsFeaturesDropdownOpen] =
+    useState<boolean>(false);
+  const [isInsightDropdownOpen, setIsInsightDropdownOpen] =
+    useState<boolean>(false);
+  const [isCommunityDropdownOpen, setIsCommunityDropdownOpen] =
+    useState<boolean>(false);
 
   // State Autentikasi
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [userName, setUserName] = useState<string>('User');
+  const [userName, setUserName] = useState<string>("User");
 
   // Navigasi Statis dengan tipe NavLink
   const baseNavLinks: NavLink[] = [
-    { path: '/', label: 'Beranda' },
-    { path: '/about', label: 'Tentang' },
+    { path: "/", label: "Beranda" },
+    { path: "/about", label: "Tentang" },
     {
-      label: 'Fitur',
+      label: "Fitur",
       isDropdown: true,
-      id: 'features',
-      dropdownLinks: [ // Diperbaiki agar path lengkap
-        { path: '/air-quality', label: 'Kualitas Udara' },
-        { path: '/soil-health', label: 'Kesehatan Tanah' },
-        { path: '/water-quality', label: 'Kualitas Air' },
-      ],
-    },
-    {
-      label: 'Artikel',
-      isDropdown: true,
-      id: 'insight',
+      id: "features",
       dropdownLinks: [
-        { path: '/news', label: 'News & Update', icon: Newspaper },
-        { path: '/blog', label: 'Blog & Artikel', icon: BookOpen },
+        // Diperbaiki agar path lengkap
+        { path: "/air-quality", label: "Kualitas Udara" },
+        { path: "/soil-health", label: "Kesehatan Tanah" },
+        { path: "/water-quality", label: "Kualitas Air" },
       ],
     },
     {
-      label: 'Komunitas',
+      label: "Artikel",
       isDropdown: true,
-      id: 'community',
+      id: "insight",
       dropdownLinks: [
-        { path: '/community-events', label: 'Events Komunitas' },
-        { path: '/community-social', label: 'Komunitas Sosial' },
+        { path: "/news", label: "News & Update", icon: Newspaper },
+        { path: "/blog", label: "Blog & Artikel", icon: BookOpen },
       ],
     },
-    { path: '/contact', label: 'Kontak' },
+    {
+      label: "Komunitas",
+      isDropdown: true,
+      id: "community",
+      dropdownLinks: [
+        { path: "/community-events", label: "Events Komunitas" },
+        { path: "/community-social", label: "Komunitas Sosial" },
+      ],
+    },
+    { path: "/contact", label: "Kontak" },
   ];
 
   // Fungsi Cek Login
   const checkAuthStatus = useCallback(() => {
-    const token = localStorage.getItem('token');
-    const userString = localStorage.getItem('currentUser');
+    const token = localStorage.getItem("token");
+    const userString = localStorage.getItem("currentUser");
 
     if (token) {
       setIsAuthenticated(true);
       try {
         const user = userString ? JSON.parse(userString) : {};
         // Pastikan is_admin diperiksa dengan benar
-        const adminStatus = user.is_admin === true || user.is_admin === 'true'; 
+        const adminStatus = user.is_admin === true || user.is_admin === "true";
         setIsAdmin(adminStatus);
-        setUserName(user.username || user.email?.split('@')[0] || 'User');
+        setUserName(user.username || user.email?.split("@")[0] || "User");
       } catch (e) {
-        setUserName('User');
+        setUserName("User");
         setIsAdmin(false);
       }
     } else {
       setIsAuthenticated(false);
       setIsAdmin(false);
-      setUserName('User');
+      setUserName("User");
     }
   }, []);
 
   // Handler Logout
   const handleLogout = (): void => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('currentUser');
+    localStorage.removeItem("token");
+    localStorage.removeItem("currentUser");
     setIsAuthenticated(false);
     setIsAdmin(false);
-    setUserName('User');
+    setUserName("User");
     setIsMenuOpen(false);
-    navigate('/login');
-    Swal.fire('Berhasil!', 'Logout anda berhasil', 'success');
+    navigate("/login");
+    Swal.fire("Berhasil!", "Logout anda berhasil", "success");
   };
 
   // Efek Scroll
@@ -121,8 +133,8 @@ const Navbar = () => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [checkAuthStatus]);
 
   // Fungsi untuk menutup semua dropdown (desktop & mobile)
@@ -143,38 +155,71 @@ const Navbar = () => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // PERUBAHAN: Abaikan jika lebar kurang dari LG (sekarang mobile mode)
-      if (window.innerWidth < 1024) return; 
+      if (window.innerWidth < 1024) return;
 
       const target = event.target as Node;
 
       // Fungsi helper untuk cek klik luar
-      const isClickedOutside = (buttonId: string, menuId: string, setState: (isOpen: boolean) => void, isOpen: boolean) => {
+      const isClickedOutside = (
+        buttonId: string,
+        menuId: string,
+        setState: (isOpen: boolean) => void,
+        isOpen: boolean
+      ) => {
         const button = document.getElementById(buttonId);
         const menu = document.getElementById(menuId);
-        
-        if (isOpen && button && !button.contains(target) && menu && !menu.contains(target)) {
+
+        if (
+          isOpen &&
+          button &&
+          !button.contains(target) &&
+          menu &&
+          !menu.contains(target)
+        ) {
           setState(false);
         }
-      }
+      };
 
-      isClickedOutside('features-dropdown-button', 'features-dropdown-menu', setIsFeaturesDropdownOpen, isFeaturesDropdownOpen);
-      isClickedOutside('insight-dropdown-button', 'insight-dropdown-menu', setIsInsightDropdownOpen, isInsightDropdownOpen);
-      isClickedOutside('community-dropdown-button', 'community-dropdown-menu', setIsCommunityDropdownOpen, isCommunityDropdownOpen);
+      isClickedOutside(
+        "features-dropdown-button",
+        "features-dropdown-menu",
+        setIsFeaturesDropdownOpen,
+        isFeaturesDropdownOpen
+      );
+      isClickedOutside(
+        "insight-dropdown-button",
+        "insight-dropdown-menu",
+        setIsInsightDropdownOpen,
+        isInsightDropdownOpen
+      );
+      isClickedOutside(
+        "community-dropdown-button",
+        "community-dropdown-menu",
+        setIsCommunityDropdownOpen,
+        isCommunityDropdownOpen
+      );
     };
 
-    document.addEventListener('mousedown', handleClickOutside as any); // Type assertion untuk event listener
+    document.addEventListener("mousedown", handleClickOutside as any); // Type assertion untuk event listener
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside as any);
+      document.removeEventListener("mousedown", handleClickOutside as any);
     };
   }, [isFeaturesDropdownOpen, isInsightDropdownOpen, isCommunityDropdownOpen]);
 
   // Fungsi Cek Aktif
-  const isDropdownActive = (id: NavLink['id']): boolean => {
+  const isDropdownActive = (id: NavLink["id"]): boolean => {
     if (!id) return false;
-    const links = baseNavLinks.find((link) => link.id === id)?.dropdownLinks || [];
-    const isBaseActive = links.some((subLink) => location.pathname === subLink.path);
+    const links =
+      baseNavLinks.find((link) => link.id === id)?.dropdownLinks || [];
+    const isBaseActive = links.some(
+      (subLink) => location.pathname === subLink.path
+    );
 
-    if (id === 'community' && isAdmin && location.pathname === '/dashboard-admin') {
+    if (
+      id === "community" &&
+      isAdmin &&
+      location.pathname === "/dashboard-admin"
+    ) {
       return true;
     }
     return isBaseActive;
@@ -182,12 +227,14 @@ const Navbar = () => {
 
   // Membuat daftar navigasi akhir, termasuk Admin Dashboard jika diperlukan
   const finalNavLinks: NavLink[] = baseNavLinks.map((link) => {
-    if (link.isDropdown && link.id === 'community') {
-      let updatedDropdownLinks: DropdownLink[] = [...(link.dropdownLinks || [])];
+    if (link.isDropdown && link.id === "community") {
+      const updatedDropdownLinks: DropdownLink[] = [
+        ...(link.dropdownLinks || []),
+      ];
       if (isAdmin) {
         updatedDropdownLinks.unshift({
-          path: '/dashboard-admin',
-          label: 'Admin Dashboard',
+          path: "/dashboard-admin",
+          label: "Admin Dashboard",
           isAdmin: true,
           icon: UserIcon,
         });
@@ -198,24 +245,24 @@ const Navbar = () => {
   });
 
   // Helper untuk mendapatkan state boolean berdasarkan ID string
-  const getDropdownState = (id: NavLink['id']): boolean => {
-    if (id === 'features') return isFeaturesDropdownOpen;
-    if (id === 'insight') return isInsightDropdownOpen;
-    if (id === 'community') return isCommunityDropdownOpen;
+  const getDropdownState = (id: NavLink["id"]): boolean => {
+    if (id === "features") return isFeaturesDropdownOpen;
+    if (id === "insight") return isInsightDropdownOpen;
+    if (id === "community") return isCommunityDropdownOpen;
     return false;
   };
 
   // Helper untuk toggle dropdown
-  const toggleDropdown = (id: NavLink['id']): void => {
-    if (id === 'features') {
+  const toggleDropdown = (id: NavLink["id"]): void => {
+    if (id === "features") {
       setIsFeaturesDropdownOpen((prev) => !prev);
       setIsInsightDropdownOpen(false);
       setIsCommunityDropdownOpen(false);
-    } else if (id === 'insight') {
+    } else if (id === "insight") {
       setIsInsightDropdownOpen((prev) => !prev);
       setIsFeaturesDropdownOpen(false);
       setIsCommunityDropdownOpen(false);
-    } else if (id === 'community') {
+    } else if (id === "community") {
       setIsCommunityDropdownOpen((prev) => !prev);
       setIsFeaturesDropdownOpen(false);
       setIsInsightDropdownOpen(false);
@@ -231,7 +278,11 @@ const Navbar = () => {
           <Link
             to="/profile"
             className={`flex items-center space-x-2 font-medium border border-gray-200 px-3 py-2 rounded-xl transition-all duration-300 hover:bg-gray-50 group
-              ${location.pathname === '/profile' ? 'text-primary bg-green-50' : 'text-gray-700'}`}
+              ${
+                location.pathname === "/profile"
+                  ? "text-primary bg-green-50"
+                  : "text-gray-700"
+              }`}
             id="user-profile-button"
           >
             <UserIcon className="w-5 h-5 text-primary" />
@@ -270,16 +321,20 @@ const Navbar = () => {
     <nav
       className={`sticky top-0 z-50 transition-all duration-300 lg:px-16 md:px-4 ${
         isScrolled
-          ? 'bg-white shadow-lg'
-          : 'bg-white/30 backdrop-blur-sm shadow-sm'
+          ? "bg-white shadow-lg"
+          : "bg-white/30 backdrop-blur-sm shadow-sm"
       }`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link to="/" className="flex items-center space-x-2 group">
-            <Leaf className="w-8 h-8 text-primary group-hover:rotate-12 transition-transform duration-300" />
-            <span className="text-2xl font-bold text-gray-800">AksiHijau</span>
-          </Link>
+          <div className="flex items-center space-x-2 group">
+            <img
+              src="/public/img/logo.png" // Ganti dengan URL/path gambar logo kamu
+              alt="Logo Aksi Hijau"
+              className="w-12 h-12 text-primary"
+            />
+            <span className="text-2xl font-bold text-gray-800">Aksi Hijau</span>
+          </div>
 
           {/* Navigasi Desktop */}
           {/* PERUBAHAN: Menu penuh hanya muncul mulai dari LG (1024px) */}
@@ -295,14 +350,14 @@ const Navbar = () => {
                       id={`${link.id}-dropdown-button`}
                       onClick={() => toggleDropdown(link.id!)}
                       className={`flex items-center space-x-1 text-gray-700 hover:text-primary transition-colors duration-300 font-medium ${
-                        isActive || isOpen ? 'text-primary' : ''
+                        isActive || isOpen ? "text-primary" : ""
                       }`}
                       aria-expanded={isOpen}
                     >
                       <span>{link.label}</span>
                       <ChevronDown
                         className={`w-4 h-4 transition-transform duration-300 ${
-                          isOpen ? 'rotate-180' : 'rotate-0'
+                          isOpen ? "rotate-180" : "rotate-0"
                         }`}
                       />
                       {isActive && (
@@ -315,15 +370,13 @@ const Navbar = () => {
                       id={`${link.id}-dropdown-menu`}
                       initial={{ opacity: 0, y: -10 }}
                       animate={
-                        isOpen
-                          ? { opacity: 1, y: 0 }
-                          : { opacity: 0, y: -10 }
+                        isOpen ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }
                       }
                       transition={{ duration: 0.2 }}
                       className={`absolute left-0 mt-3 w-56 bg-white border border-gray-100 rounded-xl shadow-xl overflow-hidden ${
-                        isOpen ? 'block' : 'hidden'
+                        isOpen ? "block" : "hidden"
                       }`}
-                      style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
+                      style={{ pointerEvents: isOpen ? "auto" : "none" }}
                     >
                       {link.dropdownLinks?.map((subLink: DropdownLink) => {
                         const IconComponent = subLink.icon;
@@ -335,15 +388,15 @@ const Navbar = () => {
                             className={`flex items-center space-x-3 px-4 py-2 text-sm transition-colors duration-200 
                               ${
                                 subLink.isAdmin
-                                  ? 'text-red-600 hover:bg-red-50 hover:text-red-700 font-semibold'
-                                  : 'text-gray-700 hover:bg-primary/10 hover:text-primary'
+                                  ? "text-red-600 hover:bg-red-50 hover:text-red-700 font-semibold"
+                                  : "text-gray-700 hover:bg-primary/10 hover:text-primary"
                               }
                               ${
                                 location.pathname === subLink.path
                                   ? subLink.isAdmin
-                                    ? 'bg-red-100 text-red-700 font-bold'
-                                    : 'bg-primary/10 text-primary font-semibold'
-                                  : ''
+                                    ? "bg-red-100 text-red-700 font-bold"
+                                    : "bg-primary/10 text-primary font-semibold"
+                                  : ""
                               }
                             `}
                             onClick={closeAllDropdowns}
@@ -365,7 +418,7 @@ const Navbar = () => {
                   <Link
                     to={link.path!}
                     className={`text-gray-700 hover:text-primary transition-colors duration-300 font-medium relative group ${
-                      location.pathname === link.path ? 'text-primary' : ''
+                      location.pathname === link.path ? "text-primary" : ""
                     }`}
                   >
                     {link.label}
@@ -405,8 +458,8 @@ const Navbar = () => {
       <div
         className={`lg:hidden overflow-y-auto transition-all duration-500 ease-in-out bg-white ${
           isMenuOpen
-            ? 'max-h-[80vh] opacity-100 border-t border-gray-100 shadow-xl'
-            : 'max-h-0 opacity-0'
+            ? "max-h-[80vh] opacity-100 border-t border-gray-100 shadow-xl"
+            : "max-h-0 opacity-0"
         }`}
       >
         <div className="flex flex-col space-y-2 p-4">
@@ -421,21 +474,21 @@ const Navbar = () => {
                     onClick={() => toggleDropdown(link.id!)}
                     className={`flex items-center justify-between w-full py-2 px-3 rounded-md text-base font-medium transition-colors duration-200 ${
                       isActive || isOpen
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-gray-700 hover:bg-gray-50'
+                        ? "bg-primary/10 text-primary"
+                        : "text-gray-700 hover:bg-gray-50"
                     }`}
                   >
                     <span>{link.label}</span>
                     <ChevronDown
                       className={`w-5 h-5 transition-transform duration-300 ${
-                        isOpen ? 'rotate-180' : 'rotate-0'
+                        isOpen ? "rotate-180" : "rotate-0"
                       }`}
                     />
                   </button>
-                  
+
                   <div
                     className={`transition-all duration-300 overflow-hidden ${
-                      isOpen ? 'max-h-60 pt-1' : 'max-h-0'
+                      isOpen ? "max-h-60 pt-1" : "max-h-0"
                     }`}
                   >
                     {link.dropdownLinks?.map((subLink: DropdownLink) => {
@@ -448,15 +501,15 @@ const Navbar = () => {
                           className={`flex items-center space-x-3 py-2 pl-8 pr-3 text-sm rounded-md transition-colors duration-200 
                             ${
                               subLink.isAdmin
-                                ? 'text-red-700 bg-red-50 hover:bg-red-100 font-bold'
-                                : 'text-gray-600 hover:bg-gray-100'
+                                ? "text-red-700 bg-red-50 hover:bg-red-100 font-bold"
+                                : "text-gray-600 hover:bg-gray-100"
                             }
                             ${
                               location.pathname === subLink.path
                                 ? subLink.isAdmin
-                                  ? 'bg-red-100 text-red-700 font-bold'
-                                  : 'bg-primary/20 text-primary font-semibold'
-                                : ''
+                                  ? "bg-red-100 text-red-700 font-bold"
+                                  : "bg-primary/20 text-primary font-semibold"
+                                : ""
                             }
                           `}
                           onClick={closeAllDropdowns}
@@ -472,15 +525,15 @@ const Navbar = () => {
                 </div>
               );
             }
-            
+
             return (
               <div key={link.path}>
                 <Link
                   to={link.path!}
                   className={`block py-2 px-3 rounded-md text-base font-medium transition-colors duration-200 ${
                     location.pathname === link.path
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? "bg-primary/10 text-primary"
+                      : "text-gray-700 hover:bg-gray-50"
                   }`}
                   onClick={closeAllDropdowns}
                 >
@@ -497,7 +550,11 @@ const Navbar = () => {
                 <Link
                   to="/profile"
                   className={`flex items-center justify-center py-2 text-base font-semibold bg-gray-50 rounded-lg hover:bg-gray-100
-                    ${location.pathname === '/profile' ? 'text-primary bg-green-100' : 'text-gray-800'}`}
+                    ${
+                      location.pathname === "/profile"
+                        ? "text-primary bg-green-100"
+                        : "text-gray-800"
+                    }`}
                   onClick={closeAllDropdowns}
                 >
                   <UserIcon className="w-5 h-5 text-primary mr-2" />
