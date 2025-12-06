@@ -421,7 +421,7 @@ const Home = () => {
       <section className="px-10 py-20 md:my-24 bg-white relative">
         
         {/* Dekorasi Pohon Kiri (Filosofi) - FLIPPED */}
-        {/* MENGGUNAKAN KODE ASLI PENGGUNA UNTUK POHON INI */}
+        {/* MENGGUNAN KODE ASLI PENGGUNA UNTUK POHON INI */}
         <div className="absolute top-0 -left-72 bottom-0  w-[650px]  hidden lg:block pointer-events-none">
           <img
             src="./img/pohon.png" // PASTIKAN PATH INI BENAR SESUAI PROJECT ANDA
@@ -543,6 +543,7 @@ const Home = () => {
                     className="p-3 bg-primary/10 rounded-full mr-4 flex-shrink-0"
                   >
                     <DollarSign className="w-6 h-6 text-primary" />
+                    {/* [Gambar: Ikon DollarSign untuk Gratis & Terjangkau] */}
                   </motion.div>
                   <div>
                     <h3 className="text-xl font-bold text-gray-900">
@@ -564,6 +565,7 @@ const Home = () => {
                     className="p-3 bg-primary/10 rounded-full mr-4 flex-shrink-0"
                   >
                     <Users className="w-6 h-6 text-primary" />
+                    {/* [Gambar: Ikon Users untuk Didukung Pakar Lingkungan] */}
                   </motion.div>
                   <div>
                     <h3 className="text-xl font-bold text-gray-900">
@@ -584,6 +586,7 @@ const Home = () => {
                     className="p-3 bg-primary/10 rounded-full mr-4 flex-shrink-0"
                   >
                     <Clock className="w-6 h-6 text-primary" />
+                    {/* [Gambar: Ikon Clock untuk Akses Fleksibel 24/7] */}
                   </motion.div>
                   <div>
                     <h3 className="text-xl font-bold text-gray-900">
@@ -614,13 +617,14 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 4. ECO ASSISTANT BARU (EcoScan) */}
+      {/* 4. ECO ASSISTANT BARU (EcoScan) - Teks di Kanan */}
       <motion.section
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.8 }}
-        className="px-5 py-15 sm:px-10 sm:py-20 bg-white"
+        // DIBEDAKAN: Ubah background section menjadi hijau muda
+        className="px-5 py-15 sm:px-10 sm:py-20 bg-green-50" 
       >
         
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -628,6 +632,7 @@ const Home = () => {
             className="rounded-3xl p-8 md:p-12 lg:p-16 lg:my-12"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              {/* Visual (Left Column) */}
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 whileInView={{ scale: 1, opacity: 1 }}
@@ -645,7 +650,8 @@ const Home = () => {
                   className="relative z-10 w-3/4 h-3/4 object-contain drop-shadow-2xl animate-[bounce_3s_infinite]"
                 />
               </motion.div>
-
+              
+              {/* Text (Right Column) */}
               <motion.div
                 initial={{ x: 50, opacity: 0 }}
                 whileInView={{ x: 0, opacity: 1 }}
@@ -675,6 +681,67 @@ const Home = () => {
             </div>
           </div>
         </div>
+      </motion.section>
+
+      {/* 4.5. ECO BOT ASSISTANT BARU - Teks di Kiri */}
+      <motion.section
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.8 }}
+          // DIBEDAKAN: Biarkan background section putih (default)
+          className="px-5 py-15 sm:px-10 sm:py-20 bg-sky-50" // Background berbeda untuk kontras
+      >
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="rounded-3xl p-8 md:p-12 lg:p-16 lg:my-12">
+                  
+                  {/* Grid order: Text first, then Visual (Teks di kiri) */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                      
+                      {/* Text (Left Column) */}
+                      <motion.div
+                          initial={{ x: -50, opacity: 0 }}
+                          whileInView={{ x: 0, opacity: 1 }}
+                          viewport={{ once: true, amount: 0.5 }}
+                          transition={{ delay: 0.4, duration: 0.7 }}
+                          className="md:pr-8"
+                      >
+                          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4 mt-5">
+                              <span className="text-sky-500">Eco</span>Bot
+                          </h2>
+                          <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                              EcoBot adalah asisten virtual berbasis AI yang siap memberikan panduan dan jawaban teredukasi mengenai segala aspek kehidupan berkelanjutan. Dapatkan tips praktis, data lingkungan terbaru, hingga langkah-langkah mengurangi jejak karbon secara instan, 24 jam sehari.
+                          </p>
+                          <Link
+                              to="/ai"
+                              className="inline-block px-8 py-4 bg-sky-500 text-white text-lg font-semibold rounded-full shadow-lg hover:bg-sky-600 transition-all duration-300 hover:shadow-xl hover:scale-[1.03]"
+                          >
+                              Mulai Chat
+                          </Link>
+                      </motion.div>
+
+                      {/* Visual (Right Column) */}
+                      <motion.div
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          whileInView={{ scale: 1, opacity: 1 }}
+                          viewport={{ once: true, amount: 0.5 }}
+                          transition={{ delay: 0.2, duration: 0.7 }}
+                          className="relative w-full aspect-square max-w-sm mx-auto flex items-center justify-center order-first md:order-none"
+                      >
+                          {/* Background glow using sky color */}
+                          <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/80 to-blue-500/50 rounded-full blur-3xl opacity-70"></div>
+                          <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/50 to-blue-300/50 rounded-full opacity-70 scale-110"></div>
+                          
+                          {/* Ilustrasi AI Bot */}
+                          <img
+                              src="/public/img/Robot.png" 
+                              alt="AI EcoBot Assistant"
+                              className="relative z-10 w-3/4 h-3/4 object-contain drop-shadow-2xl animate-[bounce_3s_infinite]"
+                          />
+                      </motion.div>
+                  </div>
+              </div>
+          </div>
       </motion.section>
 
         {/* 5. FITUR UNGGULAN BARU */}

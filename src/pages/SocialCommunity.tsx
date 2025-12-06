@@ -601,16 +601,13 @@ const SocialCommunity = () => {
                       <div className="border-t bg-gray-50">
                         {/* Comment Input */}
                         <div className="p-4 flex gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold">
-                            {(currentUser.username?.[0]?.toUpperCase() || 'A')}
-                          </div>
                           <div className="flex-1 flex gap-2">
                             <input
                               type="text"
                               value={commentText}
                               onChange={(e) => setCommentText(e.target.value)}
                               placeholder={isLoggedIn ? "Tulis komentar..." : "Login untuk berkomentar"}
-                              className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                              className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-green-500 focus:border-transparent focus:outline-none"
                               onKeyPress={(e) => {
                                 if (e.key === 'Enter' && isLoggedIn) {
                                   handleAddComment(post.post_id);

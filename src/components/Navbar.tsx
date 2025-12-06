@@ -142,7 +142,8 @@ const Navbar = () => {
   // Menutup dropdown saat klik di luar (HANYA DESKTOP)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (window.innerWidth < 768) return; // Abaikan di mobile
+      // PERUBAHAN: Abaikan jika lebar kurang dari LG (sekarang mobile mode)
+      if (window.innerWidth < 1024) return; 
 
       const target = event.target as Node;
 
@@ -281,7 +282,8 @@ const Navbar = () => {
           </Link>
 
           {/* Navigasi Desktop */}
-          <div className="hidden md:flex items-center space-x-8">
+          {/* PERUBAHAN: Menu penuh hanya muncul mulai dari LG (1024px) */}
+          <div className="hidden lg:flex items-center space-x-8">
             {finalNavLinks.map((link) => {
               if (link.isDropdown && link.id) {
                 const isActive = isDropdownActive(link.id);
@@ -376,12 +378,16 @@ const Navbar = () => {
             })}
           </div>
 
-          <div className="hidden md:flex items-center">
+          {/* Aksi Desktop */}
+          {/* PERUBAHAN: Aksi hanya muncul mulai dari LG (1024px) */}
+          <div className="hidden lg:flex items-center">
             <DesktopActions />
           </div>
 
+          {/* Tombol Toggle Mobile/Hamburger */}
+          {/* PERUBAHAN: Tombol muncul hingga layar LG (1024px) */}
           <button
-            className="md:hidden text-gray-700 hover:text-primary p-2 focus:outline-none transition-transform duration-300"
+            className="lg:hidden text-gray-700 hover:text-primary p-2 focus:outline-none transition-transform duration-300"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -395,8 +401,9 @@ const Navbar = () => {
       </div>
 
       {/* Navigasi Mobile */}
+      {/* PERUBAHAN: Navigasi Mobile disembunyikan mulai dari LG (1024px) */}
       <div
-        className={`md:hidden overflow-y-auto transition-all duration-500 ease-in-out bg-white ${
+        className={`lg:hidden overflow-y-auto transition-all duration-500 ease-in-out bg-white ${
           isMenuOpen
             ? 'max-h-[80vh] opacity-100 border-t border-gray-100 shadow-xl'
             : 'max-h-0 opacity-0'
