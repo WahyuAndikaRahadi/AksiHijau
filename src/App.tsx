@@ -19,6 +19,7 @@ import SocialCommunity from './pages/SocialCommunity';
 import BlogList from './pages/BlogList';
 import BlogPost from './pages/BlogPost';
 import EcoBot from './pages/EcoBot';
+import Profile from './pages/Profile';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -58,6 +59,7 @@ const AppContent = () => {
           <Route path="/community-events" element={<CommunityEvents />} />
           <Route path="/community-social" element={<SocialCommunity />} />
           <Route path="/dashboard-admin" element={<AdminDashboard />} />
+          <Route path="/profile" element={<Profile />} />
           
           <Route path="/blog" element={<BlogList />} />
           <Route path="/blog/:slug" element={<BlogPost />} /> 

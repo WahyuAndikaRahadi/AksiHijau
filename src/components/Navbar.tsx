@@ -1,46 +1,67 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Leaf, Menu, X, LogOut, User as UserIcon, ChevronDown, BookOpen, Newspaper } from 'lucide-react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, MouseEvent } from 'react';
 import { motion } from 'framer-motion';
 import Swal from 'sweetalert2';
+import { LucideIcon } from 'lucide-react'; // Import tipe untuk ikon
+
+// --- DEFINISI TIPE ---
+
+/** Definisi untuk link di dalam dropdown */
+interface DropdownLink {
+  path: string;
+  label: string;
+  icon?: LucideIcon; // Icon dari lucide-react (opsional)
+  isAdmin?: boolean; // Khusus untuk link admin
+}
+
+/** Definisi untuk item navigasi utama, termasuk dropdown */
+interface NavLink {
+  path?: string; // Path bisa opsional jika ini adalah item dropdown utama
+  label: string;
+  isDropdown?: boolean;
+  id?: 'features' | 'insight' | 'community'; // ID khusus untuk kontrol state dropdown
+  dropdownLinks?: DropdownLink[];
+}
+
+// --- KOMPONEN UTAMA ---
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   // States
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   
-  // --- STATE DROPDOWN ---
-  const [isFeaturesDropdownOpen, setIsFeaturesDropdownOpen] = useState(false); // PERBAIKAN: State baru untuk Features
-  const [isInsightDropdownOpen, setIsInsightDropdownOpen] = useState(false);
-  const [isCommunityDropdownOpen, setIsCommunityDropdownOpen] = useState(false);
+  // State Dropdown
+  const [isFeaturesDropdownOpen, setIsFeaturesDropdownOpen] = useState<boolean>(false);
+  const [isInsightDropdownOpen, setIsInsightDropdownOpen] = useState<boolean>(false);
+  const [isCommunityDropdownOpen, setIsCommunityDropdownOpen] = useState<boolean>(false);
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [userName, setUserName] = useState('User');
+  // State Autentikasi
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [userName, setUserName] = useState<string>('User');
 
-  // Navigasi Statis
-  const baseNavLinks = [
+  // Navigasi Statis dengan tipe NavLink
+  const baseNavLinks: NavLink[] = [
     { path: '/', label: 'Beranda' },
     { path: '/about', label: 'Tentang' },
     {
       label: 'Fitur',
       isDropdown: true,
       id: 'features',
-      path: '/features',
-      dropdownLinks: [
-        { path: 'air-quality', label: 'Kualitas Udara' },
-        { path: 'soil-health', label: 'Kesehatan Tanah' },
-        { path: 'water-quality', label: 'Kualitas Air' },
+      dropdownLinks: [ // Diperbaiki agar path lengkap
+        { path: '/air-quality', label: 'Kualitas Udara' },
+        { path: '/soil-health', label: 'Kesehatan Tanah' },
+        { path: '/water-quality', label: 'Kualitas Air' },
       ],
     },
     {
       label: 'Artikel',
       isDropdown: true,
       id: 'insight',
-      path: '/wawasan',
       dropdownLinks: [
         { path: '/news', label: 'News & Update', icon: Newspaper },
         { path: '/blog', label: 'Blog & Artikel', icon: BookOpen },
@@ -50,7 +71,6 @@ const Navbar = () => {
       label: 'Komunitas',
       isDropdown: true,
       id: 'community',
-      path: '/community',
       dropdownLinks: [
         { path: '/community-events', label: 'Events Komunitas' },
         { path: '/community-social', label: 'Komunitas Sosial' },
@@ -68,7 +88,9 @@ const Navbar = () => {
       setIsAuthenticated(true);
       try {
         const user = userString ? JSON.parse(userString) : {};
-        setIsAdmin(user.is_admin === true);
+        // Pastikan is_admin diperiksa dengan benar
+        const adminStatus = user.is_admin === true || user.is_admin === 'true'; 
+        setIsAdmin(adminStatus);
         setUserName(user.username || user.email?.split('@')[0] || 'User');
       } catch (e) {
         setUserName('User');
@@ -81,7 +103,8 @@ const Navbar = () => {
     }
   }, []);
 
-  const handleLogout = () => {
+  // Handler Logout
+  const handleLogout = (): void => {
     localStorage.removeItem('token');
     localStorage.removeItem('currentUser');
     setIsAuthenticated(false);
@@ -89,7 +112,7 @@ const Navbar = () => {
     setUserName('User');
     setIsMenuOpen(false);
     navigate('/login');
-    Swal.fire('Berhasil!', 'Logout anda berhasil', 'success')
+    Swal.fire('Berhasil!', 'Logout anda berhasil', 'success');
   };
 
   // Efek Scroll
@@ -102,15 +125,19 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [checkAuthStatus]);
 
-  // Efek Reset Dropdown saat Pindah Halaman
-  useEffect(() => {
-    setIsMenuOpen(false);
-    // Tutup semua dropdown saat navigasi
+  // Fungsi untuk menutup semua dropdown (desktop & mobile)
+  const closeAllDropdowns = useCallback((): void => {
     setIsFeaturesDropdownOpen(false);
     setIsInsightDropdownOpen(false);
     setIsCommunityDropdownOpen(false);
+    setIsMenuOpen(false); // Tutup menu mobile juga
+  }, []);
+
+  // Efek Reset Dropdown saat Pindah Halaman
+  useEffect(() => {
+    closeAllDropdowns();
     checkAuthStatus();
-  }, [location.pathname, checkAuthStatus]);
+  }, [location.pathname, checkAuthStatus, closeAllDropdowns]);
 
   // Menutup dropdown saat klik di luar (HANYA DESKTOP)
   useEffect(() => {
@@ -119,40 +146,30 @@ const Navbar = () => {
 
       const target = event.target as Node;
 
-      // Element Tombol & Menu
-      const featuresBtn = document.getElementById('features-dropdown-button');
-      const featuresMenu = document.getElementById('features-dropdown-menu');
-      
-      const insightBtn = document.getElementById('insight-dropdown-button');
-      const insightMenu = document.getElementById('insight-dropdown-menu');
-      
-      const communityBtn = document.getElementById('community-dropdown-button');
-      const communityMenu = document.getElementById('community-dropdown-menu');
-
-      // Cek Features
-      if (featuresBtn && !featuresBtn.contains(target) && featuresMenu && !featuresMenu.contains(target)) {
-        setIsFeaturesDropdownOpen(false);
+      // Fungsi helper untuk cek klik luar
+      const isClickedOutside = (buttonId: string, menuId: string, setState: (isOpen: boolean) => void, isOpen: boolean) => {
+        const button = document.getElementById(buttonId);
+        const menu = document.getElementById(menuId);
+        
+        if (isOpen && button && !button.contains(target) && menu && !menu.contains(target)) {
+          setState(false);
+        }
       }
 
-      // Cek Insight
-      if (insightBtn && !insightBtn.contains(target) && insightMenu && !insightMenu.contains(target)) {
-        setIsInsightDropdownOpen(false);
-      }
-
-      // Cek Community
-      if (communityBtn && !communityBtn.contains(target) && communityMenu && !communityMenu.contains(target)) {
-        setIsCommunityDropdownOpen(false);
-      }
+      isClickedOutside('features-dropdown-button', 'features-dropdown-menu', setIsFeaturesDropdownOpen, isFeaturesDropdownOpen);
+      isClickedOutside('insight-dropdown-button', 'insight-dropdown-menu', setIsInsightDropdownOpen, isInsightDropdownOpen);
+      isClickedOutside('community-dropdown-button', 'community-dropdown-menu', setIsCommunityDropdownOpen, isCommunityDropdownOpen);
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside as any); // Type assertion untuk event listener
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside as any);
     };
-  }, []);
+  }, [isFeaturesDropdownOpen, isInsightDropdownOpen, isCommunityDropdownOpen]);
 
   // Fungsi Cek Aktif
-  const isDropdownActive = (id: string) => {
+  const isDropdownActive = (id: NavLink['id']): boolean => {
+    if (!id) return false;
     const links = baseNavLinks.find((link) => link.id === id)?.dropdownLinks || [];
     const isBaseActive = links.some((subLink) => location.pathname === subLink.path);
 
@@ -162,14 +179,14 @@ const Navbar = () => {
     return isBaseActive;
   };
 
-  const finalNavLinks = baseNavLinks.map((link) => {
+  // Membuat daftar navigasi akhir, termasuk Admin Dashboard jika diperlukan
+  const finalNavLinks: NavLink[] = baseNavLinks.map((link) => {
     if (link.isDropdown && link.id === 'community') {
-      let updatedDropdownLinks = [...link.dropdownLinks];
+      let updatedDropdownLinks: DropdownLink[] = [...(link.dropdownLinks || [])];
       if (isAdmin) {
         updatedDropdownLinks.unshift({
           path: '/dashboard-admin',
           label: 'Admin Dashboard',
-          // @ts-ignore
           isAdmin: true,
           icon: UserIcon,
         });
@@ -179,17 +196,16 @@ const Navbar = () => {
     return link;
   });
 
-  // --- PERBAIKAN UTAMA DI SINI ---
   // Helper untuk mendapatkan state boolean berdasarkan ID string
-  const getDropdownState = (id: string) => {
+  const getDropdownState = (id: NavLink['id']): boolean => {
     if (id === 'features') return isFeaturesDropdownOpen;
     if (id === 'insight') return isInsightDropdownOpen;
     if (id === 'community') return isCommunityDropdownOpen;
     return false;
   };
 
-  // Helper untuk toggle
-  const toggleDropdown = (id: string) => {
+  // Helper untuk toggle dropdown
+  const toggleDropdown = (id: NavLink['id']): void => {
     if (id === 'features') {
       setIsFeaturesDropdownOpen((prev) => !prev);
       setIsInsightDropdownOpen(false);
@@ -205,16 +221,20 @@ const Navbar = () => {
     }
   };
 
+  // Komponen Aksi Desktop
   const DesktopActions = () => {
     if (isAuthenticated) {
       return (
         <div className="flex items-center space-x-4">
+          {/* PERBAIKAN: Link ke /profile di username */}
           <Link
             to="/profile"
-            className="flex items-center space-x-2 text-gray-700 font-medium border border-gray-200 px-3 py-2 rounded-xl transition-all duration-300 hover:bg-gray-50"
+            className={`flex items-center space-x-2 font-medium border border-gray-200 px-3 py-2 rounded-xl transition-all duration-300 hover:bg-gray-50 group
+              ${location.pathname === '/profile' ? 'text-primary bg-green-50' : 'text-gray-700'}`}
+            id="user-profile-button"
           >
             <UserIcon className="w-5 h-5 text-primary" />
-            <span>Hi, {userName}</span>
+            <span className="truncate max-w-[120px]">Hi, {userName}</span>
           </Link>
           <button
             onClick={handleLogout}
@@ -303,9 +323,8 @@ const Navbar = () => {
                       }`}
                       style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
                     >
-                      {link.dropdownLinks?.map((subLink: any) => {
-                        const IconComponent =
-                          subLink.icon || (subLink.isAdmin ? UserIcon : null);
+                      {link.dropdownLinks?.map((subLink: DropdownLink) => {
+                        const IconComponent = subLink.icon;
 
                         return (
                           <Link
@@ -325,11 +344,7 @@ const Navbar = () => {
                                   : ''
                               }
                             `}
-                            onClick={() => {
-                              setIsFeaturesDropdownOpen(false);
-                              setIsInsightDropdownOpen(false);
-                              setIsCommunityDropdownOpen(false);
-                            }}
+                            onClick={closeAllDropdowns}
                           >
                             {IconComponent && (
                               <IconComponent className="w-4 h-4" />
@@ -416,9 +431,8 @@ const Navbar = () => {
                       isOpen ? 'max-h-60 pt-1' : 'max-h-0'
                     }`}
                   >
-                    {link.dropdownLinks?.map((subLink: any) => {
-                      const IconComponent =
-                        subLink.icon || (subLink.isAdmin ? UserIcon : null);
+                    {link.dropdownLinks?.map((subLink: DropdownLink) => {
+                      const IconComponent = subLink.icon;
 
                       return (
                         <Link
@@ -438,12 +452,7 @@ const Navbar = () => {
                                 : ''
                             }
                           `}
-                          onClick={() => {
-                            setIsMenuOpen(false);
-                            setIsFeaturesDropdownOpen(false);
-                            setIsInsightDropdownOpen(false);
-                            setIsCommunityDropdownOpen(false);
-                          }}
+                          onClick={closeAllDropdowns}
                         >
                           {IconComponent && (
                             <IconComponent className="w-4 h-4" />
@@ -466,7 +475,7 @@ const Navbar = () => {
                       ? 'bg-primary/10 text-primary'
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={closeAllDropdowns}
                 >
                   <span>{link.label}</span>
                 </Link>
@@ -477,10 +486,12 @@ const Navbar = () => {
           <div className="pt-2 border-t mt-2 flex flex-col space-y-2">
             {isAuthenticated ? (
               <>
+                {/* PERBAIKAN: Link ke /profile di username (Mobile) */}
                 <Link
                   to="/profile"
-                  className="flex items-center justify-center py-2 text-base font-semibold text-gray-800 bg-gray-50 rounded-lg hover:bg-gray-100"
-                  onClick={() => setIsMenuOpen(false)}
+                  className={`flex items-center justify-center py-2 text-base font-semibold bg-gray-50 rounded-lg hover:bg-gray-100
+                    ${location.pathname === '/profile' ? 'text-primary bg-green-100' : 'text-gray-800'}`}
+                  onClick={closeAllDropdowns}
                 >
                   <UserIcon className="w-5 h-5 text-primary mr-2" />
                   Hi, {userName}
@@ -497,14 +508,14 @@ const Navbar = () => {
                 <Link
                   to="/login"
                   className="block w-full text-center py-2 border border-primary text-primary rounded-lg hover:bg-green-50 transition-colors font-medium"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={closeAllDropdowns}
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
                   className="block w-full text-center py-2 bg-primary text-white rounded-lg hover:bg-green-600 transition-colors font-medium"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={closeAllDropdowns}
                 >
                   Register
                 </Link>

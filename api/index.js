@@ -115,9 +115,10 @@ app.post('/auth/register', async (req, res) => {
         const password_hash = await bcrypt.hash(password, salt);
 
         // Insert user baru
+        // Menambahkan last_password_change dan last_username_change untuk batasan 7 hari
         const result = await pool.query(
-            `INSERT INTO users (username, email, password_hash, eco_level, is_admin) 
-             VALUES ($1, $2, $3, 1, false) 
+            `INSERT INTO users (username, email, password_hash, eco_level, is_admin, last_password_change, last_username_change) 
+             VALUES ($1, $2, $3, 1, false, NOW(), NOW()) 
              RETURNING user_id, username, email, eco_level, is_admin, created_at`,
             [username, email, password_hash]
         );
@@ -211,8 +212,9 @@ app.post('/auth/login', async (req, res) => {
 app.get('/auth/me', authenticateToken, async (req, res) => {
     console.log('GET /auth/me hit!');
     try {
+        // Ambil semua data termasuk timestamp perubahan
         const result = await pool.query(
-            `SELECT user_id, username, email, eco_level, is_admin, created_at 
+            `SELECT user_id, username, email, eco_level, is_admin, created_at, last_password_change, last_username_change
              FROM users WHERE user_id = $1`,
             [req.user.user_id]
         );
@@ -240,6 +242,208 @@ app.get('/auth/me', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Internal server error', details: err.message });
     }
 });
+
+
+app.get('/users/profile', authenticateToken, async (req, res) => {
+    console.log(`GET /users/profile hit! User ID: ${req.user.user_id}`);
+    const userId = req.user.user_id;
+
+    try {
+        const result = await pool.query(
+            // Ambil semua kolom yang relevan dari tabel users
+            // JANGAN sertakan password!
+            'SELECT user_id, username, email, is_admin, created_at, eco_level FROM users WHERE user_id = $1',
+            [userId]
+        );
+
+        if (result.rowCount === 0) {
+            console.warn(`Profile not found for user_id: ${userId}`);
+            return res.status(404).json({ error: 'Profil pengguna tidak ditemukan.' });
+        }
+
+        const profileData = result.rows[0];
+        res.json(profileData);
+        
+    } catch (err) {
+        console.error('Error fetching user profile:', err);
+        res.status(500).json({ error: 'Gagal mengambil data profil dari database', details: err.message });
+    }
+});
+
+app.put('/users/profile', authenticateToken, async (req, res) => {
+    console.log(`PUT /users/profile hit! User ID: ${req.user.user_id}`);
+    const userId = req.user.user_id;
+    // Hanya izinkan update untuk username dan email
+    const { username, email } = req.body; 
+
+    if (!username || !email) {
+        return res.status(400).json({ error: 'Username dan Email diperlukan untuk update.' });
+    }
+
+    try {
+        // Cek apakah email sudah digunakan oleh pengguna lain
+        const emailCheck = await pool.query(
+            'SELECT user_id FROM users WHERE email = $1 AND user_id != $2',
+            [email, userId]
+        );
+
+        if (emailCheck.rowCount > 0) {
+            return res.status(409).json({ error: 'Email ini sudah digunakan oleh pengguna lain.' });
+        }
+
+        // Lakukan update
+        const updateResult = await pool.query(
+            'UPDATE users SET username = $1, email = $2 WHERE user_id = $3 RETURNING user_id, username, email, is_admin, created_at, eco_level',
+            [username, email, userId]
+        );
+
+        if (updateResult.rowCount === 0) {
+            return res.status(404).json({ error: 'Gagal memperbarui profil. Pengguna tidak ditemukan.' });
+        }
+        
+        const updatedProfile = updateResult.rows[0];
+        res.json(updatedProfile);
+
+    } catch (err) {
+        console.error('Error updating user profile:', err);
+        res.status(500).json({ error: 'Gagal memperbarui data profil', details: err.message });
+    }
+});
+
+// ============================================
+// NEW: PROFILE UPDATE ROUTES
+// ============================================
+
+// PATCH: Update Password (Max 1x per 7 hari)
+app.patch('/auth/profile/password', authenticateToken, async (req, res) => {
+    console.log('PATCH /auth/profile/password hit!');
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user.user_id;
+
+    try {
+        if (!currentPassword || !newPassword || newPassword.length < 6) {
+            return res.status(400).json({ error: 'Password saat ini dan password baru minimal 6 karakter harus diisi' });
+        }
+
+        // 1. Ambil data user dan last_password_change
+        const userResult = await pool.query(
+            'SELECT password_hash, last_password_change FROM users WHERE user_id = $1',
+            [userId]
+        );
+
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({ error: 'User tidak ditemukan' });
+        }
+
+        const user = userResult.rows[0];
+
+        // 2. Verifikasi password saat ini
+        const validPassword = await bcrypt.compare(currentPassword, user.password_hash);
+        if (!validPassword) {
+            return res.status(401).json({ error: 'Password saat ini salah' });
+        }
+
+        // 3. Cek batasan waktu (7 hari / 604800000 ms)
+        const lastChange = new Date(user.last_password_change).getTime();
+        const currentTime = Date.now();
+        const oneWeek = 7 * 24 * 60 * 60 * 1000; // 604800000 ms
+
+        if (currentTime - lastChange < oneWeek) {
+            const timeRemaining = oneWeek - (currentTime - lastChange);
+            const remainingHours = Math.ceil(timeRemaining / (1000 * 60 * 60));
+            return res.status(429).json({ 
+                error: `Anda hanya dapat mengubah password 1x dalam 7 hari. Coba lagi dalam waktu kurang lebih ${remainingHours} jam.`,
+                retry_after_ms: timeRemaining
+            });
+        }
+
+        // 4. Hash password baru
+        const salt = await bcrypt.genSalt(10);
+        const newPasswordHash = await bcrypt.hash(newPassword, salt);
+
+        // 5. Update password dan timestamp
+        await pool.query(
+            `UPDATE users SET password_hash = $1, last_password_change = NOW() WHERE user_id = $2`,
+            [newPasswordHash, userId]
+        );
+
+        res.json({ message: 'Password berhasil diperbarui.' });
+
+    } catch (err) {
+        console.error('Error updating password:', err);
+        res.status(500).json({ error: 'Internal server error', details: err.message });
+    }
+});
+
+// PATCH: Update Username (Max 1x per 7 hari)
+app.patch('/auth/profile/username', authenticateToken, async (req, res) => {
+    console.log('PATCH /auth/profile/username hit!');
+    const { newUsername } = req.body;
+    const userId = req.user.user_id;
+
+    try {
+        if (!newUsername || newUsername.length < 3) {
+            return res.status(400).json({ error: 'Username baru minimal 3 karakter harus diisi' });
+        }
+        
+        // 1. Ambil data user dan last_username_change
+        const userResult = await pool.query(
+            'SELECT username, last_username_change FROM users WHERE user_id = $1',
+            [userId]
+        );
+
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({ error: 'User tidak ditemukan' });
+        }
+
+        const user = userResult.rows[0];
+
+        // Cek apakah username sama
+        if (user.username === newUsername) {
+            return res.status(400).json({ error: 'Username baru sama dengan username saat ini' });
+        }
+
+        // 2. Cek batasan waktu (7 hari / 604800000 ms)
+        const lastChange = new Date(user.last_username_change).getTime();
+        const currentTime = Date.now();
+        const oneWeek = 7 * 24 * 60 * 60 * 1000; // 604800000 ms
+
+        if (currentTime - lastChange < oneWeek) {
+            const timeRemaining = oneWeek - (currentTime - lastChange);
+            const remainingHours = Math.ceil(timeRemaining / (1000 * 60 * 60));
+            return res.status(429).json({ 
+                error: `Anda hanya dapat mengubah username 1x dalam 7 hari. Coba lagi dalam waktu kurang lebih ${remainingHours} jam.`,
+                retry_after_ms: timeRemaining
+            });
+        }
+        
+        // 3. Cek apakah username baru sudah digunakan
+        const checkUsername = await pool.query(
+            'SELECT user_id FROM users WHERE username = $1',
+            [newUsername]
+        );
+        
+        if (checkUsername.rows.length > 0) {
+            return res.status(400).json({ error: 'Username ini sudah digunakan oleh pengguna lain' });
+        }
+
+        // 4. Update username dan timestamp
+        await pool.query(
+            `UPDATE users SET username = $1, last_username_change = NOW() WHERE user_id = $2`,
+            [newUsername, userId]
+        );
+        
+        // Catatan: Token JWT tidak perlu di-refresh segera karena token tetap valid.
+        // Data di client akan di-refresh setelah update berhasil.
+        
+        res.json({ message: 'Username berhasil diperbarui.', newUsername });
+
+    } catch (err) {
+        console.error('Error updating username:', err);
+        res.status(500).json({ error: 'Internal server error', details: err.message });
+    }
+});
+
 
 // ============================================
 // EVENTS ROUTES

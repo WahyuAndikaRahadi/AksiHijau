@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, Users, TrendingUp, Plus, Clock, Search, Filter } from 'lucide-react';
 import { useState, useEffect } from 'react';
+// ✨ Impor SweetAlert2
+import Swal from 'sweetalert2';
 
 // Mock API URL - ganti dengan URL backend Anda
 const API_URL = 'http://localhost:5000';
@@ -59,6 +61,8 @@ const CommunityEvents = () => {
       }
     } catch (error) {
       console.error('Error loading events:', error);
+      // Opsi: Tambahkan SweetAlert untuk error loading
+      // Swal.fire('Error', 'Gagal memuat daftar event.', 'error');
     } finally {
       setLoading(false);
     }
@@ -67,12 +71,18 @@ const CommunityEvents = () => {
   const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // ✨ Cek validasi wajib (title, desc, date) dan status loading
+    // Cek validasi wajib (title, desc, date) dan status loading
     if (!formData.title.trim() || !formData.description.trim() || !formData.event_date.trim() || isCreating) return;
 
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Silakan login terlebih dahulu');
+      // ✨ Ganti alert dengan Swal
+      Swal.fire({
+        icon: 'warning',
+        title: 'Harap Login',
+        text: 'Silakan login terlebih dahulu untuk membuat event.',
+        confirmButtonText: 'OK',
+      });
       return;
     }
 
@@ -89,18 +99,35 @@ const CommunityEvents = () => {
       });
 
       if (response.ok) {
-        alert('Event berhasil dibuat! Menunggu persetujuan admin.');
+        // ✨ Ganti alert dengan Swal Success
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil Dibuat!',
+            text: 'Event berhasil dibuat! Menunggu persetujuan admin sebelum dipublikasikan.',
+            confirmButtonText: 'Mengerti',
+        });
         setShowCreateModal(false);
         setFormData({ title: '', description: '', event_date: '', location: '' });
-        // Hanya reload event yang sudah disetujui, tapi panggil loadEvents untuk refresh
         loadEvents(); 
       } else {
         const error = await response.json();
-        alert(error.error || 'Gagal membuat event');
+        // ✨ Ganti alert dengan Swal Error
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: error.error || 'Gagal membuat event. Silakan coba lagi.',
+            confirmButtonText: 'Tutup',
+        });
       }
     } catch (error) {
       console.error('Error creating event:', error);
-      alert('Terjadi kesalahan');
+       // ✨ Ganti alert dengan Swal Error Koneksi
+       Swal.fire({
+            icon: 'error',
+            title: 'Kesalahan Jaringan',
+            text: 'Terjadi kesalahan koneksi saat membuat event. Periksa koneksi internet Anda.',
+            confirmButtonText: 'Tutup',
+        });
     } finally {
       setIsCreating(false); // Selesai proses posting
     }
@@ -108,10 +135,16 @@ const CommunityEvents = () => {
 
   const handleUpvote = async (eventId: number) => {
     if (!isLoggedIn) {
-      alert('Silakan login untuk upvote');
+      // ✨ Ganti alert dengan Swal
+      Swal.fire({
+        icon: 'warning',
+        title: 'Harap Login',
+        text: 'Silakan login untuk memberikan dukungan (upvote) pada event ini.',
+        confirmButtonText: 'OK',
+      });
       return;
     }
-    // ✨ Cek apakah event ini sudah dalam proses upvote
+    // Cek apakah event ini sudah dalam proses upvote
     if (upvoting.has(eventId)) return;
 
     setUpvoting(prev => new Set(prev).add(eventId)); // Mulai upvote
@@ -127,16 +160,28 @@ const CommunityEvents = () => {
       });
 
       if (response.ok) {
-        // Karena upvote adalah toggle dan kita tidak menyimpan state upvote user, 
-        // kita panggil loadEvents untuk mendapatkan count terbaru dan status upvote yang akurat.
+        // Swal tidak wajib di sini, tapi bisa memberikan feedback singkat
+        // Swal.fire({ icon: 'success', title: 'Upvote Berhasil', showConfirmButton: false, timer: 1000 });
         await loadEvents(); 
       } else {
          const error = await response.json();
-         alert(error.error || 'Gagal upvote event.');
+         // ✨ Ganti alert dengan Swal Error
+         Swal.fire({
+            icon: 'info',
+            title: 'Upvote Gagal',
+            text: error.error || 'Gagal upvote event. Mungkin Anda sudah upvote.',
+            confirmButtonText: 'Tutup',
+        });
       }
     } catch (error) {
       console.error('Error upvoting:', error);
-      alert('Terjadi kesalahan koneksi saat upvote.');
+      // ✨ Ganti alert dengan Swal Error Koneksi
+      Swal.fire({
+        icon: 'error',
+        title: 'Kesalahan Jaringan',
+        text: 'Terjadi kesalahan koneksi saat upvote.',
+        confirmButtonText: 'Tutup',
+      });
     } finally {
       // Selesai upvote, hapus dari set
       setUpvoting(prev => {
@@ -149,7 +194,7 @@ const CommunityEvents = () => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    // ✨ Robustness check for Invalid Date
+    // Robustness check for Invalid Date
     if (isNaN(date.getTime())) {
         return 'Tanggal tidak valid'; 
     }
@@ -226,7 +271,15 @@ const CommunityEvents = () => {
             </div>
             <button
               onClick={() => {
-                if (!isLoggedIn) alert('Harap login untuk membuat Event.');
+                if (!isLoggedIn) {
+                   // ✨ Ganti alert dengan Swal
+                   Swal.fire({
+                        icon: 'warning',
+                        title: 'Harap Login',
+                        text: 'Silakan login untuk membuat Event.',
+                        confirmButtonText: 'OK',
+                    });
+                }
                 else setShowCreateModal(true);
               }}
               disabled={!isLoggedIn}
@@ -501,7 +554,7 @@ const CommunityEvents = () => {
               </button>
               <button
                 onClick={handleCreateEvent}
-                // ✨ Tambahkan cek isFormValid dan isCreating
+                // Tambahkan cek isFormValid dan isCreating
                 disabled={!isFormValid || isCreating}
                 className={`flex-1 px-6 py-3 text-white rounded-lg transition-all duration-300 font-semibold ${
                   !isFormValid || isCreating

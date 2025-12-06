@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { Heart, MessageCircle, Send, Image as ImageIcon, Leaf, Award, XCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
+// ✨ Impor SweetAlert2
+import Swal from 'sweetalert2'; 
 
 // URL backend, pastikan ini sesuai
 const API_URL = 'http://localhost:5000'; 
@@ -120,7 +122,13 @@ const SocialCommunity = () => {
   const handleLike = async (postId: number) => {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert('Silakan login untuk like');
+      // ✨ Ganti alert dengan Swal
+      Swal.fire({
+        icon: 'warning',
+        title: 'Harap Login',
+        text: 'Anda harus login untuk memberikan like.',
+        confirmButtonText: 'OK',
+      });
       return;
     }
 
@@ -189,21 +197,37 @@ const SocialCommunity = () => {
         });
         
         const error = await response.json();
-        alert(error.error || 'Gagal memperbarui like. Status dikembalikan.');
+        // ✨ Ganti alert dengan Swal
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal Like',
+            text: error.error || 'Gagal memperbarui like. Status dikembalikan.',
+            confirmButtonText: 'Tutup',
+        });
+      } else {
+        // Jika sukses, biarkan UI tetap terupdate secara optimistic
+        // Opsi: Beri feedback sukses singkat
+        // Swal.fire({ icon: 'success', title: 'Berhasil', showConfirmButton: false, timer: 800 });
       }
     } catch (error) {
       console.error('Error liking post (network error):', error);
       // Rollback jika error jaringan
-      // ... (rollback logic sama seperti di atas)
+      // Rollback logic ada di bagian `if (!response.ok)`
+      // ✨ Ganti alert dengan Swal
+      Swal.fire({
+          icon: 'error',
+          title: 'Kesalahan Jaringan',
+          text: 'Terjadi kesalahan koneksi saat like. Status dikembalikan.',
+          confirmButtonText: 'Tutup',
+      });
+      
     }
   };
 
 // ----------------------------------------------------
-// ## FUNGSI COMMENT DAN UTILITY (Tetap Sama)
+// ## FUNGSI COMMENT DAN UTILITY
 // ----------------------------------------------------
   
-  // ... (handleCreatePost, loadComments, handleAddComment, toggleComments) ...
-
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -211,7 +235,13 @@ const SocialCommunity = () => {
 
     const token = localStorage.getItem('token');
     if (!token) {
-        alert('Silakan login terlebih dahulu untuk membuat post.');
+        // ✨ Ganti alert dengan Swal
+        Swal.fire({
+            icon: 'warning',
+            title: 'Harap Login',
+            text: 'Silakan login terlebih dahulu untuk membuat post.',
+            confirmButtonText: 'OK',
+        });
         return;
     }
 
@@ -248,13 +278,27 @@ const SocialCommunity = () => {
         setShowCreateModal(false);
         setPostContent('');
         setPostImage('');
+        // Opsi: Feedback sukses singkat
+        Swal.fire({ icon: 'success', title: 'Post Berhasil!',text:'Postingan berhasil dibuat!', showConfirmButton: false, timer: 1500 });
       } else {
         const error = await response.json();
-        alert(error.error || 'Gagal membuat post');
+        // ✨ Ganti alert dengan Swal
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal Posting',
+            text: error.error || 'Gagal membuat post. Silakan coba lagi.',
+            confirmButtonText: 'Tutup',
+        });
       }
     } catch (error) {
       console.error('Error creating post:', error);
-      alert('Terjadi kesalahan');
+      // ✨ Ganti alert dengan Swal
+      Swal.fire({
+            icon: 'error',
+            title: 'Kesalahan Jaringan',
+            text: 'Terjadi kesalahan jaringan saat membuat post.',
+            confirmButtonText: 'Tutup',
+        });
     } finally {
       setIsPosting(false);
     }
@@ -278,7 +322,13 @@ const SocialCommunity = () => {
 
     const token = localStorage.getItem('token');
     if (!token) {
-        alert('Silakan login untuk komentar');
+        // ✨ Ganti alert dengan Swal
+        Swal.fire({
+            icon: 'warning',
+            title: 'Harap Login',
+            text: 'Silakan login untuk berkomentar.',
+            confirmButtonText: 'OK',
+        });
         return;
     }
 
@@ -309,11 +359,23 @@ const SocialCommunity = () => {
         setCommentText('');
       } else {
           const error = await response.json();
-          alert(error.error || 'Gagal menambah komentar');
+          // ✨ Ganti alert dengan Swal
+          Swal.fire({
+            icon: 'error',
+            title: 'Gagal Komentar',
+            text: error.error || 'Gagal menambah komentar. Silakan coba lagi.',
+            confirmButtonText: 'Tutup',
+        });
       }
     } catch (error) {
       console.error('Error adding comment:', error);
-      alert('Terjadi kesalahan jaringan saat menambah komentar');
+      // ✨ Ganti alert dengan Swal
+      Swal.fire({
+            icon: 'error',
+            title: 'Kesalahan Jaringan',
+            text: 'Terjadi kesalahan jaringan saat menambah komentar.',
+            confirmButtonText: 'Tutup',
+        });
     }
   };
 
@@ -373,7 +435,13 @@ const SocialCommunity = () => {
                 onError={() => {
                     setImgError(true);
                     onRemove(); 
-                    alert('Gagal memuat gambar dari link tersebut.');
+                    // ✨ Ganti alert dengan Swal
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gambar Gagal Dimuat',
+                        text: 'Gagal memuat gambar dari link yang dimasukkan. URL telah dihapus.',
+                        confirmButtonText: 'OK',
+                    });
                 }}
             />
             <button
@@ -410,7 +478,15 @@ const SocialCommunity = () => {
             <button
               onClick={() => {
                 if (isLoggedIn) setShowCreateModal(true);
-                else alert('Harap login untuk membuat Post.');
+                else {
+                   // ✨ Ganti alert dengan Swal
+                   Swal.fire({
+                        icon: 'warning',
+                        title: 'Harap Login',
+                        text: 'Anda harus login untuk membuat Post.',
+                        confirmButtonText: 'OK',
+                    });
+                }
               }}
               disabled={!isLoggedIn}
               className={`flex items-center gap-2 px-4 py-2 text-white rounded-lg transition-all shadow-md ${
