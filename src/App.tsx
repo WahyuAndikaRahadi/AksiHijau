@@ -21,7 +21,7 @@ import EcoBot from './pages/EcoBot';
 import Profile from './pages/Profile';
 // Import komponen loading dan 404
 import FirstLoadAnimation from './components/FirstLoadAnimation'; // 👈 Import FirstLoadAnimation
-import NotFound from './pages/Notfound'; // 👈 Import NotFound
+import NotFound from './pages/NotFound';
 
 // --- ScrollToTop Component ---
 const ScrollToTop = () => {

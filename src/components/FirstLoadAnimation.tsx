@@ -9,7 +9,6 @@ import {
 } from "animejs";
 import { useEffect, useRef } from "react";
 
-// --- UTILITY CSS CLASS INJECTION ---
 const injectCss = () => {
   const style = document.createElement("style");
   style.textContent = `
@@ -30,7 +29,6 @@ const injectCss = () => {
         cursor: grabbing;
     }
     
-    /* STYLE UNTUK IKON TUNAS YANG AKAN DIGAMBAR */
     .sprout-drawable-svg {
         width: 60px; 
         height: 60px;
@@ -48,25 +46,19 @@ const injectCss = () => {
 };
 injectCss();
 
-// ------------------------------------------------------
-
 const FirstLoadAnimation = () => {
   const rootRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLHeadingElement>(null);
   const scope = useRef<any>(null);
 
-  // Ref untuk setiap PATH di ikon Tunas
   const path1Ref = useRef<SVGPathElement>(null);
   const path2Ref = useRef<SVGPathElement>(null);
   const path3Ref = useRef<SVGPathElement>(null);
 
-  // Total durasi menggambar untuk ketiga path adalah 5000ms
   const DRAW_DURATION_TOTAL = 4500;
-  // Durasi per path: 5000ms / 3 path ≈ 1666ms
   const DRAW_DURATION_PER_PATH = DRAW_DURATION_TOTAL / 3;
 
   useEffect(() => {
-    // Pastikan semua ref tersedia
     if (
       rootRef.current &&
       textRef.current &&
@@ -84,20 +76,14 @@ const FirstLoadAnimation = () => {
         return;
       }
 
-      // Kumpulkan semua elemen path
       const paths = [path1Ref.current, path2Ref.current, path3Ref.current];
 
       scope.current = createScope({ root: rootRef.current }).add((self) => {
-        // --- 1. ANIMASI LINE DRAWING (Ikon Tunas/Sprout) ---
-
         paths.forEach((pathElement, index) => {
-          // Hitung delay untuk setiap path
           const delay = index * DRAW_DURATION_PER_PATH;
 
-          // Animasi draw untuk setiap path
           animate(svg.createDrawable(pathElement), {
             draw: [
-              // Fase Menggambar: 0 (awal) ke 1 (akhir)
               {
                 to: "0 1",
                 easing: "easeInOutQuad",
@@ -105,11 +91,9 @@ const FirstLoadAnimation = () => {
                 delay: delay,
               },
             ],
-            // loop dihapus agar hanya menggambar sekali
           });
         });
 
-        // --- 2. ANIMASI LOGO (Leaf) ---
         animate(".leaf-logo", {
           scale: [
             { to: 1.3, ease: "inOut(3)", duration: 600 },
@@ -124,7 +108,6 @@ const FirstLoadAnimation = () => {
           releaseEase: spring({ bounce: 0.7 }),
         });
 
-        // --- 3. ANIMASI TEKS (Berjalan 2 Kali) ---
         animate(chars, {
           y: [
             { to: "-3rem", ease: "outExpo", duration: 600 },
@@ -148,25 +131,23 @@ const FirstLoadAnimation = () => {
   return (
     <div
       ref={rootRef}
-      className="fixed inset-0 flex flex-col items-center justify-center bg-green-50 z-[9999] first-load-animation-container"
+      className="fixed inset-0 flex flex-col items-center justify-center bg-green-50 z-[9999] first-load-animation-container gap-8"
     >
-      {/* Logo Leaf */}
       <img
-        src="/public/img/logo.png" // Ganti dengan URL/path gambar logo kamu
+        src="/public/img/logo.png"
         alt="Logo Aksi Hijau"
-        className="w-16 h-16 text-primary group-hover:rotate-12 transition-transform duration-300 leaf-logo"
+        className="w-16 h-16 mb-5 text-primary group-hover:rotate-12 transition-transform duration-300 leaf-logo"
       />
 
-      {/* Teks Aksi Hijau */}
       <h2
         ref={textRef}
-        className="text-5xl sm:text-6xl font-extrabold text-primary tracking-wider"
+        // DIUBAH DARI mt-24 MENJADI mt-8 (menggeser ke atas)
+        className="text-5xl sm:text-6xl font-extrabold text-primary tracking-wider mt-8"
       >
         Aksi Hijau
       </h2>
 
-      {/* IKON TUNAS/SPROUT YANG DIGAMBAR (DRAWABLE) */}
-      <div className="mt-8 text-primary">
+      <div className="text-primary">
         <svg
           className="sprout-drawable-svg"
           aria-hidden="true"
@@ -176,7 +157,6 @@ const FirstLoadAnimation = () => {
           fill="none"
           viewBox="0 0 24 24"
         >
-          {/* Path 1 */}
           <path
             ref={path1Ref}
             stroke="currentColor"
@@ -185,7 +165,6 @@ const FirstLoadAnimation = () => {
             strokeWidth="2"
             d="M14 9.536V7a4 4 0 0 1 4-4h1.5a.5.5 0 0 1 .5.5V5a4 4 0 0 1-4 4 4 4 0 0 0-4 4c0 2 1 3 1 5a5 5 0 0 1-1 3"
           />
-          {/* Path 2 */}
           <path
             ref={path2Ref}
             stroke="currentColor"
@@ -194,7 +173,6 @@ const FirstLoadAnimation = () => {
             strokeWidth="2"
             d="M4 9a5 5 0 0 1 8 4 5 5 0 0 1-8-4"
           />
-          {/* Path 3 */}
           <path
             ref={path3Ref}
             stroke="currentColor"
