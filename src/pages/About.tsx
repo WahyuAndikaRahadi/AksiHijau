@@ -167,7 +167,7 @@ const processSteps = [
     title: 'Pantau Lingkungan',
     desc: 'Cek kualitas udara (AQI) dan cuaca real-time di sekitarmu untuk mengantisipasi dampak polusi.',
     // Mengacu pada fitur di AirQuality.tsx
-    image:'./img/PantauLingkungan.jpg',
+    image: './img/PantauLingkungan.jpg',
     color: 'bg-cyan-100',
   },
   {
@@ -296,7 +296,7 @@ const About = () => {
           className="text-center mb-20"
         >
           <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
-            Tentang AksiHijau
+            Tentang <span className="text-green-600">Aksi Hijau</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Gerakan digital yang menghubungkan individu dengan solusi nyata
@@ -945,52 +945,66 @@ const About = () => {
         </motion.div>
 
         {/* BAGIAN DAMPAK KAMI DALAM ANGKA */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-          {impactStats.map((item, index) => (
-            <motion.div
-              key={item.label}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.08 }}
-              whileHover={{ y: -6, scale: 1.02 }}
-              className="relative group h-full"
-            >
-              {/* border glow */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-200/40 via-transparent to-cyan-200/40 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
+        <section className="py-12 px-4 max-w-7xl mx-auto">
 
-              <div
-                className="relative bg-white rounded-2xl border border-emerald-100/70 shadow-sm 
-        group-hover:border-emerald-300 group-hover:shadow-lg 
-        transition-all duration-300 p-6 
-        flex flex-col items-center text-center justify-between h-full"
+          {/* BAGIAN 1: HEADER (Dipisah dari Grid) */}
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Dampak Kami dalam Angka
+            </h2>
+            <p className="text-gray-500 text-lg">
+              Bersama membangun masyarakat yang lebih sehat
+            </p>
+          </div>
+
+          {/* BAGIAN 2: GRID KARTU */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+            {impactStats.map((item, index) => (
+              <motion.div
+                key={item.label}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+                whileHover={{ y: -5 }} // Efek naik sedikit saat hover
+                className="relative group h-full"
               >
-                <div className="mb-4 flex items-center justify-center">
-                  <div
-                    className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center 
-            shadow-[0_6px_18px_rgba(16,185,129,0.18)]"
-                  >
-                    <item.icon className="w-6 h-6 text-emerald-600" />
+                {/* Efek Glow Border Halus di belakang */}
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-200/40 via-transparent to-cyan-200/40 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
+
+                <div className="relative bg-white rounded-2xl border border-emerald-100 shadow-sm border-green-600
+          transition-all duration-300 p-6 
+          flex flex-col items-center text-center justify-between h-full"
+                >
+                  {/* Ikon */}
+                  <div className="mb-4 flex items-center justify-center">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center 
+              shadow-[0_6px_18px_rgba(16,185,129,0.18)]"
+                    >
+                      <item.icon className="w-6 h-6 text-emerald-600" />
+                    </div>
                   </div>
+
+                  {/* Angka & Label */}
+                  <div>
+                    <div className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-1">
+                      {item.value}
+                    </div>
+                    <div className="text-[13px] font-semibold uppercase tracking-[0.16em] text-emerald-700 mb-2">
+                      {item.label}
+                    </div>
+                  </div>
+
+                  {/* Deskripsi Kecil */}
+                  <p className="text-xs md:text-sm text-gray-500 leading-relaxed mt-2">
+                    {item.desc}
+                  </p>
                 </div>
+              </motion.div>
+            ))}
+          </div>
 
-                <div>
-                  <div className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-1">
-                    {item.value}
-                  </div>
-                  <div className="text-[13px] font-semibold uppercase tracking-[0.16em] text-emerald-700 mb-2">
-                    {item.label}
-                  </div>
-                </div>
-
-                <p className="text-xs md:text-sm text-gray-500 leading-relaxed mt-2">
-                  {item.desc}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
+        </section>
 
         {/* TIM KAMI */}
         <motion.div

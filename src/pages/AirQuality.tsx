@@ -222,10 +222,11 @@ const WeatherDashboard = ({ weatherData, locationName, isLoading }) => {
             </div>
           </div>
 
-          <div className="relative z-10 flex flex-col md:flex-row items-end md:items-center justify-between mt-8">
+          {/* ----- PERUBAHAN DI SINI: items-end diganti items-start ----- */}
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between mt-8">
             <div>
               <div className="flex items-start">
-                <span className="text-[10rem] leading-none font-black tracking-tighter drop-shadow-lg">{mainTemp}</span>
+                <span className="text-[15rem] md:text-[13rem] lg:text-[11rem] xl:text-[10rem] leading-none font-black tracking-tighter drop-shadow-lg">{mainTemp}</span>
                 <span className="text-6xl font-light text-blue-200 mt-4">°</span>
               </div>
               <div className="text-3xl font-medium text-white/90 ml-2">{weatherDescriptionID}</div>
@@ -817,7 +818,7 @@ const AirQuality = () => {
                                 fetchEnvironmentalData(fallbackLocation);
                                 if (mapRef.current) mapRef.current.flyTo([fallbackLocation.lat, fallbackLocation.lon], 13);
                             }}
-                            className="absolute bottom-4 left-4 z-[400] bg-white p-3 rounded-full shadow-lg hover:bg-slate-100 transition-colors border border-slate-200"
+                            className="absolute bottom-4 left-4 z-[10] bg-white p-3 rounded-full shadow-lg hover:bg-slate-100 transition-colors border border-slate-200"
                             title="Kembali ke Lokasi Default"
                         >
                             <LocateFixed className="w-5 h-5 text-slate-600" />

@@ -29,7 +29,7 @@ import {
 
 // =============================
 // SECTION 1: KUALITAS AIR
-// (Tidak ada perubahan)
+// (LAYOUT DIPERBAIKI: Gambar di Atas saat Mobile)
 // =============================
 
 const KualitasAirSection: React.FC = () => {
@@ -49,8 +49,10 @@ const KualitasAirSection: React.FC = () => {
         <div className="absolute bottom-0 right-0 w-72 h-72 bg-blue-50 rounded-full filter blur-3xl opacity-50 translate-y-1/3 translate-x-1/3 pointer-events-none"></div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center relative z-10">
+          
           {/* --- KONTEN KIRI (GAMBAR) --- */}
-          <div className="relative w-full flex justify-center lg:justify-start pt-10 lg:pt-0 order-2 lg:order-1">
+          {/* PERUBAHAN: order-1 (supaya di atas saat mobile), pt-0 (hapus padding atas) */}
+          <div className="relative w-full flex justify-center lg:justify-start pt-0 lg:pt-0 order-1 lg:order-1">
             <div className="relative w-full">
               {/* Container Gambar */}
               <div className="w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-white group relative z-0">
@@ -82,7 +84,8 @@ const KualitasAirSection: React.FC = () => {
           </div>
 
           {/* --- KONTEN KANAN (TEKS) --- */}
-          <div className="order-1 lg:order-2">
+          {/* PERUBAHAN: order-2 (supaya di bawah gambar saat mobile) */}
+          <div className="order-2 lg:order-2">
             {/* Badge Kategori */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-50 border border-cyan-200 text-cyan-700 text-sm font-bold mb-6 shadow-sm backdrop-blur-sm">
               <Droplet className="w-4 h-4" />
@@ -228,6 +231,10 @@ const KualitasAirSection: React.FC = () => {
     </section>
   );
 };
+
+// ... (SISA KODE WATER FOOTPRINT CALCULATOR TETAP SAMA SEPERTI YANG ANDA BERIKAN) ...
+// (Saya tidak menyertakan ulang kode di bawah ini untuk menghemat tempat, karena Anda meminta jangan ubah fungsi lain)
+// Pastikan menyambungkan kembali dengan kode WaterFootprintCalculatorSection yang lama.
 
 // =============================
 // SECTION 2: WATER FOOTPRINT CALCULATOR
@@ -1031,7 +1038,7 @@ const WaterFootprintCalculatorSection: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    Lihat Tips Hemat Air Personal (Gemini AI)
+                     Lihat Tips Hemat Air Personal (Gemini AI)
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
