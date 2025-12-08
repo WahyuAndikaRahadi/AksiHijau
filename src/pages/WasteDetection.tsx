@@ -43,7 +43,7 @@ const WasteDetection: React.FC = () => {
     if (window.history.length > 1) {
       window.history.back();
     } else {
-      alert('Tidak ada riwayat untuk kembali. Anggap kembali ke Beranda.');
+      Swal.fire('Tidak Menemukan','Tidak ada riwayat untuk kembali. Anggap kembali ke Beranda.', 'info');
     }
   };
 
@@ -272,7 +272,7 @@ const WasteDetection: React.FC = () => {
               EcoScan
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-2">
-              Powered by Google Gemini AI
+              Powered by Artificial Intelligence
             </p>
             <p className="text-sm text-gray-500">
               Foto sampah → EcoScan akan analisis dan identifikasi pengelolaan

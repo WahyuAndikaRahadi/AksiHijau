@@ -2,6 +2,40 @@ import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
+// Definisi Tautan Footer (Sama seperti versi terakhir, hanya penempatan judul yang disesuaikan)
+const footerNavSections = [
+  {
+    title: "Fitur Kami",
+    links: [
+      { path: "/air-quality", label: "Kualitas Udara" },
+      { path: "/soil-health", label: "Kesehatan Tanah" },
+      { path: "/water-quality", label: "Kualitas Air" },
+      { path: "/cam", label: "EcoScan" },
+      { path: "/ai", label: "EcoBot" }
+    ],
+  },
+  {
+    title: "Artikel & Komunitas", // Digabungkan
+    links: [
+      // Artikel
+      { path: "/news", label: "News & Update" },
+      { path: "/blog", label: "Blog & Artikel" },
+      // Komunitas
+      { path: "/community-events", label: "Events Komunitas" },
+      { path: "/community-social", label: "Komunitas Sosial" },
+    ],
+  },
+  {
+    title: "Info & Akun", // Kolom terpisah untuk Login/Register
+    links: [
+      { path: "/login", label: "Login" },
+      { path: "/register", label: "Daftar Akun" },
+      { path: "/about", label: "Tentang Kami" },
+      { path: "/contact", label: "Kontak Kami" },
+    ],
+  },
+];
+
 const Footer = () => {
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -43,13 +77,14 @@ const Footer = () => {
       viewport={{ once: true, amount: 0.3 }}
       variants={containerVariants}
     >
-      {/* 🟢 PERBAIKAN 1: Mengurangi padding vertikal (py-16 -> py-10) untuk mobile */}
       <div className="container mx-auto px-4 sm:px-9 lg:px-8 py-8 md:py-16 relative z-20">
-        {/* 🟢 PERBAIKAN 2: Mengurangi gap vertikal (gap-12 -> gap-8) saat kolom bertumpuk */}
+        {/* PERUBAHAN UTAMA DI SINI: Mengubah grid menjadi 4 kolom di layar MD ke atas. 
+            Setiap kolom akan mengambil 1 bagian (1/4 lebar), termasuk kolom Logo. */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
-          {/* 🌿 Kolom Logo & Deskripsi */}
+          
+          {/* 🌿 Kolom Logo & Deskripsi (Sekarang hanya mengambil 1 kolom di desktop) */}
           <motion.div
-            className="col-span-1 md:col-span-2"
+            className="col-span-1" // Dihapus md:col-span-2 agar hanya mengambil 1 kolom
             variants={itemVariants}
           >
             <div className="flex items-center space-x-3 mb-4">
@@ -97,52 +132,32 @@ const Footer = () => {
             </div>
           </motion.div>
 
-          {/* Kolom Quick Links */}
-          <motion.div variants={itemVariants}>
-            <h3 className="text-xl font-extrabold text-green-800 mb-6 border-b-2 border-green-300 pb-2">
-              Quick Links
-            </h3>
-            <ul className="space-y-3">
-              {["Home", "About", "News", "Contact"].map((linkName, index) => (
-                <motion.li key={index} variants={itemVariants}>
-                  <Link
-                    to={`/${
-                      linkName.toLowerCase() === "home"
-                        ? ""
-                        : linkName.toLowerCase()
-                    }`}
-                    className="text-green-900 hover:text-green-600 transition-colors duration-300 font-semibold block p-1 -ml-1 rounded-md"
-                  >
-                    {linkName}
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
-
-          {/* Kolom Get Started */}
-          <motion.div variants={itemVariants}>
-            <h3 className="text-xl font-extrabold text-green-800 mb-6 border-b-2 border-green-300 pb-2">
-              Join Us!
-            </h3>
-            <ul className="space-y-3">
-              {["Register", "Login"].map((linkName, index) => (
-                <motion.li key={index} variants={itemVariants}>
-                  <Link
-                    to={`/${linkName.toLowerCase()}`}
-                    className="text-green-900 hover:text-green-600 transition-colors duration-300 font-semibold block p-1 -ml-1 rounded-md"
-                  >
-                    {linkName}
-                  </Link>
-                </motion.li>
-              ))}
-            </ul>
-          </motion.div>
+          {/* 🔗 Kolom Tautan Dinamis (Fitur, Artikel & Komunitas, Akun) */}
+          {/* Kolom-kolom ini akan otomatis menempati 3 kolom sisanya secara sejajar */}
+          {footerNavSections.map((section, sectionIndex) => (
+            <motion.div key={sectionIndex} variants={itemVariants}>
+              <h3 className="text-xl font-extrabold text-green-800 mb-6 border-b-2 border-green-300 pb-2">
+                {section.title}
+              </h3>
+              <ul className="space-y-3">
+                {section.links.map((link, linkIndex) => (
+                  <motion.li key={linkIndex} variants={itemVariants}>
+                    <Link
+                      to={link.path}
+                      className="text-green-900 hover:text-green-600 transition-colors duration-300 font-semibold block p-1 -ml-1 rounded-md"
+                    >
+                      {link.label}
+                    </Link>
+                  </motion.li>
+                ))}
+              </ul>
+            </motion.div>
+          ))}
         </div>
 
         {/* Bagian Hak Cipta */}
         <motion.div
-          className="mt-8 pt-6 text-center border-t-2 border-green-300 md:mt-12 md:pt-8"
+          className="mt-8 pt-6   text-center border-t-2 border-green-300 md:mt-12 md:pt-8"
           variants={itemVariants}
         >
           <p className="text-green-900 font-semibold">
@@ -152,7 +167,7 @@ const Footer = () => {
       </div>
 
       {/* Gambar Dekorasi */}
-      <div className="absolute bottom-0 left-0 w-full pointer-events-none z-10">
+      <div className="absolute md:mt-24 bottom-0 left-0 w-full pointer-events-none z-10">
         <img
           src="/img/footer.png"
           alt="Karangan Bunga Dekorasi Footer"
