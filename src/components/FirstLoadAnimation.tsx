@@ -136,7 +136,7 @@ const FirstLoadAnimation = () => {
       <img
         src="/public/img/logo.png"
         alt="Logo Aksi Hijau"
-        className="w-16 h-16 mb-5 text-primary group-hover:rotate-12 transition-transform duration-300 leaf-logo"
+        className="w-24 h-24 mb-5 text-primary group-hover:rotate-12 transition-transform duration-300 leaf-logo"
       />
 
       <h2

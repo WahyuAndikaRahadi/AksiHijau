@@ -116,16 +116,31 @@ const Navbar = () => {
   }, []);
 
   // Handler Logout
-  const handleLogout = (): void => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("currentUser");
-    setIsAuthenticated(false);
-    setIsAdmin(false);
-    setUserName("User");
-    setIsMenuOpen(false);
-    navigate("/login");
-    Swal.fire("Berhasil!", "Logout anda berhasil", "success");
-  };
+const handleLogout = (): void => {
+  Swal.fire({
+    title: "Apakah Anda yakin?",
+    text: "Anda akan keluar dari akun Anda.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Ya, logout!",
+    cancelButtonText: "Batal",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Jalankan proses logout
+      localStorage.removeItem("token");
+      localStorage.removeItem("currentUser");
+      setIsAuthenticated(false);
+      setIsAdmin(false);
+      setUserName("User");
+      setIsMenuOpen(false);
+
+      Swal.fire("Berhasil!", "Logout anda berhasil", "success").then(() => {
+        navigate("/login");
+      });
+    }
+  });
+};
+
 
   // Efek Scroll
   useEffect(() => {
