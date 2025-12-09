@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Tag, User, Loader2, ArrowLeft } from 'lucide-react';
+import { Calendar, Tag,Loader2, ArrowLeft } from 'lucide-react';
 
 // Interface untuk data blog
 interface BlogItem {
@@ -105,10 +105,6 @@ const BlogPost: React.FC = () => {
               {blog.date}
             </span>
             <span className="flex items-center">
-              <User className="w-4 h-4 mr-1 text-green-500" />
-              {blog.author}
-            </span>
-            <span className="flex items-center">
               <Tag className="w-4 h-4 mr-1 text-yellow-500" />
               {blog.category}
             </span>
@@ -140,7 +136,7 @@ const BlogPost: React.FC = () => {
           </div>
 
           {/* Galeri Foto */}
-          {blog.galleryImages.length > 0 && (
+          {blog.IsGallery === true  && (
             <div className="mt-12">
               <h2 className="text-3xl font-bold text-gray-900 mb-6 border-b pb-2">Galeri Foto</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">

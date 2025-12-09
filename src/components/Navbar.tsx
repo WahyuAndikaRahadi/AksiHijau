@@ -64,7 +64,7 @@ const Navbar = () => {
       isDropdown: true,
       id: "insight",
       dropdownLinks: [
-        { path: "/news", label: "News & Update", icon: Newspaper },
+        { path: "/news", label: "Berita Terbaru", icon: Newspaper },
         { path: "/blog", label: "Blog & Artikel", icon: BookOpen },
       ],
     },

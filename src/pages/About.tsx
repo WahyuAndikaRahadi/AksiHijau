@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { Line } from 'react-chartjs-2';
 import {
@@ -35,7 +34,9 @@ import {
   Github,
   Linkedin,
   Instagram,
+  Recycle, 
 } from 'lucide-react';
+import CountUp from '../components/CountUp';
 
 // ==========================================
 // 1. KONFIGURASI CHART JS
@@ -56,28 +57,28 @@ ChartJS.register(
 // ==========================================
 const teamMembers = [
   {
-    name: 'Wahyu Andika Rahadi',
-    role: 'Team Lead',
+    name: 'Muhammad Bintang',
+    role: 'Front-End',
     image:
-      'https://api.dicebear.com/7.x/avataaars/svg?seed=Wahyu&backgroundColor=b6e3f4',
-    bio: 'Mengkoordinasikan visi dan misi AksiHijau untuk dampak yang berkelanjutan.',
-    social: { linkedin: '#', instagram: '#' },
+      './img/MuhammadBintang.jpeg',
+    bio: 'Saya seorang Front-End Developer yang berfokus pada pembuatan antarmuka web modern dan responsif.menggunakan React dan Tailwind CSS untuk pengalaman pengguna yang cepat dan menarik.',
+    social: { github: 'https://github.com/Ktune-kpop', instagram: 'https://www.instagram.com/bintanggg_20/  ' },
   },
   {
-    name: 'Muhammad Bintang',
-    role: 'Lead Developer',
+    name: 'Wahyu Andika Rahadi',
+    role: 'Team Lead | Back-End',
     image:
-      'https://api.dicebear.com/7.x/avataaars/svg?seed=Bintang&backgroundColor=c0eb75',
-    bio: 'Membangun infrastruktur digital yang efisien untuk pengalaman pengguna terbaik.',
-    social: { github: '#', linkedin: '#', instagram: '#' },
+      './img/WahyuAndikaRahadi.jpeg',
+    bio: 'Saya menjadi team leader sekaligus backend developer di proyek web Aksi Hijau, bertugas mengatur kerja tim dan mengambil keputusan teknis selama pengembangan.',
+    social: { github: 'https://github.com/WahyuAndikaRahadi', instagram: 'https://www.instagram.com/andika.rwahyu/' },
   },
   {
     name: 'Bagus Hasan Ali',
-    role: 'Head of Community',
+    role: 'Front-End',
     image:
-      'https://api.dicebear.com/7.x/avataaars/svg?seed=Citra&backgroundColor=ffdfbf',
-    bio: 'Menghubungkan relawan dan mengelola konten edukasi lingkungan.',
-    social: { linkedin: '#', instagram: '#' },
+      './img/BagusHasanAli.jpeg',
+    bio: 'Saya adalah Front-End Developer. Berfokus pada arsitektur komponen React dan desain responsif Tailwind CSS. Menciptakan pengalaman web mulus dan berkinerja tinggi.',
+    social: { github: 'https://github.com/Zyzenmax', instagram: 'https://www.instagram.com/bagushsnali/' },
   },
 ];
 
@@ -116,28 +117,32 @@ const solutions = [
 // ==========================================
 const impactStats = [
   {
-    icon: Users,
-    value: '1.200+',
-    label: 'Relawan Terhubung',
-    desc: 'Bergabung dalam berbagai aksi, kampanye, dan gerakan hijau.',
+    icon: Users, // Merefleksikan SocialCommunity.tsx
+    value: 500, // Gunakan angka murni agar animasi CountUp berjalan lancar
+    suffix: '+',
+    label: 'Komunitas Hijau',
+    desc: 'Pengguna aktif berbagi aksi nyata dan inspirasi di Social Feed.',
   },
   {
-    icon: Trees,
-    value: '3.500+',
-    label: 'Pohon Tertanam',
-    desc: 'Dilaporkan oleh komunitas melalui aksi penanaman dan restorasi.',
+    icon: Recycle, // Merefleksikan WasteDetection.tsx (EcoScan)
+    value: 1200,
+    suffix: '+',
+    label: 'Objek Terdeteksi',
+    desc: 'Sampah berhasil diidentifikasi dan dipilah menggunakan AI EcoScan.',
   },
   {
-    icon: Zap,
-    value: '85%',
-    label: 'Aksi Hemat Energi',
-    desc: 'Pengguna yang rutin menyelesaikan tantangan hemat energi.',
+    icon: Droplet, // Merefleksikan WaterQuality.tsx
+    value: 50000,
+    suffix: '+',
+    label: 'Liter Air Dihitung',
+    desc: 'Estimasi jejak air harian yang dilacak melalui kalkulator pengguna.',
   },
   {
-    icon: ShieldCheck,
-    value: '24/7',
-    label: 'Akses Edukasi',
-    desc: 'Konten hijau dan panduan aksi tersedia kapan pun dibutuhkan.',
+    icon: Wind, // Merefleksikan AirQuality.tsx
+    value: 24,
+    suffix: '/7',
+    label: 'Pantauan Udara',
+    desc: 'Akses data kualitas udara real-time untuk perlindungan kesehatan.',
   },
 ];
 
@@ -196,11 +201,11 @@ const processSteps = [
 const About = () => {
   // Data chart
   const chartData = {
-    labels: ['2019', '2020', '2021', '2022', '2023', '2024'],
+    labels: ['2020', '2021', '2022', '2023', '2024'],
     datasets: [
       {
         label: 'Total Sampah (Juta Ton)',
-        data: [27.6, 28.1, 29.0, 38.8, 38.6, 33.8],
+        data: [27.592603, 28.591323, 38.710014, 43.209373, 32.658076],
         borderColor: '#10B981',
         backgroundColor: (context: any) => {
           const { ctx, chartArea } = context.chart;
@@ -972,7 +977,7 @@ const About = () => {
                 {/* Efek Glow Border Halus di belakang */}
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-200/40 via-transparent to-cyan-200/40 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
 
-                <div className="relative bg-white rounded-2xl border border-emerald-100 shadow-sm border-green-600
+                <div className="relative bg-white rounded-2xl border shadow-sm border-green-600
           transition-all duration-300 p-6 
           flex flex-col items-center text-center justify-between h-full"
                 >
@@ -988,7 +993,13 @@ const About = () => {
                   {/* Angka & Label */}
                   <div>
                     <div className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-1">
-                      {item.value}
+                      <CountUp
+                        from={0}
+                        to={item.value}
+                        separator=","
+                        direction="up"
+                        duration={2}
+                      />
                     </div>
                     <div className="text-[13px] font-semibold uppercase tracking-[0.16em] text-emerald-700 mb-2">
                       {item.label}

@@ -563,9 +563,7 @@ const WaterFootprintCalculatorSection: React.FC = () => {
     laundryLoads: 3,
     dishMinutes: 15,
     customVirtualActivities: [
-        { id: 1, name: 'Cuci Mobil', liters: 50 }, 
-        { id: 2, name: 'Menyiram Tanaman', liters: 15 },
-        { id: 3, name: 'Membuat Kopi Instan', liters: 1 },       
+        { id: 1, name: 'Cuci Motor (Contoh)', liters: 5 }
     ],
   });
 
@@ -674,14 +672,10 @@ const WaterFootprintCalculatorSection: React.FC = () => {
     const virtualSummary = safeVirtualActivities.map(a => `${a.name} (${a.liters} L)`).join(', ');
     
     // PROMPT BARU DENGAN INPUT VIRTUAL DINAMIS
-    const prompt = `Saya telah menghitung jejak air harian saya. Rinciannya adalah: Mandi (${data.showerMinutes} menit), Laundry (${data.laundryLoads}x/minggu), Cuci Piring (${data.dishMinutes} menit), dan beberapa kegiatan harian/virtual lainnya: ${virtualSummary}. Total jejak air saya adalah ${totalLiters.toLocaleString()} Liter/hari. Berikan 5 tips yang sangat spesifik dan praktis (dalam format list: * [Tip]) dalam Bahasa Indonesia untuk mengurangi konsumsi air di kategori yang saya sebutkan, termasuk tips untuk mengurangi jejak air dari kegiatan virtual/tambahan seperti ${safeVirtualActivities[0]?.name || 'kegiatan virtual'}.`;
+    const prompt = `Saya telah menghitung jejak air harian saya. Rinciannya adalah: Mandi (${data.showerMinutes} menit), Laundry (${data.laundryLoads}x/minggu), Cuci Piring (${data.dishMinutes} menit), dan beberapa kegiatan harian/virtual lainnya: ${virtualSummary}. Total jejak air saya adalah ${totalLiters.toLocaleString()} Liter/hari. Berikan 5 tips yang sangat spesifik dan praktis (dalam format list: * [Tip]) dalam Bahasa Indonesia untuk mengurangi konsumsi air di kategori yang saya sebutkan, termasuk tips untuk mengurangi jejak air dari kegiatan virtual/tambahan seperti ${safeVirtualActivities[0]?.name || 'kegiatan virtual'} buat dengan jelas dan lengkap untuk semua kegiatan virtual maupun kegiatan mandi ataupun rumah tangga.`;
 
     const requestBody = {
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: { 
-        maxOutputTokens: 500,
-        temperature: 0.7,
-      }
+      contents: [{ role: "user", parts: [{ text: prompt }] }]
     };
 
     try {
@@ -715,7 +709,7 @@ const WaterFootprintCalculatorSection: React.FC = () => {
 
 
   return (
-    <section className="min-h-screen w-full bg-[#f8fafc] font-sans selection:bg-cyan-100 text-slate-800 pb-20">
+    <section className="min-h-screen w-full bg-[#f8fafc] font-sans selection:bg-cyan-100 text-slate-800 pb-40">
       {/* Decorative Background Blob */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <div className="absolute -top-[20%] -right-[10%] w-[50vw] h-[50vw] bg-cyan-100/40 rounded-full blur-3xl mix-blend-multiply filter opacity-70 animate-blob"></div>
@@ -1045,34 +1039,49 @@ const WaterFootprintCalculatorSection: React.FC = () => {
               </button>
 
               {/* Gemini Tips Display - TELAH DIUBAH MENJADI TRANSPARAN/GLASS MORPHISM */}
+{/* Bagian Display Tips Gemini */}
               <AnimatePresence>
                 {isTipsExpanded && ( 
                   <motion.div
-                    initial={{ opacity: 0, y: -20, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -20, scale: 0.98 }}
-                    transition={{ duration: 0.4 }}
-                    // BARU: Desain Transparan/Glassmorphism
-                    className="mt-4 bg-white/70 backdrop-blur-md rounded-2xl p-6 shadow-xl text-sm border-2 border-cyan-300" 
+                    initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                    animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                    exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                    className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border-2 border-cyan-300 overflow-hidden" 
                   >
-                    {tipsLoading ? (
-                      // BARU: Warna loading disesuaikan untuk latar terang
-                      <div className="flex flex-col items-center justify-center h-24 text-slate-600">
-                        <Loader className="w-6 h-6 animate-spin mb-2 text-cyan-600" />
-                        <p className="text-xs">AI sedang menganalisis jejak air Anda...</p>
-                      </div>
-                    ) : (
-                      <>
-                        {/* BARU: Warna judul disesuaikan untuk latar terang */}
-                        <h4 className="font-bold text-cyan-700 mb-4 flex items-center gap-2">
-                            <Sparkles className='w-4 h-4' /> Analisis Gemini AI untuk Jejak Air {totalLiters.toLocaleString()} L
-                        </h4>
-                        {/* BARU: Warna teks dan style prose disesuaikan (dihapus prose-invert) */}
-                        <div className='text-slate-700 space-y-4 prose prose-sm max-w-none'> 
-                            <ReactMarkdown>{geminiTips || 'Gagal memuat tips. Silakan coba hitung ulang.'}</ReactMarkdown>
+                    <div className="p-6 md:p-8"> {/* Padding diperbesar */}
+                        {tipsLoading ? (
+                        <div className="flex flex-col items-center justify-center h-32 text-slate-600">
+                            <Loader className="w-8 h-8 animate-spin mb-3 text-cyan-600" />
+                            <p className="text-base font-medium">AI sedang menganalisis jejak air Anda...</p>
                         </div>
-                      </>
-                    )}
+                        ) : (
+                        <>
+                            <h4 className="text-xl md:text-2xl font-bold text-cyan-800 mb-6 flex items-center gap-3">
+                                <Sparkles className='w-6 h-6 text-cyan-500' /> 
+                                Analisis Gemini AI
+                            </h4>
+                            
+                            {/* PERUBAHAN DISINI: 
+                                1. prose-sm diganti prose-lg (Teks jadi besar)
+                                2. text-slate-700 jadi text-slate-800 (Lebih gelap/jelas)
+                                3. leading-relaxed (Jarak antar baris lebih lega)
+                            */}
+                            <div className='text-slate-800 prose prose-lg max-w-none leading-relaxed'> 
+                                <ReactMarkdown 
+                                  components={{
+                                    // Kustomisasi elemen spesifik agar lebih rapi
+                                    ul: ({node, ...props}) => <ul className="list-disc pl-6 space-y-2" {...props} />,
+                                    li: ({node, ...props}) => <li className="pl-1" {...props} />,
+                                    strong: ({node, ...props}) => <strong className="font-extrabold text-cyan-900" {...props} />
+                                  }}
+                                >
+                                  {geminiTips || 'Gagal memuat tips. Silakan coba hitung ulang.'}
+                                </ReactMarkdown>
+                            </div>
+                        </>
+                        )}
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>

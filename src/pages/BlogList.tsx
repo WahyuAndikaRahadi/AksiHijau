@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Tag, User, Loader2, ArrowRight, Search } from 'lucide-react';
+import { Calendar, Tag,Loader2, ArrowRight, Search } from 'lucide-react';
 
 interface BlogItem {
   id: number;
@@ -209,10 +209,6 @@ const BlogList: React.FC = () => {
                     <span className="flex items-center">
                       <Calendar className="w-4 h-4 mr-1 text-blue-500" />
                       {blog.date}
-                    </span>
-                    <span className="flex items-center">
-                      <User className="w-4 h-4 mr-1 text-blue-500" />
-                      {blog.author}
                     </span>
                     <span className="flex items-center">
                       <Tag className="w-4 h-4 mr-1 text-blue-500" />
