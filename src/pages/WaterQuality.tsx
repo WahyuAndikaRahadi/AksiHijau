@@ -563,9 +563,9 @@ const WaterFootprintCalculatorSection: React.FC = () => {
     laundryLoads: 3,
     dishMinutes: 15,
     customVirtualActivities: [
-        { id: 1, name: 'Beli Kopi Instan', liters: 140 }, 
-        { id: 2, name: 'Cuci Motor', liters: 40 }, 
-        { id: 3, name: 'Streaming 1 jam', liters: 15 }, 
+        { id: 1, name: 'Cuci Mobil', liters: 50 }, 
+        { id: 2, name: 'Menyiram Tanaman', liters: 15 },
+        { id: 3, name: 'Membuat Kopi Instan', liters: 1 },       
     ],
   });
 

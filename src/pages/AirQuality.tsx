@@ -178,7 +178,7 @@ const WeatherDashboard = ({ weatherData, locationName, isLoading }) => {
 
   return (
     <section className="py-10 px-4 w-full max-w-7xl mx-auto font-sans">
-       <div className="flex flex-col md:flex-row justify-between items-end mb-10 ml-2">
+       <div className="flex flex-col md:flex-row justify-between items-start mb-10 ml-2">
          <div>
            <h2 className="text-4xl font-extrabold text-slate-800 tracking-tight">
              Kondisi <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-cyan-500">Cuaca Real-time</span>
@@ -480,9 +480,9 @@ const AirQualityBanner = () => {
             viewport={{ once: true }}
             className="w-full max-w-7xl mx-auto mt-12 mb-8"
         >
-            <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl border border-slate-100 flex flex-col md:flex-row gap-10 items-center overflow-hidden mb-8">
+            <div className="bg-white rounded-[2.5rem] p-8 lg:p-12 shadow-xl border border-slate-100 flex flex-col lg:flex-row gap-10 items-center overflow-hidden mb-8">
                 {/* Bagian Gambar (Kiri) */}
-                <div className="w-full md:w-1/2 relative group">
+                <div className="w-full lg:w-1/2 relative group">
                     <div className="absolute inset-0  opacity-10 group-hover:rotate-6 transition-transform"></div>
                     <img 
                         src="./img/Polusi-Udara-Industri.jpg" 
@@ -491,7 +491,7 @@ const AirQualityBanner = () => {
                     />
                     
                     {/* Floating Badge */}
-                    <div className="absolute z-20 -bottom-6 -right-4 md:-right-6 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce-slow border border-slate-100">
+                    <div className="absolute z-20 -bottom-6 -right-4 lg:-right-6 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce-slow border border-slate-100">
                         <div className="bg-orange-50 p-3 rounded-xl">
                             <Wind className="w-6 h-6 text-orange-500" />
                         </div>
@@ -505,12 +505,12 @@ const AirQualityBanner = () => {
                 </div>
 
                 {/* Bagian Konten (Kanan) */}
-                <div className="w-full md:w-1/2">
+                <div className="w-full lg:w-1/2">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-50 text-cyan-600 text-xs font-bold uppercase tracking-wider mb-6 border border-cyan-100">
                         <CloudSun className="w-4 h-4" /> Kualitas Udara
                     </div>
                     
-                    <h2 className="text-3xl md:text-5xl font-extrabold text-slate-800 mb-6 leading-[1.15]">
+                    <h2 className="text-3xl lg:text-5xl font-extrabold text-slate-800 mb-6 leading-[1.15]">
                         Udara Bersih untuk <br/>
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Masa Depan Sehat</span>
                     </h2>
@@ -535,7 +535,7 @@ const AirQualityBanner = () => {
                     {/* Tombol dengan OnClick Event */}
                     <button 
                         onClick={() => setShowDetail(!showDetail)}
-                        className="bg-[#0e4a6b] text-white px-8 py-4 rounded-full font-bold text-sm md:text-base flex items-center gap-2 hover:bg-slate-800 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-cyan-900/20 group"
+                        className="bg-[#0e4a6b] text-white px-8 py-4 rounded-full font-bold text-sm lg:text-base flex items-center gap-2 hover:bg-slate-800 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-cyan-900/20 group"
                     >
                         <BookOpen className="w-5 h-5" /> 
                         {showDetail ? 'Tutup Penjelasan' : 'Pelajari Dampaknya'}
@@ -712,7 +712,7 @@ const AirQuality = () => {
                 className="max-w-7xl mx-auto bg-white border border-slate-100 rounded-[2rem] p-8 lg:p-12 overflow-hidden relative shadow-2xl shadow-cyan-50/50"
             >
                 {/* Header Air Quality */}
-                <div className="flex flex-col md:flex-row justify-between items-end mb-8">
+                <div className="flex flex-col md:flex-row justify-between items-start mb-8">
                     <div>
                         <h2 className="text-3xl md:text-4xl font-bold text-slate-800 leading-tight">
                             Pantauan <span className="text-cyan-500">Kualitas Udara</span> Real-time

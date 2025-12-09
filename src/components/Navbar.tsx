@@ -11,38 +11,30 @@ import {
 import { useState, useEffect, useCallback, MouseEvent } from "react";
 import { motion } from "framer-motion";
 import Swal from "sweetalert2";
-import { LucideIcon } from "lucide-react"; // Import tipe untuk ikon
+import { LucideIcon } from "lucide-react";
 
-// --- DEFINISI TIPE ---
-
-/** Definisi untuk link di dalam dropdown */
 interface DropdownLink {
   path: string;
   label: string;
-  icon?: LucideIcon; // Icon dari lucide-react (opsional)
-  isAdmin?: boolean; // Khusus untuk link admin
+  icon?: LucideIcon;
+  isAdmin?: boolean;
 }
 
-/** Definisi untuk item navigasi utama, termasuk dropdown */
 interface NavLink {
-  path?: string; // Path bisa opsional jika ini adalah item dropdown utama
+  path?: string;
   label: string;
   isDropdown?: boolean;
-  id?: "features" | "insight" | "community"; // ID khusus untuk kontrol state dropdown
+  id?: "features" | "insight" | "community";
   dropdownLinks?: DropdownLink[];
 }
-
-// --- KOMPONEN UTAMA ---
 
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // States
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
-  // State Dropdown
   const [isFeaturesDropdownOpen, setIsFeaturesDropdownOpen] =
     useState<boolean>(false);
   const [isInsightDropdownOpen, setIsInsightDropdownOpen] =
@@ -50,12 +42,10 @@ const Navbar = () => {
   const [isCommunityDropdownOpen, setIsCommunityDropdownOpen] =
     useState<boolean>(false);
 
-  // State Autentikasi
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [userName, setUserName] = useState<string>("User");
 
-  // Navigasi Statis dengan tipe NavLink
   const baseNavLinks: NavLink[] = [
     { path: "/", label: "Beranda" },
     { path: "/about", label: "Tentang" },
@@ -64,7 +54,6 @@ const Navbar = () => {
       isDropdown: true,
       id: "features",
       dropdownLinks: [
-        // Diperbaiki agar path lengkap
         { path: "/air-quality", label: "Kualitas Udara" },
         { path: "/soil-health", label: "Kesehatan Tanah" },
         { path: "/water-quality", label: "Kualitas Air" },
@@ -91,7 +80,6 @@ const Navbar = () => {
     { path: "/contact", label: "Kontak" },
   ];
 
-  // Fungsi Cek Login
   const checkAuthStatus = useCallback(() => {
     const token = localStorage.getItem("token");
     const userString = localStorage.getItem("currentUser");
@@ -100,8 +88,7 @@ const Navbar = () => {
       setIsAuthenticated(true);
       try {
         const user = userString ? JSON.parse(userString) : {};
-        // Pastikan is_admin diperiksa dengan benar
-        const adminStatus = user.is_admin === true || user.is_admin === "true";
+        const adminStatus = user.is_admin === true || user.is_admin === "true"; 
         setIsAdmin(adminStatus);
         setUserName(user.username || user.email?.split("@")[0] || "User");
       } catch (e) {
@@ -115,34 +102,30 @@ const Navbar = () => {
     }
   }, []);
 
-  // Handler Logout
-const handleLogout = (): void => {
-  Swal.fire({
-    title: "Apakah Anda yakin?",
-    text: "Anda akan keluar dari akun Anda.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Ya, logout!",
-    cancelButtonText: "Batal",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      // Jalankan proses logout
-      localStorage.removeItem("token");
-      localStorage.removeItem("currentUser");
-      setIsAuthenticated(false);
-      setIsAdmin(false);
-      setUserName("User");
-      setIsMenuOpen(false);
+  const handleLogout = (): void => {
+    Swal.fire({
+      title: "Apakah Anda yakin?",
+      text: "Anda akan keluar dari akun Anda.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Ya, logout!",
+      cancelButtonText: "Batal",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("currentUser");
+        setIsAuthenticated(false);
+        setIsAdmin(false);
+        setUserName("User");
+        setIsMenuOpen(false);
 
-      Swal.fire("Berhasil!", "Logout anda berhasil", "success").then(() => {
-        navigate("/login");
-      });
-    }
-  });
-};
+        Swal.fire("Berhasil!", "Logout anda berhasil", "success").then(() => {
+          navigate("/login");
+        });
+      }
+    });
+  };
 
-
-  // Efek Scroll
   useEffect(() => {
     checkAuthStatus();
     const handleScroll = () => {
@@ -152,29 +135,24 @@ const handleLogout = (): void => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [checkAuthStatus]);
 
-  // Fungsi untuk menutup semua dropdown (desktop & mobile)
   const closeAllDropdowns = useCallback((): void => {
     setIsFeaturesDropdownOpen(false);
     setIsInsightDropdownOpen(false);
     setIsCommunityDropdownOpen(false);
-    setIsMenuOpen(false); // Tutup menu mobile juga
+    setIsMenuOpen(false);
   }, []);
 
-  // Efek Reset Dropdown saat Pindah Halaman
   useEffect(() => {
     closeAllDropdowns();
     checkAuthStatus();
   }, [location.pathname, checkAuthStatus, closeAllDropdowns]);
 
-  // Menutup dropdown saat klik di luar (HANYA DESKTOP)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      // PERUBAHAN: Abaikan jika lebar kurang dari LG (sekarang mobile mode)
-      if (window.innerWidth < 1024) return;
+      if (window.innerWidth < 1280) return;
 
       const target = event.target as Node;
 
-      // Fungsi helper untuk cek klik luar
       const isClickedOutside = (
         buttonId: string,
         menuId: string,
@@ -215,13 +193,12 @@ const handleLogout = (): void => {
       );
     };
 
-    document.addEventListener("mousedown", handleClickOutside as any); // Type assertion untuk event listener
+    document.addEventListener("mousedown", handleClickOutside as any);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside as any);
     };
   }, [isFeaturesDropdownOpen, isInsightDropdownOpen, isCommunityDropdownOpen]);
 
-  // Fungsi Cek Aktif
   const isDropdownActive = (id: NavLink["id"]): boolean => {
     if (!id) return false;
     const links =
@@ -240,7 +217,6 @@ const handleLogout = (): void => {
     return isBaseActive;
   };
 
-  // Membuat daftar navigasi akhir, termasuk Admin Dashboard jika diperlukan
   const finalNavLinks: NavLink[] = baseNavLinks.map((link) => {
     if (link.isDropdown && link.id === "community") {
       const updatedDropdownLinks: DropdownLink[] = [
@@ -259,7 +235,6 @@ const handleLogout = (): void => {
     return link;
   });
 
-  // Helper untuk mendapatkan state boolean berdasarkan ID string
   const getDropdownState = (id: NavLink["id"]): boolean => {
     if (id === "features") return isFeaturesDropdownOpen;
     if (id === "insight") return isInsightDropdownOpen;
@@ -267,7 +242,6 @@ const handleLogout = (): void => {
     return false;
   };
 
-  // Helper untuk toggle dropdown
   const toggleDropdown = (id: NavLink["id"]): void => {
     if (id === "features") {
       setIsFeaturesDropdownOpen((prev) => !prev);
@@ -284,12 +258,10 @@ const handleLogout = (): void => {
     }
   };
 
-  // Komponen Aksi Desktop
   const DesktopActions = () => {
     if (isAuthenticated) {
       return (
         <div className="flex items-center space-x-4">
-          {/* PERBAIKAN: Link ke /profile di username */}
           <Link
             to="/profile"
             className={`flex items-center space-x-2 font-medium border border-gray-200 px-3 py-2 rounded-xl transition-all duration-300 hover:bg-gray-50 group
@@ -334,26 +306,24 @@ const handleLogout = (): void => {
 
   return (
     <nav
-      className={`sticky top-0 z-50 transition-all duration-300 lg:px-16 md:px-4 ${
+      className={`sticky top-0 z-50 transition-all duration-300 xl:px-16 sm:px-4 ${ 
         isScrolled
           ? "bg-white shadow-lg"
           : "bg-white/30 backdrop-blur-sm shadow-sm"
       }`}
     >
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 md:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-2 group">
             <img
-              src="/public/img/logo.png" // Ganti dengan URL/path gambar logo kamu
+              src="/public/img/logo.png"
               alt="Logo Aksi Hijau"
               className="w-12 h-12 text-primary"
             />
             <span className="text-2xl font-bold text-gray-800">Aksi Hijau</span>
           </div>
 
-          {/* Navigasi Desktop */}
-          {/* PERUBAHAN: Menu penuh hanya muncul mulai dari LG (1024px) */}
-          <div className="hidden lg:flex items-center space-x-8">
+          <div className="hidden xl:flex items-center space-x-8">
             {finalNavLinks.map((link) => {
               if (link.isDropdown && link.id) {
                 const isActive = isDropdownActive(link.id);
@@ -380,7 +350,6 @@ const handleLogout = (): void => {
                       )}
                     </button>
 
-                    {/* Isi Dropdown */}
                     <motion.div
                       id={`${link.id}-dropdown-menu`}
                       initial={{ opacity: 0, y: -10 }}
@@ -446,16 +415,12 @@ const handleLogout = (): void => {
             })}
           </div>
 
-          {/* Aksi Desktop */}
-          {/* PERUBAHAN: Aksi hanya muncul mulai dari LG (1024px) */}
-          <div className="hidden lg:flex items-center">
+          <div className="hidden xl:flex items-center">
             <DesktopActions />
           </div>
 
-          {/* Tombol Toggle Mobile/Hamburger */}
-          {/* PERUBAHAN: Tombol muncul hingga layar LG (1024px) */}
           <button
-            className="lg:hidden text-gray-700 hover:text-primary p-2 focus:outline-none transition-transform duration-300"
+            className="xl:hidden text-gray-700 hover:text-primary p-2 focus:outline-none transition-transform duration-300"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -466,12 +431,11 @@ const handleLogout = (): void => {
             )}
           </button>
         </div>
+        
       </div>
 
-      {/* Navigasi Mobile */}
-      {/* PERUBAHAN: Navigasi Mobile disembunyikan mulai dari LG (1024px) */}
       <div
-        className={`lg:hidden overflow-y-auto transition-all duration-500 ease-in-out bg-white ${
+        className={`xl:hidden overflow-y-auto transition-all duration-500 ease-in-out bg-white ${
           isMenuOpen
             ? "max-h-[80vh] opacity-100 border-t border-gray-100 shadow-xl"
             : "max-h-0 opacity-0"
@@ -561,7 +525,6 @@ const handleLogout = (): void => {
           <div className="pt-2 border-t mt-2 flex flex-col space-y-2">
             {isAuthenticated ? (
               <>
-                {/* PERBAIKAN: Link ke /profile di username (Mobile) */}
                 <Link
                   to="/profile"
                   className={`flex items-center justify-center py-2 text-base font-semibold bg-gray-50 rounded-lg hover:bg-gray-100
