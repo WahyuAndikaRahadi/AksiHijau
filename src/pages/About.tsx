@@ -32,15 +32,11 @@ import {
   ChevronRight,
   ArrowRight,
   Github,
-  Linkedin,
   Instagram,
   Recycle, 
 } from 'lucide-react';
 import CountUp from '../components/CountUp';
 
-// ==========================================
-// 1. KONFIGURASI CHART JS
-// ==========================================
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -52,9 +48,6 @@ ChartJS.register(
   Filler,
 );
 
-// ==========================================
-// 2. DATA TIM
-// ==========================================
 const teamMembers = [
   {
     name: 'Muhammad Bintang',
@@ -82,9 +75,6 @@ const teamMembers = [
   },
 ];
 
-// ==========================================
-// 3. DATA SOLUSI (TIMELINE)
-// ==========================================
 const solutions = [
   {
     icon: ShieldCheck,
@@ -112,33 +102,30 @@ const solutions = [
   },
 ];
 
-// ==========================================
-// 4. DATA DAMPAK KAMI DALAM ANGKA
-// ==========================================
 const impactStats = [
   {
-    icon: Users, // Merefleksikan SocialCommunity.tsx
-    value: 500, // Gunakan angka murni agar animasi CountUp berjalan lancar
+    icon: Users, 
+    value: 500, 
     suffix: '+',
     label: 'Komunitas Hijau',
     desc: 'Pengguna aktif berbagi aksi nyata dan inspirasi di Social Feed.',
   },
   {
-    icon: Recycle, // Merefleksikan WasteDetection.tsx (EcoScan)
+    icon: Recycle,
     value: 1200,
     suffix: '+',
     label: 'Objek Terdeteksi',
     desc: 'Sampah berhasil diidentifikasi dan dipilah menggunakan AI EcoScan.',
   },
   {
-    icon: Droplet, // Merefleksikan WaterQuality.tsx
+    icon: Droplet,
     value: 50000,
     suffix: '+',
     label: 'Liter Air Dihitung',
     desc: 'Estimasi jejak air harian yang dilacak melalui kalkulator pengguna.',
   },
   {
-    icon: Wind, // Merefleksikan AirQuality.tsx
+    icon: Wind,
     value: 24,
     suffix: '/7',
     label: 'Pantauan Udara',
@@ -146,15 +133,11 @@ const impactStats = [
   },
 ];
 
-// ==========================================
-// 5. DATA PROSES / CARA KERJA
-// ==========================================
 const processSteps = [
   {
     id: 1,
     title: 'Gabung Komunitas',
     desc: 'Buat akun AksiHijau untuk mengakses fitur eksklusif, bergabung dengan event, dan terhubung dengan relawan lain.',
-    // Mengacu pada fitur Login/Register di Login.tsx
     image:
       'https://media.istockphoto.com/id/2151209290/id/foto/ilustrasi-3d-pria-pria-qadir-online-konsep-medis-seluler-aplikasi-untuk-perawatan-kesehatan.webp?a=1&b=1&s=612x612&w=0&k=20&c=rQfCWIKZgpKb2_2wwSVDEx8i5z6sNc6eZ08zHJmGOzA=',
     color: 'bg-blue-100',
@@ -163,7 +146,6 @@ const processSteps = [
     id: 2,
     title: 'Gunakan Fitur AI',
     desc: 'Manfaatkan EcoScan untuk mendeteksi jenis sampah atau konsultasi masalah lingkungan dengan EcoBot cerdas.',
-    // Mengacu pada EcoBot.tsx dan fitur EcoScan di Home.tsx
     image: './img/Robot.png',
     color: 'bg-orange-100',
   },
@@ -171,7 +153,6 @@ const processSteps = [
     id: 3,
     title: 'Pantau Lingkungan',
     desc: 'Cek kualitas udara (AQI) dan cuaca real-time di sekitarmu untuk mengantisipasi dampak polusi.',
-    // Mengacu pada fitur di AirQuality.tsx
     image: './img/PantauLingkungan.jpg',
     color: 'bg-cyan-100',
   },
@@ -179,7 +160,6 @@ const processSteps = [
     id: 4,
     title: 'Ikuti Event Nyata',
     desc: 'Temukan dan hadiri kegiatan positif seperti penanaman pohon atau clean-up day di lokasi terdekat.',
-    // Mengacu pada fitur di CommunityEvents.tsx
     image:
       './img/KegiatanPositif.jpg',
     color: 'bg-purple-100',
@@ -188,18 +168,13 @@ const processSteps = [
     id: 5,
     title: 'Raih Level & Badge',
     desc: 'Dapatkan poin dari setiap partisipasi, naikkan Eco Level-mu, dan koleksi Badge penghargaan eksklusif.',
-    // Mengacu pada sistem gamifikasi (Eco Level & Badge) di dashboardAdmin.tsx
     image:
       './img/Badge.jpg',
     color: 'bg-emerald-100',
   },
 ];
 
-// ==========================================
-// 6. KOMPONEN UTAMA (ABOUT PAGE)
-// ==========================================
 const About = () => {
-  // Data chart
   const chartData = {
     labels: ['2020', '2021', '2022', '2023', '2024'],
     datasets: [
@@ -293,7 +268,6 @@ const About = () => {
   return (
     <div className="py-20 bg-gray-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* HEADER */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -309,7 +283,6 @@ const About = () => {
           </p>
         </motion.div>
 
-        {/* MISI KAMI */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24 mx-5">
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -333,7 +306,6 @@ const About = () => {
               suportif.
             </p>
 
-            {/* Note Box */}
             <div className="bg-emerald-50 border-l-4 border-primary text-emerald-800 p-4 rounded-r-lg">
               <div className="flex">
                 <div className="flex-shrink-0">
@@ -382,7 +354,6 @@ const About = () => {
           </motion.div>
         </div>
 
-        {/* 3 ASPEK UTAMA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -418,7 +389,6 @@ const About = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Kualitas Udara */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -491,7 +461,6 @@ const About = () => {
                 </div>
               </motion.div>
 
-              {/* Kesehatan Tanah */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -564,7 +533,6 @@ const About = () => {
                 </div>
               </motion.div>
 
-              {/* Kualitas Air */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -641,7 +609,6 @@ const About = () => {
           </motion.div>
         </motion.div>
 
-        {/* TARGET DAMPAK */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -651,7 +618,6 @@ const About = () => {
         >
           <div className="bg-cyan-50 border border-cyan-100 rounded-3xl p-8 lg:p-12 relative overflow-hidden shadow-lg">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              {/* KONTEN KIRI */}
               <div className="z-10">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-cyan-200 text-green-700 text-sm font-semibold mb-6">
                   <Target className="w-4 h-4" />
@@ -690,7 +656,6 @@ const About = () => {
                 </div>
               </div>
 
-              {/* KONTEN KANAN */}
               <div className="relative h-full min-h-[300px]">
                 <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white h-full">
                   <img
@@ -716,7 +681,6 @@ const About = () => {
           </div>
         </motion.div>
 
-        {/* PROSES / CARA KERJA */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -736,7 +700,6 @@ const About = () => {
           </div>
 
           <div className="relative">
-            {/* Garis Penghubung (Desktop) */}
             <div className="hidden lg:block absolute top-1/2 left-0 w-full h-0.5 bg-gray-200 -translate-y-1/2 z-0 border-2" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 relative z-10">
@@ -801,7 +764,6 @@ const About = () => {
           </div>
         </motion.div>
 
-        {/* DATA & STATISTIK SAMPAH INDONESIA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -830,7 +792,6 @@ const About = () => {
           </div>
         </motion.div>
 
-        {/* LATAR BELAKANG */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -876,7 +837,6 @@ const About = () => {
           </div>
         </motion.div>
 
-        {/* SOLUSI NYATA (TIMELINE) */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -885,7 +845,6 @@ const About = () => {
           className="my-24 w-full bg-gradient-to-r from-green-700 to-green-500 rounded-3xl p-8 md:p-12 shadow-2xl relative"
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Kiri: Ilustrasi */}
             <div className="relative z-10 order-2 lg:order-1">
               <div className="bg-emerald-100 rounded-2xl p-6 aspect-[4/3] flex items-center justify-center relative shadow-inner">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob" />
@@ -913,7 +872,6 @@ const About = () => {
               </div>
             </div>
 
-            {/* Kanan: Timeline */}
             <div className="order-1 lg:order-2 text-white">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
                 Solusi Nyata untuk Pulihkan Bumi
@@ -949,10 +907,8 @@ const About = () => {
           </div>
         </motion.div>
 
-        {/* BAGIAN DAMPAK KAMI DALAM ANGKA */}
         <section className="py-12 px-4 max-w-7xl mx-auto">
 
-          {/* BAGIAN 1: HEADER (Dipisah dari Grid) */}
           <div className="text-center max-w-3xl mx-auto mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Dampak Kami dalam Angka
@@ -962,7 +918,6 @@ const About = () => {
             </p>
           </div>
 
-          {/* BAGIAN 2: GRID KARTU */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
             {impactStats.map((item, index) => (
               <motion.div
@@ -971,17 +926,15 @@ const About = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
-                whileHover={{ y: -5 }} // Efek naik sedikit saat hover
+                whileHover={{ y: -5 }}
                 className="relative group h-full"
               >
-                {/* Efek Glow Border Halus di belakang */}
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-200/40 via-transparent to-cyan-200/40 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-300" />
 
                 <div className="relative bg-white rounded-2xl border shadow-sm border-green-600
           transition-all duration-300 p-6 
           flex flex-col items-center text-center justify-between h-full"
                 >
-                  {/* Ikon */}
                   <div className="mb-4 flex items-center justify-center">
                     <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center 
               shadow-[0_6px_18px_rgba(16,185,129,0.18)]"
@@ -990,7 +943,6 @@ const About = () => {
                     </div>
                   </div>
 
-                  {/* Angka & Label */}
                   <div>
                     <div className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-1">
                       <CountUp
@@ -1006,7 +958,6 @@ const About = () => {
                     </div>
                   </div>
 
-                  {/* Deskripsi Kecil */}
                   <p className="text-xs md:text-sm text-gray-500 leading-relaxed mt-2">
                     {item.desc}
                   </p>
@@ -1017,7 +968,6 @@ const About = () => {
 
         </section>
 
-        {/* TIM KAMI */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -1025,12 +975,10 @@ const About = () => {
           transition={{ duration: 0.6 }}
           className="my-24 py-16 px-6 bg-gradient-to-b from-emerald-50 via-white to-cyan-50 rounded-3xl border border-emerald-100 shadow-xl relative overflow-hidden"
         >
-          {/* Dekorasi */}
           <div className="pointer-events-none absolute -top-24 right-[-40px] w-60 h-60 bg-emerald-200/50 rounded-full blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 left-[-40px] w-72 h-72 bg-cyan-200/50 rounded-full blur-3xl" />
           <div className="pointer-events-none absolute inset-x-10 top-1/2 h-px bg-gradient-to-r from-transparent via-emerald-100 to-transparent" />
 
-          {/* Header */}
           <div className="text-center mb-16 relative z-10">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-emerald-200 text-emerald-700 text-xs font-semibold mb-4 shadow-sm">
               <Users className="w-4 h-4" />
@@ -1047,7 +995,6 @@ const About = () => {
             </p>
           </div>
 
-          {/* Cards Tim */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
             {teamMembers.map((member, idx) => (
               <motion.div
@@ -1059,17 +1006,14 @@ const About = () => {
                 whileHover={{ y: -8, scale: 1.015 }}
                 className="relative bg-white/90 backdrop-blur-lg rounded-3xl p-6 shadow-md border border-emerald-100 hover:border-emerald-300 transition-all duration-300 group overflow-hidden"
               >
-                {/* Garis accent atas */}
                 <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-500 opacity-70" />
 
-                {/* Badge role */}
                 <div className="absolute top-4 right-4">
                   <span className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-semibold border border-emerald-100">
                     {member.role}
                   </span>
                 </div>
 
-                {/* Avatar */}
                 <div className="flex flex-col items-center text-center mt-4 mb-5">
                   <div className="relative">
                     <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-emerald-400 via-cyan-400 to-emerald-500 p-[3px] shadow-lg group-hover:shadow-emerald-300/70 transition-shadow duration-300">
@@ -1095,15 +1039,12 @@ const About = () => {
                   </p>
                 </div>
 
-                {/* Bio */}
                 <p className="text-gray-500 text-sm leading-relaxed text-center mb-5 px-1">
                   {member.bio}
                 </p>
 
-                {/* Divider */}
                 <div className="w-full h-px bg-gradient-to-r from-transparent via-emerald-100 to-transparent mb-4" />
 
-                {/* Social */}
                 <div className="flex items-center justify-center gap-3">
                   {member.social.github && (
                     <a
@@ -1114,17 +1055,6 @@ const About = () => {
                       rel="noreferrer"
                     >
                       <Github className="w-4 h-4" />
-                    </a>
-                  )}
-                  {member.social.linkedin && (
-                    <a
-                      href={member.social.linkedin}
-                      className="w-9 h-9 rounded-full flex items-center justify-center bg-blue-50 border border-blue-100 text-blue-600 hover:text-blue-700 hover:border-blue-200 hover:-translate-y-0.5 transition-all duration-200"
-                      aria-label={`${member.name} Linkedin`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <Linkedin className="w-4 h-4" />
                     </a>
                   )}
                   {member.social.instagram && (

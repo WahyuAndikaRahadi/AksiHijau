@@ -9,15 +9,9 @@ import {
   CloudSun, Droplets, Wind, Thermometer, Sun, CloudRain, Navigation, Eye, MapPin, 
   BookOpen, AlertTriangle, HeartPulse, Zap, Leaf, ShieldCheck, Sparkles,
   Loader2, LocateFixed, Circle, CheckCircle, Skull, Info, ArrowRight,
-  // Icon tambahan untuk fitur baru
   Bus, Factory, Trash2, ChevronUp
 } from 'lucide-react';
 
-// ==========================================
-// LEAFLET CONFIG & HELPER COMPONENTS
-// ==========================================
-
-// Fix for default marker icon issue with Leaflet in React
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -28,7 +22,6 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-// Komponen untuk menambahkan kontrol pencarian di peta
 function SearchControl({ onSearchResult }) {
   const map = useMap();
   
@@ -64,7 +57,6 @@ function SearchControl({ onSearchResult }) {
   return null;
 }
 
-// Data Mapping Kualitas Udara (Air Quality Index - AQI)
 const airQualityMap = {
   1: { label: "Baik", color: "text-emerald-500", bg: "bg-emerald-500/10", icon: CheckCircle },
   2: { label: "Sedang", color: "text-yellow-500", bg: "bg-yellow-500/10", icon: Leaf },
@@ -73,7 +65,6 @@ const airQualityMap = {
   5: { label: "Berbahaya", color: "text-purple-600", bg: "bg-purple-600/10", icon: Skull }
 };
 
-// Fungsi untuk mendapatkan icon cuaca yang sesuai
 const getWeatherIcon = (iconCode) => {
     const code = iconCode?.toString().slice(0, 2); 
     if (code === '01') return Sun; 
@@ -85,7 +76,6 @@ const getWeatherIcon = (iconCode) => {
     return CloudSun;
 };
 
-// Fungsi untuk konversi deskripsi OpenWeatherMap ke Bahasa Indonesia
 const translateWeatherDescription = (desc) => {
     if (!desc) return 'Tidak Tersedia';
     const translations = {
@@ -102,10 +92,6 @@ const translateWeatherDescription = (desc) => {
     }
     return desc;
 };
-
-// ==========================================
-// 1. WEATHER DASHBOARD COMPONENT
-// ==========================================
 
 const WeatherDashboard = ({ weatherData, locationName, isLoading }) => {
   const [time, setTime] = useState(new Date());
@@ -222,7 +208,6 @@ const WeatherDashboard = ({ weatherData, locationName, isLoading }) => {
             </div>
           </div>
 
-          {/* ----- PERUBAHAN DI SINI: items-end diganti items-start ----- */}
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between mt-8">
             <div>
               <div className="flex items-start">
@@ -352,10 +337,6 @@ const WeatherDashboard = ({ weatherData, locationName, isLoading }) => {
   );
 };
 
-
-// ==========================================
-// 2. KOMPONEN DETAIL DAMPAK (BARU - SESUAI GAMBAR)
-// ==========================================
 const ImpactDetails = ({ onClose }) => {
   return (
     <motion.div
@@ -365,17 +346,13 @@ const ImpactDetails = ({ onClose }) => {
       transition={{ duration: 0.5, ease: "easeInOut" }}
       className="overflow-hidden"
     >
-      {/* Tombol Tutup di atas card */}
-     
       <div className="bg-white border-2 border-cyan-100 rounded-[2.5rem] p-8 md:p-10 shadow-xl mb-12 relative overflow-hidden mx-1">
         <h3 className="text-2xl font-bold text-[#0e4a6b] mb-8">
           Dampak Mendalam Polusi Udara
         </h3>
 
-        {/* Grid: Sumber & Efek */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
           
-          {/* Kolom Kiri: Sumber Polusi */}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <AlertTriangle className="w-5 h-5 text-red-500" />
@@ -396,7 +373,6 @@ const ImpactDetails = ({ onClose }) => {
             </ul>
           </div>
 
-          {/* Kolom Kanan: Efek Kesehatan */}
           <div>
             <div className="flex items-center gap-2 mb-4">
               <HeartPulse className="w-5 h-5 text-orange-500" />
@@ -418,7 +394,6 @@ const ImpactDetails = ({ onClose }) => {
           </div>
         </div>
 
-        {/* Section Bawah: Solusi Nyata */}
         <div>
           <div className="flex items-center gap-2 mb-4">
             <Sparkles className="w-5 h-5 text-cyan-500" />
@@ -426,7 +401,6 @@ const ImpactDetails = ({ onClose }) => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Card 1: Transportasi */}
             <div className="bg-cyan-50/50 p-6 rounded-2xl border border-cyan-100 hover:bg-cyan-50 transition-colors">
               <div className="mb-4 bg-white w-fit p-2 rounded-lg shadow-sm">
                  <Bus className="w-6 h-6 text-blue-600" />
@@ -437,7 +411,6 @@ const ImpactDetails = ({ onClose }) => {
               </p>
             </div>
 
-            {/* Card 2: Energi */}
             <div className="bg-cyan-50/50 p-6 rounded-2xl border border-cyan-100 hover:bg-cyan-50 transition-colors">
               <div className="mb-4 bg-white w-fit p-2 rounded-lg shadow-sm">
                  <Zap className="w-6 h-6 text-orange-500" />
@@ -448,7 +421,6 @@ const ImpactDetails = ({ onClose }) => {
               </p>
             </div>
 
-            {/* Card 3: Penghijauan */}
             <div className="bg-cyan-50/50 p-6 rounded-2xl border border-cyan-100 hover:bg-cyan-50 transition-colors">
               <div className="mb-4 bg-white w-fit p-2 rounded-lg shadow-sm">
                  <Leaf className="w-6 h-6 text-emerald-600" />
@@ -465,12 +437,7 @@ const ImpactDetails = ({ onClose }) => {
   );
 };
 
-
-// ==========================================
-// 3. AIR QUALITY BANNER (DENGAN INTERAKSI)
-// ==========================================
 const AirQualityBanner = () => {
-    // State untuk mengatur visibilitas detail
     const [showDetail, setShowDetail] = useState(false);
 
     return (
@@ -481,7 +448,6 @@ const AirQualityBanner = () => {
             className="w-full max-w-7xl mx-auto mt-12 mb-8"
         >
             <div className="bg-white rounded-[2.5rem] p-8 lg:p-12 shadow-xl border border-slate-100 flex flex-col lg:flex-row gap-10 items-center overflow-hidden mb-8">
-                {/* Bagian Gambar (Kiri) */}
                 <div className="w-full lg:w-1/2 relative group">
                     <div className="absolute inset-0  opacity-10 group-hover:rotate-6 transition-transform"></div>
                     <img 
@@ -490,7 +456,6 @@ const AirQualityBanner = () => {
                         className="relative z-10 rounded-3xl shadow-lg w-full h-[320px] object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                     />
                     
-                    {/* Floating Badge */}
                     <div className="absolute z-20 -bottom-6 -right-4 lg:-right-6 bg-white p-4 rounded-2xl shadow-xl flex items-center gap-4 animate-bounce-slow border border-slate-100">
                         <div className="bg-orange-50 p-3 rounded-xl">
                             <Wind className="w-6 h-6 text-orange-500" />
@@ -504,7 +469,6 @@ const AirQualityBanner = () => {
                     </div>
                 </div>
 
-                {/* Bagian Konten (Kanan) */}
                 <div className="w-full lg:w-1/2">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-50 text-cyan-600 text-xs font-bold uppercase tracking-wider mb-6 border border-cyan-100">
                         <CloudSun className="w-4 h-4" /> Kualitas Udara
@@ -520,7 +484,6 @@ const AirQualityBanner = () => {
                         Setiap hirupan udara bersih yang kita jaga hari ini adalah investasi kesehatan bagi generasi mendatang.
                     </p>
 
-                    {/* Stats Grid */}
                     <div className="grid grid-cols-2 gap-4 mb-8">
                         <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 hover:bg-slate-100 transition-colors">
                             <div className="text-3xl font-black text-slate-800 mb-1">99%</div>
@@ -532,7 +495,6 @@ const AirQualityBanner = () => {
                         </div>
                     </div>
 
-                    {/* Tombol dengan OnClick Event */}
                     <button 
                         onClick={() => setShowDetail(!showDetail)}
                         className="bg-[#0e4a6b] text-white px-8 py-4 rounded-full font-bold text-sm lg:text-base flex items-center gap-2 hover:bg-slate-800 transition-all hover:scale-105 active:scale-95 shadow-lg shadow-cyan-900/20 group"
@@ -544,7 +506,6 @@ const AirQualityBanner = () => {
                 </div>
             </div>
 
-            {/* Render Komponen Detail dengan Animasi */}
             <AnimatePresence>
                 {showDetail && <ImpactDetails onClose={() => setShowDetail(false)} />}
             </AnimatePresence>
@@ -552,15 +513,9 @@ const AirQualityBanner = () => {
     );
 }
 
-
-// ==========================================
-// 4. AIR QUALITY COMPONENT (MAIN LOGIC & API)
-// ==========================================
 const AirQuality = () => {
-    // Kunci API sudah terpasang
     const OPENWEATHER_API_KEY = "f2c01965f5cc81db1486d398e1cdcf81";
     
-    // Lokasi default (Jakarta Industrial Estate)
     const fallbackLocation = { lat: -6.2088, lon: 106.8456, name: 'Jakarta Industrial Estate' };
     const mapRef = useRef(null);
 
@@ -591,7 +546,6 @@ const AirQuality = () => {
         }
 
         try {
-            // 1. Fetch Air Pollution Data
             const pollutionPromise = fetch(
                 `https://api.openweathermap.org/data/2.5/air_pollution?lat=${loc.lat}&lon=${loc.lon}&appid=${OPENWEATHER_API_KEY}`
             ).then(res => {
@@ -600,7 +554,6 @@ const AirQuality = () => {
                 return res.json();
             });
 
-            // 2. Fetch Weather Data (Cuaca)
             const weatherPromise = fetch(
                 `https://api.openweathermap.org/data/2.5/weather?lat=${loc.lat}&lon=${loc.lon}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=id`
             ).then(res => {
@@ -696,13 +649,12 @@ const AirQuality = () => {
 
     return (
         <section className="py-12 px-4 w-full">
-                            <AirQualityBanner />
+            <AirQualityBanner />
             <WeatherDashboard 
                 weatherData={weatherData} 
                 locationName={location.name} 
                 isLoading={isDataLoading}
             />
-            
             
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -711,7 +663,6 @@ const AirQuality = () => {
                 transition={{ duration: 0.6 }}
                 className="max-w-7xl mx-auto bg-white border border-slate-100 rounded-[2rem] p-8 lg:p-12 overflow-hidden relative shadow-2xl shadow-cyan-50/50"
             >
-                {/* Header Air Quality */}
                 <div className="flex flex-col md:flex-row justify-between items-start mb-8">
                     <div>
                         <h2 className="text-3xl md:text-4xl font-bold text-slate-800 leading-tight">
@@ -723,14 +674,12 @@ const AirQuality = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     
-                    {/* --- KONTEN KIRI: AIR QUALITY DATA --- */}
                     <motion.div 
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.2 }}
                         className="lg:col-span-1 space-y-6"
                     >
-                        {/* AQI Status Card */}
                         <div className={`p-6 rounded-3xl ${aqiStatus.bg} border border-slate-100 shadow-lg`}>
                             <div className="flex items-center gap-3 mb-4">
                                 <aqiStatus.icon className={`w-8 h-8 ${aqiStatus.color}`} />
@@ -747,7 +696,6 @@ const AirQuality = () => {
                             {error && <p className="text-red-500 text-sm mt-3 font-semibold">{error}</p>}
                         </div>
 
-                        {/* Pollutant Components */}
                         <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-lg space-y-3">
                             <h4 className="text-lg font-bold text-slate-700 border-b pb-2 mb-3">Konsentrasi Polutan Udara</h4>
                             {isDataLoading && (
@@ -757,7 +705,6 @@ const AirQuality = () => {
                                 </div>
                             )}
                             
-                            {/* List of components */}
                             {Object.entries(components).length > 0 ? (
                                 Object.entries(components).map(([key, value]) => (
                                     <div key={key} className="flex justify-between items-center text-sm">
@@ -772,7 +719,6 @@ const AirQuality = () => {
                         </div>
                     </motion.div>
                     
-                    {/* --- KONTEN KANAN: MAP --- */}
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         whileInView={{ opacity: 1, x: 0 }}
@@ -811,7 +757,6 @@ const AirQuality = () => {
                             <SearchControl onSearchResult={handleLocationSearchResult} />
                         </MapContainer>
 
-                        {/* Button to return to default location */}
                         <button
                             onClick={() => {
                                 setLocation(fallbackLocation);
@@ -827,10 +772,6 @@ const AirQuality = () => {
                     </motion.div>
                 </div>
                 
-                {/* --- BANNER BARU (DENGAN TOMBOL KLIK) --- */}
-
-
-                {/* --- ANALISIS/PENJELASAN POLUTAN --- */}
                 <AirQualityDetails components={components} />
 
             </motion.div>
@@ -838,12 +779,8 @@ const AirQuality = () => {
     );
 };
 
-// ==========================================
-// 5. AIR QUALITY DETAILS (PENJELASAN POLUTAN)
-// ==========================================
 const AirQualityDetails = ({ components }) => {
     
-    // Definisi dan penjelasan setiap polutan
     const pollutantInfo = {
         co: {
             name: "Karbon Monoksida",

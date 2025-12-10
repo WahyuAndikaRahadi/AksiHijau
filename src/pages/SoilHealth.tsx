@@ -15,8 +15,6 @@ import {
   CheckSquare,
 } from 'lucide-react';
 
-// --- BAGIAN 1: KESEHATAN TANAH ---
-
 const KesehatanTanah: React.FC = () => {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -33,7 +31,7 @@ const KesehatanTanah: React.FC = () => {
         <div className="absolute bottom-0 left-0 w-72 h-72 bg-lime-50 rounded-full filter blur-3xl opacity-50 translate-y-1/3 -translate-x-1/3 pointer-events-none" />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center relative z-10">
-          <div>
+          <div className="order-2 lg:order-1">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-bold mb-6 shadow-sm backdrop-blur-sm">
               <Sprout className="w-4 h-4" />
               Kesehatan Tanah
@@ -75,11 +73,10 @@ const KesehatanTanah: React.FC = () => {
             </button>
           </div>
 
-          <div className="relative w-full flex justify-center lg:justify-end pt-10 lg:pt-0">
+          <div className="relative w-full flex justify-center lg:justify-end mb-10 lg:mb-0 order-1 lg:order-2">
             <div className="relative w-full">
               <div className="w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-white group relative z-0">
                 <img
-                  // Menggunakan URL online agar gambar muncul di preview (menggantikan ./img/KesehatanTanah.jpg)
                   src="./img/KesehatanTanah.jpg"
                   alt="Tanah Kering vs Subur"
                   className="w-full h-full object-cover"
@@ -203,20 +200,17 @@ const KesehatanTanah: React.FC = () => {
   );
 };
 
-// --- BAGIAN 2: SOIL CALCULATOR ---
-
 const SoilCalculator = () => {
   const [area, setArea] = useState<number | ''>('');
   const [selectedPractices, setSelectedPractices] = useState<string[]>([]);
   const [result, setResult] = useState<number | null>(null);
 
-  // Data Praktik (Sesuai Gambar)
   const practices = [
     { 
       id: 'kompos', 
       title: 'Penambahan Kompos/Pupuk Organik', 
       desc: 'Meningkatkan kesuburan tanah dan retensi air.',
-      score: 1.5 // Poin dampak per m2
+      score: 1.5 
     },
     { 
       id: 'cover_crop', 
@@ -254,12 +248,10 @@ const SoilCalculator = () => {
     e.preventDefault();
     const areaVal = Number(area) || 0;
     
-    // Rumus Sederhana: Luas * (Jumlah Score Praktik yang dipilih)
     const totalScore = practices
       .filter(p => selectedPractices.includes(p.id))
       .reduce((acc, curr) => acc + curr.score, 0);
       
-    // Asumsi: Hasil dalam kg Karbon Organik Tanah (Soil Organic Carbon) yang tersimpan/tahun
     const totalImpact = areaVal * totalScore * 0.5; 
 
     setResult(totalImpact);
@@ -273,7 +265,6 @@ const SoilCalculator = () => {
         viewport={{ once: true }}
         className="bg-white rounded-3xl shadow-xl border border-emerald-100 overflow-hidden"
       >
-        {/* Header Kalkulator */}
         <div className="bg-emerald-600 p-8 text-white text-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
             <div className="relative z-10">
@@ -289,7 +280,6 @@ const SoilCalculator = () => {
 
         <div className="p-8 md:p-10">
             <form onSubmit={calculateImpact}>
-                {/* Input Area */}
                 <div className="mb-8">
                     <label className="block text-gray-700 font-bold mb-3 flex items-center gap-2">
                         <Layers className="w-5 h-5 text-emerald-600" />
@@ -308,7 +298,6 @@ const SoilCalculator = () => {
                     </div>
                 </div>
 
-                {/* Pilihan Praktik */}
                 <div className="mb-8">
                     <label className="block text-gray-700 font-bold mb-4 flex items-center gap-2">
                         <Tractor className="w-5 h-5 text-emerald-600" />
@@ -358,7 +347,6 @@ const SoilCalculator = () => {
                 </button>
             </form>
 
-            {/* Hasil */}
             <AnimatePresence>
                 {result !== null && (
                     <motion.div
@@ -389,8 +377,6 @@ const SoilCalculator = () => {
     </div>
   );
 };
-
-// --- KOMPONEN UTAMA (APP) ---
 
 const App = () => {
   return (

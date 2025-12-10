@@ -1,10 +1,8 @@
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, Users, TrendingUp, Plus, Clock, Search, Filter } from 'lucide-react';
 import { useState, useEffect } from 'react';
-// ✨ Impor SweetAlert2
 import Swal from 'sweetalert2';
 
-// Mock API URL - ganti dengan URL backend Anda
 const API_URL = 'http://localhost:5000';
 
 interface Event {
@@ -21,9 +19,7 @@ interface Event {
 const CommunityEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
-  // ✨ Tambah state untuk mencegah double submission pada create event
   const [isCreating, setIsCreating] = useState(false);
-  // ✨ Tambah state untuk menonaktifkan tombol upvote saat request
   const [upvoting, setUpvoting] = useState<Set<number>>(new Set());
   
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -31,7 +27,6 @@ const CommunityEvents = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
 
-  // Form state untuk create event
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -41,7 +36,6 @@ const CommunityEvents = () => {
   
   const isLoggedIn = !!localStorage.getItem('token');
 
-  // Load events
   useEffect(() => {
     loadEvents();
   }, []);
@@ -61,8 +55,6 @@ const CommunityEvents = () => {
       }
     } catch (error) {
       console.error('Error loading events:', error);
-      // Opsi: Tambahkan SweetAlert untuk error loading
-      // Swal.fire('Error', 'Gagal memuat daftar event.', 'error');
     } finally {
       setLoading(false);
     }
@@ -71,12 +63,10 @@ const CommunityEvents = () => {
   const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Cek validasi wajib (title, desc, date) dan status loading
     if (!formData.title.trim() || !formData.description.trim() || !formData.event_date.trim() || isCreating) return;
 
     const token = localStorage.getItem('token');
     if (!token) {
-      // ✨ Ganti alert dengan Swal
       Swal.fire({
         icon: 'warning',
         title: 'Harap Login',
@@ -86,7 +76,7 @@ const CommunityEvents = () => {
       return;
     }
 
-    setIsCreating(true); // Mulai proses posting
+    setIsCreating(true);
     
     try {
       const response = await fetch(`${API_URL}/events`, {
@@ -99,7 +89,6 @@ const CommunityEvents = () => {
       });
 
       if (response.ok) {
-        // ✨ Ganti alert dengan Swal Success
         Swal.fire({
             icon: 'success',
             title: 'Berhasil Dibuat!',
@@ -111,7 +100,6 @@ const CommunityEvents = () => {
         loadEvents(); 
       } else {
         const error = await response.json();
-        // ✨ Ganti alert dengan Swal Error
         Swal.fire({
             icon: 'error',
             title: 'Gagal',
@@ -121,7 +109,6 @@ const CommunityEvents = () => {
       }
     } catch (error) {
       console.error('Error creating event:', error);
-       // ✨ Ganti alert dengan Swal Error Koneksi
        Swal.fire({
             icon: 'error',
             title: 'Kesalahan Jaringan',
@@ -129,13 +116,12 @@ const CommunityEvents = () => {
             confirmButtonText: 'Tutup',
         });
     } finally {
-      setIsCreating(false); // Selesai proses posting
+      setIsCreating(false);
     }
   };
 
   const handleUpvote = async (eventId: number) => {
     if (!isLoggedIn) {
-      // ✨ Ganti alert dengan Swal
       Swal.fire({
         icon: 'warning',
         title: 'Harap Login',
@@ -144,10 +130,9 @@ const CommunityEvents = () => {
       });
       return;
     }
-    // Cek apakah event ini sudah dalam proses upvote
     if (upvoting.has(eventId)) return;
 
-    setUpvoting(prev => new Set(prev).add(eventId)); // Mulai upvote
+    setUpvoting(prev => new Set(prev).add(eventId));
 
     try {
       const token = localStorage.getItem('token');
@@ -160,12 +145,9 @@ const CommunityEvents = () => {
       });
 
       if (response.ok) {
-        // Swal tidak wajib di sini, tapi bisa memberikan feedback singkat
-        // Swal.fire({ icon: 'success', title: 'Upvote Berhasil', showConfirmButton: false, timer: 1000 });
         await loadEvents(); 
       } else {
          const error = await response.json();
-         // ✨ Ganti alert dengan Swal Error
          Swal.fire({
             icon: 'info',
             title: 'Upvote Gagal',
@@ -175,7 +157,6 @@ const CommunityEvents = () => {
       }
     } catch (error) {
       console.error('Error upvoting:', error);
-      // ✨ Ganti alert dengan Swal Error Koneksi
       Swal.fire({
         icon: 'error',
         title: 'Kesalahan Jaringan',
@@ -183,7 +164,6 @@ const CommunityEvents = () => {
         confirmButtonText: 'Tutup',
       });
     } finally {
-      // Selesai upvote, hapus dari set
       setUpvoting(prev => {
         const newSet = new Set(prev);
         newSet.delete(eventId);
@@ -194,7 +174,6 @@ const CommunityEvents = () => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    // Robustness check for Invalid Date
     if (isNaN(date.getTime())) {
         return 'Tanggal tidak valid'; 
     }
@@ -214,23 +193,20 @@ const CommunityEvents = () => {
     event.location.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Calendar helper - get days in month
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const startingDayOfWeek = firstDay.getDay();
 
     const days = [];
     
-    // Empty cells before first day
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
     }
     
-    // Days of the month
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(i);
     }
@@ -246,7 +222,6 @@ const CommunityEvents = () => {
     
     return events.filter(event => {
       const eventDate = new Date(event.event_date);
-      // Cek apakah tanggal valid sebelum perbandingan
       if(isNaN(eventDate.getTime())) return false; 
         
       return (
@@ -261,7 +236,6 @@ const CommunityEvents = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-sky-50">
-      {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
@@ -272,7 +246,6 @@ const CommunityEvents = () => {
             <button
               onClick={() => {
                 if (!isLoggedIn) {
-                   // ✨ Ganti alert dengan Swal
                    Swal.fire({
                         icon: 'warning',
                         title: 'Harap Login',
@@ -292,7 +265,6 @@ const CommunityEvents = () => {
             </button>
           </div>
 
-          {/* Search & Filter */}
           <div className="mt-6 flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -331,14 +303,12 @@ const CommunityEvents = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {loading ? (
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
           </div>
         ) : viewMode === 'list' ? (
-          /* List View */
           <div className="grid grid-cols-1 gap-6">
             {filteredEvents.length === 0 ? (
               <div className="text-center py-12">
@@ -379,7 +349,6 @@ const CommunityEvents = () => {
                           </div>
                         </div>
 
-                        {/* Upvote Button */}
                         <button
                           onClick={() => handleUpvote(event.event_id)}
                           disabled={!isLoggedIn || isCurrentlyUpvoting}
@@ -405,7 +374,6 @@ const CommunityEvents = () => {
             )}
           </div>
         ) : (
-          /* Calendar View */
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center justify-between mb-6">
               <button
@@ -427,7 +395,6 @@ const CommunityEvents = () => {
               </button>
             </div>
 
-            {/* Calendar Grid */}
             <div className="grid grid-cols-7 gap-2">
               {['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'].map(day => (
                 <div key={day} className="text-center font-semibold text-gray-600 py-2">
@@ -467,7 +434,6 @@ const CommunityEvents = () => {
         )}
       </div>
 
-      {/* Create Event Modal */}
       {showCreateModal && isLoggedIn && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <motion.div
@@ -554,7 +520,6 @@ const CommunityEvents = () => {
               </button>
               <button
                 onClick={handleCreateEvent}
-                // Tambahkan cek isFormValid dan isCreating
                 disabled={!isFormValid || isCreating}
                 className={`flex-1 px-6 py-3 text-white rounded-lg transition-all duration-300 font-semibold ${
                   !isFormValid || isCreating

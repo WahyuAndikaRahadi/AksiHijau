@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Tag,Loader2, ArrowLeft } from 'lucide-react';
 
-// Interface untuk data blog
 interface BlogItem {
   id: number;
   title: string;
@@ -29,7 +28,6 @@ const BlogPost: React.FC = () => {
     const fetchBlogDetail = async () => {
       try {
         setLoading(true);
-        // Pastikan path ini sesuai dengan lokasi file JSON Anda
         const response = await fetch('/blogData.json');
         
         if (!response.ok) {
@@ -110,7 +108,6 @@ const BlogPost: React.FC = () => {
             </span>
           </div>
 
-          {/* Wrapper Gambar Banner + Caption */}
           <div className="mb-10">
             <div className="relative w-full h-96 rounded-xl overflow-hidden shadow-lg">
               <img
@@ -119,7 +116,7 @@ const BlogPost: React.FC = () => {
                 className="w-full h-full object-cover"
               />
             </div>
-            {/* Keterangan Gambar (Caption) - UPDATE: Rata Kiri (text-left) */}
+
             {blog.KeteranganGambarBanner && (
               <p className="mt-3 text-left text-sm text-gray-500 italic">
                 {blog.KeteranganGambarBanner}
@@ -129,13 +126,11 @@ const BlogPost: React.FC = () => {
 
           <div className="prose prose-lg max-w-none text-gray-700">
             <p className="lead font-medium text-xl mb-6">{blog.description}</p>
-            {/* Split description for paragraphs */}
             {blog.detailDescription.split('\n').map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}
           </div>
 
-          {/* Galeri Foto */}
           {blog.IsGallery === true  && (
             <div className="mt-12">
               <h2 className="text-3xl font-bold text-gray-900 mb-6 border-b pb-2">Galeri Foto</h2>
@@ -162,7 +157,6 @@ const BlogPost: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Modal Galeri */}
       {selectedImage && (
         <motion.div
           initial={{ opacity: 0 }}

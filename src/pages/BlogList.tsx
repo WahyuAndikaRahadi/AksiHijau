@@ -37,7 +37,6 @@ const BlogList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  // Tambahan state untuk pencarian
   const [searchQuery, setSearchQuery] = useState<string>('');
   
   const itemsPerPage: number = 9;
@@ -66,18 +65,15 @@ const BlogList: React.FC = () => {
     fetchBlogs();
   }, []);
 
-  // Reset ke halaman 1 setiap kali user mengetik sesuatu di kolom search
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery]);
 
-  // Logika Filter
   const filteredBlogs = allBlogs.filter((blog) => 
     blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     blog.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Kalkulasi Pagination berdasarkan hasil Filter
   const totalItems: number = filteredBlogs.length;
   const totalPages: number = Math.ceil(totalItems / itemsPerPage);
   const indexOfLastItem: number = currentPage * itemsPerPage;
@@ -166,7 +162,6 @@ const BlogList: React.FC = () => {
             Halaman <span className="text-green-600 font-bold">{totalItems > 0 ? currentPage : 0}</span> dari <span className="text-green-600 font-bold">{totalPages || 0}</span>
           </div>
         </motion.div>
-        {/* --- END SEARCH BAR --- */}
 
         {totalItems === 0 ? (
           <div className="text-center py-20">
