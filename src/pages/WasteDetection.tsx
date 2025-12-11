@@ -1,12 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// PERBAIKAN: RotateCw digunakan untuk tombol reset
 import { Camera, Upload, X, Recycle, Leaf, AlertCircle, Sparkles, RotateCw, ArrowLeft } from 'lucide-react';
 import Webcam from 'react-webcam';
-// BARU: Import SweetAlert2
 import Swal from 'sweetalert2'; 
 
-// Interface untuk hasil deteksi
 interface DetectionResult {
   detectedObject: string;
   confidence: number;
@@ -31,14 +28,12 @@ const WasteDetection: React.FC = () => {
   const webcamRef = useRef<Webcam>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // PENTING: Ganti dengan API Key Gemini Anda
   const GEMINI_API_KEY = 'AIzaSyBm7j_d45T56ZoLEnS2zAin9ExG_HEUWGk';
 
   useEffect(() => {
     console.log('✅ Gemini API is ready for analysis.');
   }, []);
 
-  // Fungsi untuk navigasi kembali (fungsi ini sudah benar)
   const goBack = (): void => {
     if (window.history.length > 1) {
       window.history.back();
@@ -47,7 +42,6 @@ const WasteDetection: React.FC = () => {
     }
   };
 
-  // Buka kamera
   const openCamera = (): void => {
     setIsCameraOpen(true);
     setError(null);
@@ -55,19 +49,16 @@ const WasteDetection: React.FC = () => {
     setDetectionResult(null);
   };
 
-  // Tutup kamera
   const closeCamera = (): void => {
     setIsCameraOpen(false);
     setCapturedImage(null);
     setDetectionResult(null);
   };
 
-  // Switch kamera depan/belakang
   const switchCamera = (): void => {
     setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
   };
 
-  // Capture foto dari webcam
   const capturePhoto = useCallback((): void => {
     if (webcamRef.current) {
       const imageSrc = webcamRef.current.getScreenshot();
@@ -80,7 +71,6 @@ const WasteDetection: React.FC = () => {
     }
   }, [webcamRef]);
 
-  // Handle upload file
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
     if (file) {
@@ -94,7 +84,6 @@ const WasteDetection: React.FC = () => {
     }
   };
 
-  // Analisis dengan Gemini AI (DIMODIFIKASI UNTUK SWEETALERT2)
   const analyzeWithGemini = async (imageBase64: string): Promise<void> => {
     setIsAnalyzingWithAI(true);
     setIsDetecting(true);
@@ -103,7 +92,6 @@ const WasteDetection: React.FC = () => {
     try {
       const base64Data = imageBase64.split(',')[1];
 
-      // PROMPT BARU: Meminta Gemini melakukan Deteksi Objek Spesifik dan Analisis Sampah
       const prompt = `Kamu adalah ahli pengelolaan sampah dan lingkungan. 
       
       Analisis gambar ini. Identifikasi **object utama** dalam gambar yang kemungkinan adalah sampah, dan beri nama klasifikasi yang paling spesifik (misalnya, bukan hanya "botol" tapi "Botol Plastik PET").
@@ -162,7 +150,6 @@ const WasteDetection: React.FC = () => {
         const analysisData = JSON.parse(jsonMatch[0]);
         
         const result: DetectionResult = {
-          // Ambil hasil deteksi dari JSON yang dihasilkan Gemini
           detectedObject: analysisData.detectedObject || "Object Tidak Teridentifikasi",
           confidence: 100,
           wasteAnalysis: analysisData
@@ -170,7 +157,6 @@ const WasteDetection: React.FC = () => {
 
         setDetectionResult(result);
 
-        // --- SweetAlert2 Success ---
         const categoryColor = analysisData.category === 'Organik' ? '#10B981' : 
                               analysisData.category === 'Anorganik' ? '#3B82F6' : 
                               analysisData.category === 'B3' ? '#EF4444' : '#6B7280';
@@ -189,27 +175,23 @@ const WasteDetection: React.FC = () => {
           `,
           icon: 'success',
           confirmButtonText: 'Lihat Panduan',
-          confirmButtonColor: '#10B981', // green-500
+          confirmButtonColor: '#10B981', 
           timer: 15000,
         });
-        // --- AKHIR SweetAlert2 Success ---
 
       } else {
         throw new Error('Invalid Gemini response format. Could not extract JSON.');
       }
     } catch (error) {
       console.error('Error analyzing with Gemini:', error);
-      // Set error state untuk ditampilkan di UI
       setError('Gagal menganalisis dengan AI. Pastikan API Key Gemini valid dan gambar jelas.'); 
 
-      // --- SweetAlert2 Error ---
       await Swal.fire({
         title: 'Gagal Menganalisis!',
         text: 'Terjadi kesalahan saat menghubungi atau memproses respon dari Gemini AI. Cek API Key dan format gambar.',
         icon: 'error',
-        confirmButtonColor: '#EF4444', // red-500
+        confirmButtonColor: '#EF4444', 
       });
-      // --- AKHIR SweetAlert2 Error ---
       
     } finally {
       setIsAnalyzingWithAI(false);
@@ -217,7 +199,6 @@ const WasteDetection: React.FC = () => {
     }
   };
 
-  // Reset (fungsi ini sudah benar)
   const resetDetection = (): void => {
     setCapturedImage(null);
     setDetectionResult(null);
@@ -240,12 +221,8 @@ const WasteDetection: React.FC = () => {
   };
 
   return (
-    // PERBAIKAN UTAMA 2: Tambahkan overflow-x-hidden untuk mencegah scroll horizontal
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-blue-50 py-12 px-4 pt-28 sm:pt-32 overflow-x-hidden">
       
-      {/* PERBAIKAN UTAMA 1: Tambahkan left-0 right-0 (atau inset-x-0) 
-        untuk memastikan elemen absolute w-full tidak meluber saat ada padding/margin
-      */}
       <div className="absolute top-0 z-30 left-0 right-0 px-4 pt-6 sm:px-8 sm:pt-8 flex flex-row justify-between items-center "> 
         <button
           className="text-emerald-600 hover:text-emerald-700 transition-colors flex items-center gap-1 text-lg font-medium"
@@ -257,7 +234,6 @@ const WasteDetection: React.FC = () => {
       </div>
 
       <div className="container mx-auto max-w-4xl">
-        {/* Header Utama (Judul EcoScan) */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -280,7 +256,6 @@ const WasteDetection: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Error Message */}
         {error && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -292,14 +267,12 @@ const WasteDetection: React.FC = () => {
           </motion.div>
         )}
 
-        {/* Main Content */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="bg-white rounded-2xl shadow-xl overflow-hidden"
         >
-          {/* Initial State */}
           {!capturedImage && !isCameraOpen && (
             <div className="p-8">
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
@@ -326,7 +299,6 @@ const WasteDetection: React.FC = () => {
                 />
               </div>
 
-              {/* Info Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-6 bg-blue-50 rounded-xl">
                   <Camera className="w-8 h-8 text-blue-500 mb-3" />
@@ -345,7 +317,6 @@ const WasteDetection: React.FC = () => {
                 </div>
               </div>
 
-              {/* Status Model */}
               <div className="mt-6 text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -355,11 +326,9 @@ const WasteDetection: React.FC = () => {
             </div>
           )}
 
-          {/* Camera View dengan React Webcam (Tanpa Overlay Real-time) */}
           {isCameraOpen && (
             <div className="relative bg-black">
               <div className="relative">
-                {/* Webcam */}
                 <Webcam
                   ref={webcamRef}
                   audio={false}
@@ -369,7 +338,6 @@ const WasteDetection: React.FC = () => {
                 />
               </div>
 
-              {/* Camera controls */}
               <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
                 <div className="flex justify-center items-center gap-4">
                   <button
@@ -401,10 +369,8 @@ const WasteDetection: React.FC = () => {
             </div>
           )}
 
-          {/* Result Section */}
           {capturedImage && (
             <div className="p-6 sm:p-8">
-              {/* Captured Image */}
               <div className="mb-6">
                 <h3 className="text-lg font-semibold mb-4 text-center">📸 Foto Terlampir</h3>
                 <div className="relative max-w-2xl mx-auto">
@@ -416,11 +382,9 @@ const WasteDetection: React.FC = () => {
                 </div>
               </div>
 
-              {/* Analysis Result */}
               <div>
                 <h3 className="text-lg font-semibold mb-4 text-center">🤖 Hasil Analisis AI</h3>
                 
-                {/* Combined Gemini Analysis Loading */}
                 {isDetecting && isAnalyzingWithAI && (
                   <div className="flex flex-col items-center justify-center py-12">
                     <Sparkles className="w-16 h-16 text-green-500 animate-pulse mb-4" />
@@ -429,7 +393,6 @@ const WasteDetection: React.FC = () => {
                   </div>
                 )}
 
-                {/* Final Result */}
                 <AnimatePresence>
                   {detectionResult && !isDetecting && !isAnalyzingWithAI && detectionResult.wasteAnalysis && (
                     <motion.div
@@ -437,7 +400,6 @@ const WasteDetection: React.FC = () => {
                       animate={{ opacity: 1, y: 0 }}
                       className="space-y-4 max-w-3xl mx-auto"
                     >
-                      {/* Gemini Detection Card */}
                       <div className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl shadow-md">
                         <div className="flex items-center gap-3 mb-3">
                           <div className="p-2 bg-blue-500 rounded-lg">
@@ -452,7 +414,6 @@ const WasteDetection: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Gemini Analysis Card */}
                       <div className="p-6 bg-gradient-to-r from-green-50 to-green-100 rounded-xl shadow-md">
                         <div className="flex items-center gap-2 mb-4">
                           <Sparkles className="w-6 h-6 text-green-500" />
@@ -488,7 +449,6 @@ const WasteDetection: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Tips Pengelolaan */}
                       <div className="p-6 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl shadow-md">
                         <h4 className="font-bold text-xl text-gray-900 mb-4 flex items-center gap-2">
                           <AlertCircle className="w-6 h-6 text-purple-500" />
@@ -511,7 +471,6 @@ const WasteDetection: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Action Buttons */}
                       <div className="flex flex-col sm:flex-row gap-3 pt-4">
                         <button
                           onClick={resetDetection}
@@ -528,7 +487,6 @@ const WasteDetection: React.FC = () => {
           )}
         </motion.div>
 
-        {/* Educational Footer */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

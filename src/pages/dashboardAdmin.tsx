@@ -13,7 +13,6 @@ import {
   Heart,
 } from "lucide-react";
 import { useState, useEffect, useCallback, useMemo } from "react";
-// 💡 SweetAlert2 Import
 import Swal from 'sweetalert2';
 
 // Config
@@ -44,7 +43,6 @@ const AdminDashboard = () => {
 
   const token = localStorage.getItem("token");
 
-  // Stats dihitung dari data yang tersedia
   const stats = useMemo<DashboardStats>(() => ({
     totalUsers: users.length,
     totalEventsPending: pendingEvents.length,
@@ -54,7 +52,6 @@ const AdminDashboard = () => {
 
   const formatDate = (date: string) => new Date(date).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
 
-  // FUNGSI UTAMA: Fetch Data Minimal untuk Initial Load
   const loadInitialData = useCallback(async () => {
     if (!token) return;
 
@@ -80,14 +77,12 @@ const AdminDashboard = () => {
       setBadges(badgesData);
     } catch (err) {
       console.error(err);
-      // 💡 Ganti alert dengan Swal
       Swal.fire('Error', 'Gagal memuat data awal dashboard.', 'error');
     } finally {
       setLoading(false);
     }
   }, [token]);
   
-  // FUNGSI LAZY LOADING: Fetch SEMUA Events
   const loadAllEvents = useCallback(async () => {
     if (loadingContent || hasLoadedAllEvents) return; 
     
@@ -106,7 +101,6 @@ const AdminDashboard = () => {
     }
   }, [token, loadingContent, hasLoadedAllEvents]);
   
-  // FUNGSI LAZY LOADING: Fetch SEMUA Posts
   const loadAllPosts = useCallback(async () => {
     if (loadingContent || allPosts.length > 0) return;
     
@@ -137,11 +131,9 @@ const AdminDashboard = () => {
     }
   }, [activeTab, loadAllEvents, loadAllPosts, hasLoadedAllEvents, allPosts.length]);
 
-  // FUNGSI REALTIME DELETE
   const deleteItem = useCallback(async (type: "events" | "posts", id: number) => {
     if (!token || deletingId) return;
 
-    // 💡 Ganti window.confirm dengan Swal
     const confirmation = await Swal.fire({
         title: `Yakin ingin menghapus ${type === "events" ? "event" : "post"} ini?`,
         text: "Tindakan ini tidak dapat dibatalkan!",
@@ -172,12 +164,10 @@ const AdminDashboard = () => {
           setAllPosts(prev => prev.filter(p => p.post_id !== id));
       }
       
-      // 💡 Notifikasi Sukses
       Swal.fire('Berhasil!', `${type === "events" ? "Event" : "Post"} berhasil dihapus.`, 'success');
 
     } catch (err: any) {
       console.error(err);
-      // 💡 Notifikasi Error
       Swal.fire('Error', err.message || "Gagal menghapus", 'error');
     } finally {
       setDeletingId(null);
@@ -188,7 +178,6 @@ const AdminDashboard = () => {
   const moderate = useCallback(async (type: "events", id: number, status: "ACCEPTED" | "REJECTED") => {
     if (!token) return;
     
-    // Konfirmasi Moderasi
     const statusText = status === "ACCEPTED" ? "menyetujui" : "menolak";
     const confirmation = await Swal.fire({
         title: `Konfirmasi ${statusText} event?`,
@@ -211,14 +200,11 @@ const AdminDashboard = () => {
       });
 
       if (!res.ok) throw new Error((await res.json()).error || "Gagal memoderasi");
-      
-      // 💡 Notifikasi Sukses
+
       Swal.fire('Sukses!', `Berhasil ${statusText} event.`, 'success');
       
-      // Update state langsung: hapus dari pending
       setPendingEvents(prev => prev.filter(e => e.event_id !== id));
       
-      // Update status event di allEvents jika sudah dimuat
       if (hasLoadedAllEvents) {
           setAllEvents(prev => prev.map(e => 
               e.event_id === id ? { ...e, status } : e
@@ -227,7 +213,6 @@ const AdminDashboard = () => {
 
     } catch (err: any) {
       console.error(err);
-      // 💡 Notifikasi Error
       Swal.fire('Error', err.message || "Gagal memoderasi", 'error');
     }
   }, [token, hasLoadedAllEvents]);
@@ -244,12 +229,11 @@ const AdminDashboard = () => {
 
       if (!res.ok) throw new Error((await res.json()).error || "Gagal memberikan badge");
       
-      // 💡 Notifikasi Sukses
       Swal.fire('Berhasil!', "Badge berhasil diberikan!", 'success');
 
       setShowBadgeModal(false);
       setSelectedUser(null);
-      loadInitialData(); // Muat ulang user data untuk update level
+      loadInitialData();
     } catch (err: any) {
       console.error(err);
       // 💡 Notifikasi Error
@@ -257,7 +241,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Render
   if (!token) return <div className="p-8 text-center">Harap login sebagai admin</div>;
 
   return (
@@ -274,7 +257,6 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[
               { label: "Total Users", value: stats.totalUsers, icon: Users, color: "from-blue-500 to-blue-600" },
@@ -296,7 +278,6 @@ const AdminDashboard = () => {
         </div>
       </header>
 
-      {/* Tabs */}
       <nav className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex gap-1">
@@ -323,7 +304,6 @@ const AdminDashboard = () => {
         </div>
       </nav>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {(loading && activeTab === 'events_pending' || loadingContent) ? (
           <div className="flex justify-center py-20">
@@ -331,7 +311,6 @@ const AdminDashboard = () => {
           </div>
         ) : (
           <>
-            {/* Events Pending Tab */}
             {activeTab === "events_pending" && (
               <Section title={`Events Membutuhkan Persetujuan (${pendingEvents.length})`}>
                 {pendingEvents.length === 0 ? <EmptyState message="Tidak ada event yang perlu direview" /> : (
@@ -350,7 +329,6 @@ const AdminDashboard = () => {
               </Section>
             )}
             
-            {/* Events All Tab */}
             {activeTab === "events_all" && (
               <Section title={`Semua Events (${allEvents.length})`}>
                 <div className="space-y-4">
@@ -371,7 +349,6 @@ const AdminDashboard = () => {
               </Section>
             )}
 
-            {/* Posts All Tab */}
             {activeTab === "posts_all" && (
               <Section title={`Semua Posts (${allPosts.length})`}>
                 <div className="space-y-4">
@@ -390,7 +367,6 @@ const AdminDashboard = () => {
               </Section>
             )}
 
-            {/* Users Tab */}
             {activeTab === "users" && (
               <Section title={`User Management (${users.length})`}>
                  <div className="bg-white rounded-xl shadow-md overflow-hidden">
@@ -441,7 +417,6 @@ const AdminDashboard = () => {
         )}
       </main>
 
-      {/* Badge Modal */}
       {showBadgeModal && (
         <Modal onClose={() => { setShowBadgeModal(false); setSelectedUser(null); }}>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Pilih Badge</h2>
@@ -476,7 +451,6 @@ const AdminDashboard = () => {
   );
 };
 
-// Reusable Components
 const Section: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <section className="space-y-4">
     <h2 className="text-xl font-bold text-gray-900">{title}</h2>
@@ -491,7 +465,6 @@ const EmptyState: React.FC<{ message: string }> = ({ message }) => (
   </div>
 );
 
-// EventCard (Menambahkan isDeleting)
 const EventCard: React.FC<{ event: Event; onModerate: (status: "ACCEPTED" | "REJECTED") => void; onDelete: () => void; formatDate: (d: string) => string; showStatus?: boolean; isDeleting: boolean }> = ({ event, onModerate, onDelete, formatDate, showStatus = false, isDeleting }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`bg-white rounded-xl shadow-md p-6 relative ${isDeleting ? 'opacity-70' : ''}`}>
     <div className="flex items-start justify-between gap-4">
@@ -515,7 +488,7 @@ const EventCard: React.FC<{ event: Event; onModerate: (status: "ACCEPTED" | "REJ
         </div>
       </div>
       <div className="flex gap-2 items-start">
-        {event.status === 'PENDING' && ( // Tombol Moderasi hanya muncul di status PENDING
+        {event.status === 'PENDING' && (
           <>
             <button onClick={() => onModerate("ACCEPTED")} disabled={isDeleting} className={`flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-semibold ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
               <CheckCircle className="w-4 h-4" /> Accept
@@ -526,7 +499,6 @@ const EventCard: React.FC<{ event: Event; onModerate: (status: "ACCEPTED" | "REJ
           </>
         )}
         
-        {/* Tombol Hapus hanya muncul untuk event yang BUKAN PENDING */}
         {event.status !== 'PENDING' && (
             <button onClick={onDelete} disabled={isDeleting} className={`flex items-center gap-2 px-4 py-2 bg-gray-200 text-red-600 rounded-lg hover:bg-gray-300 text-sm font-semibold transition-colors flex-shrink-0 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
                 {isDeleting ? (
@@ -541,7 +513,6 @@ const EventCard: React.FC<{ event: Event; onModerate: (status: "ACCEPTED" | "REJ
   </motion.div>
 );
 
-// PostCard (Menambahkan isDeleting)
 const PostCard: React.FC<{ post: Post; onDelete: () => void; showStatus?: boolean; isDeleting: boolean }> = ({ post, onDelete, isDeleting }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`bg-white rounded-xl shadow-md p-6 relative ${isDeleting ? 'opacity-70' : ''}`}>
     <div className="flex items-start gap-4">
@@ -559,7 +530,6 @@ const PostCard: React.FC<{ post: Post; onDelete: () => void; showStatus?: boolea
           <span><MessageSquare className="w-4 h-4 inline-block mr-1" /> {post.comment_count} comments</span>
         </div>
       </div>
-      {/* Tombol Hapus Post dengan Spinner */}
       <button onClick={onDelete} disabled={isDeleting} className={`flex items-center gap-2 px-4 py-2 bg-gray-200 text-red-600 rounded-lg hover:bg-gray-300 text-sm font-semibold transition-colors flex-shrink-0 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
         {isDeleting ? (
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600" />

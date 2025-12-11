@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, ArrowRight, Loader2, Search, Leaf } from 'lucide-react'; 
 
-// Interface untuk data berita
 interface NewsItem {
   title: string;
   link: string;
@@ -11,22 +10,17 @@ interface NewsItem {
   description: string;
 }
 
-// Interface untuk response API
 interface ApiResponse {
   message: string;
   total: number;
   data: NewsItem[];
 }
 
-// KOMPONEN WAVE
 const CardWave: React.FC = () => (
-    // h-20 memberikan tinggi yang cukup besar agar wave tampak jelas.
-    // bottom-0 agar menempel di dasar card
     <div className="absolute bottom-0 left-0 right-0 h-30 overflow-hidden rounded-b-3xl z-99"> 
         <svg 
             xmlns="http://www.w3.org/2000/svg" 
             viewBox="0 0 1440 320"
-            // -mt-10 agar gelombang naik sedikit dan memotong tepi atasnya, membuatnya lebih jelas.
             className="w-full h-auto block" 
         >
             <path 
@@ -179,7 +173,6 @@ const News: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* Search Input and Info */}
         <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -216,10 +209,8 @@ const News: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1, duration: 0.6 }}
-              // Kita kembalikan padding bawah pada artikel (misalnya pb-16) untuk memberi ruang bagi CardWave.
               className="relative bg-white rounded-3xl overflow-hidden shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.03] group border border-green-100 pb-20" 
             >
-                {/* DEKORASI DAUN LATAR BELAKANG */}
                 <Leaf className="absolute top-0 right-0 w-20 h-20 text-green-100 opacity-60 rotate-[10deg] transition-transform duration-500 group-hover:rotate-[30deg] z-0" />
                 <Leaf className="absolute top-1/2 left-0 w-16 h-16 text-green-50 opacity-80 -rotate-[30deg] transition-transform duration-500 group-hover:-rotate-[50deg] z-0" />
                 
@@ -233,9 +224,7 @@ const News: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-green-900/40 to-transparent"></div>
               </div>
 
-              {/* Konten Artikel: gunakan padding bawah (pb-6) yang normal agar kartu tampak lebih tinggi dan lega */}
               <div className="p-6 relative z-10"> 
-                {/* Judul Artikel */}
                 <h2 className="text-2xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-green-600 transition-colors duration-300 leading-snug">
                   {item.title}
                 </h2>
@@ -246,7 +235,6 @@ const News: React.FC = () => {
                   <Leaf className="w-4 h-4 ml-auto text-green-400" /> 
                 </div>
 
-                {/* Deskripsi */}
                 <p className="text-gray-700 text-base mb-4 line-clamp-3">
                   {item.description}
                 </p>
@@ -255,7 +243,6 @@ const News: React.FC = () => {
                   href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  // Hapus mb-2 (margin-bottom) agar link ini berada di posisi yang diinginkan
                   className="inline-flex items-center text-green-600 font-semibold group-hover:gap-2 transition-all duration-300 hover:text-green-700" 
                 >
                   Baca Selengkapnya
@@ -263,13 +250,11 @@ const News: React.FC = () => {
                 </a>
               </div>
               
-              {/* KOMPONEN WAVE DITEMPATKAN DI SINI (CardWave berada di bottom-0 dari pb-16) */}
               <CardWave />
             </motion.article>
           ))}
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && totalItems > 0 && (
             <motion.div
               initial={{ opacity: 0 }}

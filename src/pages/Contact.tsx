@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { Mail, MapPin, Phone, Send } from 'lucide-react';
 import { useState } from 'react';
 import emailjs from '@emailjs/browser';
-import Swal from 'sweetalert2'; // Import SweetAlert2
+import Swal from 'sweetalert2';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -17,12 +17,10 @@ const Contact = () => {
     setLoading(true);
 
     try {
-      // Konfigurasi EmailJS (ganti dengan ID Anda)
-      const serviceId = 'service_7pgcv2r'; // Ganti dengan Service ID dari EmailJS
-      const templateId = 'template_hb65sil'; // Ganti dengan Template ID dari EmailJS
-      const publicKey = 'XaoJzqugOBJNnw5Qn'; // Ganti dengan Public Key dari EmailJS
+      const serviceId = 'service_7pgcv2r';
+      const templateId = 'template_hb65sil';
+      const publicKey = 'XaoJzqugOBJNnw5Qn';
 
-      // Kirim email menggunakan EmailJS
       await emailjs.send(
         serviceId,
         templateId,
@@ -30,12 +28,11 @@ const Contact = () => {
           from_name: formData.name,
           from_email: formData.email,
           message: formData.message,
-          to_email: 'aksihijau69@gmail.com', // Email tujuan
+          to_email: 'aksihijau69@gmail.com',
         },
         publicKey
       );
 
-      // Notifikasi sukses dengan SweetAlert2
       Swal.fire({
         icon: 'success',
         title: 'Berhasil!',
@@ -43,11 +40,9 @@ const Contact = () => {
         confirmButtonColor: '#16a34a',
       });
 
-      // Reset form setelah sukses
       setFormData({ name: '', email: '', message: '' });
     } catch (error) {
       console.error('Error sending email:', error);
-      // Notifikasi error dengan SweetAlert2
       Swal.fire({
         icon: 'error',
         title: 'Gagal!',
@@ -84,7 +79,6 @@ const Contact = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Bagian Form (Kiri) */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -173,7 +167,6 @@ const Contact = () => {
             </div>
           </motion.div>
 
-          {/* Bagian Info Kontak (Kanan) - Tetap sama */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -186,7 +179,6 @@ const Contact = () => {
               </h2>
 
               <div className="space-y-8 flex-grow">
-                {/* Email */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -202,7 +194,6 @@ const Contact = () => {
                   </div>
                 </motion.div>
 
-                {/* Telepon */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -218,7 +209,6 @@ const Contact = () => {
                   </div>
                 </motion.div>
 
-                {/* Alamat & Peta */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -237,7 +227,6 @@ const Contact = () => {
                     </div>
                   </div>
 
-                  {/* --- AREA PETA GOOGLE MAPS --- */}
                   <div className="mt-4 w-full h-64 bg-gray-200 rounded-lg overflow-hidden border border-gray-300">
                     <iframe
                       title="Lokasi Kantor"
@@ -250,7 +239,6 @@ const Contact = () => {
                       referrerPolicy="no-referrer-when-downgrade"
                     ></iframe>
                   </div>
-                  {/* --- AKHIR AREA PETA --- */}
                 </motion.div>
               </div>
             </div>

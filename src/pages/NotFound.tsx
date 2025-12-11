@@ -6,10 +6,8 @@ import { motion } from 'framer-motion';
 const CUSTOM_IMAGE_URL = '/public/img/404.png'; 
 
 const NotFound: React.FC = () => {
-    // Menggunakan warna latar belakang yang sudah Anda tentukan
     const bgColor = "bg-emerald-50"; 
     
-    // Durasi spin 5s menggunakan Arbitrary Value Tailwind
     const slowSpinClass = "animate-[spin_5s_linear_infinite]";
 
     return (
@@ -18,26 +16,21 @@ const NotFound: React.FC = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6 }}
-                className="z-10 w-full max-w-5xl" // Diperluas sedikit
+                className="z-10 w-full max-w-5xl"
             >
                 
-                {/* Visual 404 dengan Tumpang Tindih */}
-                {/* Gunakan FLEX-COL di layar kecil, dan kembali ke FLEX-ROW di layar menengah ke atas */}
                 <div className="flex items-center justify-center my-6  sm:my-10 sm:gap-4">
                     
-                    {/* Angka 4 pertama */}
                     <motion.span
                         initial={{ x: -50, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ duration: 0.5, delay: 0.2 }}
-                        // Ukuran teks disesuaikan: 150px di default, 250px di sm, 350px di md
                         className="text-[150px] sm:text-[250px] md:text-[350px] font-extrabold text-green-600/80 leading-none"
                     >
                         4
                     </motion.span>
 
-                    {/* Gambar di posisi 0 (Pusat) */}
-                    {/* Ukuran gambar disesuaikan: w-48 di default, w-64 di sm */}
+                
                     <div className="w-48 h-48 sm:w-64 sm:h-64 mt-[-40px] mb-[-40px] sm:my-0"> 
                         <img 
                             src={CUSTOM_IMAGE_URL} 
@@ -46,19 +39,16 @@ const NotFound: React.FC = () => {
                         />
                     </div>
 
-                    {/* Angka 4 kedua */}
                     <motion.span
                         initial={{ x: 50, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ duration: 0.5, delay: 0.2 }}
-                        // Ukuran teks disesuaikan sama dengan angka 4 pertama
                         className="text-[150px] sm:text-[250px] md:text-[350px] font-extrabold text-green-700/80 leading-none"
                     >
                         4
                     </motion.span>
                 </div>
                 
-                {/* Teks dan Tombol */}
                 <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

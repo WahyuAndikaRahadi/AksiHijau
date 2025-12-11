@@ -1,10 +1,8 @@
 import { motion } from 'framer-motion';
 import { Heart, MessageCircle, Send, Image as ImageIcon, Leaf, Award, XCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
-// ✨ Impor SweetAlert2
 import Swal from 'sweetalert2'; 
 
-// URL backend, pastikan ini sesuai
 const API_URL = 'http://localhost:5000'; 
 
 interface Post {
@@ -35,25 +33,14 @@ const SocialCommunity = () => {
   const [comments, setComments] = useState<{ [key: number]: Comment[] }>({});
   const [commentText, setCommentText] = useState('');
   
-  // KUNCI: State untuk menyimpan ID post yang sudah di-like oleh user saat ini
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set()); 
 
-  // Form state
   const [postContent, setPostContent] = useState('');
   const [postImage, setPostImage] = useState('');
 
-  // Ambil data user dari localStorage
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const isLoggedIn = !!localStorage.getItem('token'); 
 
-// ----------------------------------------------------
-// ## FUNGSI LIKE DAN POST LOADING
-// ----------------------------------------------------
-
-  /**
-   * Mengambil daftar ID post yang sudah di-like oleh user dari backend.
-   * Dipanggil saat load pertama kali.
-   */
   const loadLikedPosts = async (token: string) => {
     try {
       const response = await fetch(`${API_URL}/user/liked-posts`, {
@@ -64,7 +51,6 @@ const SocialCommunity = () => {
 
       if (response.ok) {
         const likedPostIds: number[] = await response.json();
-        // Set state dengan Set<number> untuk lookup cepat
         setLikedPosts(new Set(likedPostIds));
       } else {
         console.error('Failed to load user liked posts:', response.statusText);
@@ -74,16 +60,11 @@ const SocialCommunity = () => {
     }
   };
 
-
-  /**
-   * Mengambil semua post dan status like saat inisialisasi.
-   */
   const loadPosts = async () => {
     setLoading(true);
     const token = localStorage.getItem('token');
 
     try {
-      // 1. Ambil semua post
       const postsResponse = await fetch(`${API_URL}/posts`, {
         headers: {
           'Authorization': token ? `Bearer ${token}` : '', 
@@ -94,7 +75,6 @@ const SocialCommunity = () => {
         const data = await postsResponse.json();
         setPosts(data);
 
-        // 2. Jika login, ambil status like (membuatnya aktif setelah refresh)
         if (token) {
           await loadLikedPosts(token); 
         } else {
@@ -111,18 +91,13 @@ const SocialCommunity = () => {
     }
   };
 
-  // Panggil loadPosts saat komponen pertama kali di-mount
   useEffect(() => {
     loadPosts();
   }, []);
 
-  /**
-   * Menangani aksi like/unlike. Menggunakan Optimistic UI Update.
-   */
   const handleLike = async (postId: number) => {
     const token = localStorage.getItem('token');
     if (!token) {
-      // ✨ Ganti alert dengan Swal
       Swal.fire({
         icon: 'warning',
         title: 'Harap Login',
@@ -132,12 +107,8 @@ const SocialCommunity = () => {
       return;
     }
 
-    // Cek status like saat ini dari state 'likedPosts' yang sudah disinkronkan
     const isCurrentlyLiked = likedPosts.has(postId);
 
-    // 1. Optimistic UI Update: Ubah tampilan segera
-    
-    // Update like count
     setPosts(prevPosts =>
       prevPosts.map(post => {
         if (post.post_id === postId) {
@@ -150,18 +121,16 @@ const SocialCommunity = () => {
       })
     );
     
-    // Update likedPosts Set (untuk ikon merah)
     setLikedPosts(prev => {
       const newSet = new Set(prev);
       if (isCurrentlyLiked) {
-        newSet.delete(postId); // Unlike: Hapus dari Set
+        newSet.delete(postId);
       } else {
-        newSet.add(postId);    // Like: Tambahkan ke Set
+        newSet.add(postId);
       }
       return newSet;
     });
 
-    // 2. API Call ke Backend (Validasi dan Persistensi)
     try {
       const response = await fetch(`${API_URL}/posts/${postId}/like`, {
         method: 'POST',
@@ -171,7 +140,6 @@ const SocialCommunity = () => {
       });
 
       if (!response.ok) {
-        // Rollback UI Update jika API gagal
         console.error('Like API failed. Rolling back UI.');
         
         setPosts(prevPosts =>
@@ -189,45 +157,32 @@ const SocialCommunity = () => {
         setLikedPosts(prev => {
           const newSet = new Set(prev);
           if (isCurrentlyLiked) {
-            newSet.add(postId); // Rollback unlike
+            newSet.add(postId);
           } else {
-            newSet.delete(postId); // Rollback like
+            newSet.delete(postId);
           }
           return newSet;
         });
         
         const error = await response.json();
-        // ✨ Ganti alert dengan Swal
         Swal.fire({
             icon: 'error',
             title: 'Gagal Like',
             text: error.error || 'Gagal memperbarui like. Status dikembalikan.',
             confirmButtonText: 'Tutup',
         });
-      } else {
-        // Jika sukses, biarkan UI tetap terupdate secara optimistic
-        // Opsi: Beri feedback sukses singkat
-        // Swal.fire({ icon: 'success', title: 'Berhasil', showConfirmButton: false, timer: 800 });
       }
     } catch (error) {
       console.error('Error liking post (network error):', error);
-      // Rollback jika error jaringan
-      // Rollback logic ada di bagian `if (!response.ok)`
-      // ✨ Ganti alert dengan Swal
       Swal.fire({
           icon: 'error',
           title: 'Kesalahan Jaringan',
           text: 'Terjadi kesalahan koneksi saat like. Status dikembalikan.',
           confirmButtonText: 'Tutup',
       });
-      
     }
   };
 
-// ----------------------------------------------------
-// ## FUNGSI COMMENT DAN UTILITY
-// ----------------------------------------------------
-  
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -235,7 +190,6 @@ const SocialCommunity = () => {
 
     const token = localStorage.getItem('token');
     if (!token) {
-        // ✨ Ganti alert dengan Swal
         Swal.fire({
             icon: 'warning',
             title: 'Harap Login',
@@ -272,17 +226,14 @@ const SocialCommunity = () => {
             comment_count: newPost.comment_count ?? 0,
         };
 
-        // Tambahkan post baru di awal daftar
         setPosts(prev => [postToAdd, ...prev]);
         
         setShowCreateModal(false);
         setPostContent('');
         setPostImage('');
-        // Opsi: Feedback sukses singkat
         Swal.fire({ icon: 'success', title: 'Post Berhasil!',text:'Postingan berhasil dibuat!', showConfirmButton: false, timer: 1500 });
       } else {
         const error = await response.json();
-        // ✨ Ganti alert dengan Swal
         Swal.fire({
             icon: 'error',
             title: 'Gagal Posting',
@@ -292,7 +243,6 @@ const SocialCommunity = () => {
       }
     } catch (error) {
       console.error('Error creating post:', error);
-      // ✨ Ganti alert dengan Swal
       Swal.fire({
             icon: 'error',
             title: 'Kesalahan Jaringan',
@@ -322,7 +272,6 @@ const SocialCommunity = () => {
 
     const token = localStorage.getItem('token');
     if (!token) {
-        // ✨ Ganti alert dengan Swal
         Swal.fire({
             icon: 'warning',
             title: 'Harap Login',
@@ -359,7 +308,6 @@ const SocialCommunity = () => {
         setCommentText('');
       } else {
           const error = await response.json();
-          // ✨ Ganti alert dengan Swal
           Swal.fire({
             icon: 'error',
             title: 'Gagal Komentar',
@@ -369,7 +317,6 @@ const SocialCommunity = () => {
       }
     } catch (error) {
       console.error('Error adding comment:', error);
-      // ✨ Ganti alert dengan Swal
       Swal.fire({
             icon: 'error',
             title: 'Kesalahan Jaringan',
@@ -435,7 +382,6 @@ const SocialCommunity = () => {
                 onError={() => {
                     setImgError(true);
                     onRemove(); 
-                    // ✨ Ganti alert dengan Swal
                     Swal.fire({
                         icon: 'error',
                         title: 'Gambar Gagal Dimuat',
@@ -454,14 +400,8 @@ const SocialCommunity = () => {
     );
   };
 
-
-// ----------------------------------------------------
-// ## KOMPONEN UTAMA (JSX)
-// ----------------------------------------------------
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-sky-50">
-      {/* Header */}
       <div className="bg-white shadow-sm border-b sticky top-16 z-10">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -476,8 +416,7 @@ const SocialCommunity = () => {
               onClick={() => {
                 if (isLoggedIn) setShowCreateModal(true);
                 else {
-                   // ✨ Ganti alert dengan Swal
-                   Swal.fire({
+                    Swal.fire({
                         icon: 'warning',
                         title: 'Harap Login',
                         text: 'Anda harus login untuk membuat Post.',
@@ -497,7 +436,6 @@ const SocialCommunity = () => {
         </div>
       </div>
 
-      {/* Pesan Login */}
       {!isLoggedIn && (
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="text-center py-4 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg shadow-sm">
@@ -507,7 +445,6 @@ const SocialCommunity = () => {
         </div>
       )}
 
-      {/* Main Feed */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {loading ? (
           <div className="flex items-center justify-center h-64">
@@ -524,7 +461,6 @@ const SocialCommunity = () => {
             ) : (
               posts.map((post, index) => {
                 const badge = getLevelBadge(post.eco_level);
-                // PENTING: Mengecek apakah post_id ada di Set likedPosts
                 const isLiked = likedPosts.has(post.post_id); 
                 
                 return (
@@ -535,7 +471,6 @@ const SocialCommunity = () => {
                     transition={{ delay: index * 0.05 }} 
                     className="bg-white rounded-xl shadow-md overflow-hidden"
                   >
-                    {/* Post Header */}
                     <div className="p-4 flex items-center gap-3">
                       <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
                         {(post.username?.[0] || 'U').toUpperCase()} 
@@ -552,12 +487,10 @@ const SocialCommunity = () => {
                       </div>
                     </div>
 
-                    {/* Post Content */}
                     <div className="px-4 pb-3">
                       <p className="text-gray-800 whitespace-pre-wrap">{post.content}</p>
                     </div>
 
-                    {/* Post Image */}
                     {post.image_url && (
                       <div className="px-4 pb-3">
                         <img
@@ -569,17 +502,14 @@ const SocialCommunity = () => {
                       </div>
                     )}
 
-                    {/* Post Actions */}
                     <div className="px-4 py-3 border-t flex items-center gap-6">
                       <button
                         onClick={() => handleLike(post.post_id)}
                         disabled={!isLoggedIn} 
                         className={`flex items-center gap-2 transition-colors ${
-                          // MENGGUNAKAN isLiked untuk menentukan warna
                           isLiked ? 'text-red-500' : 'text-gray-600 hover:text-red-500'
                         } ${!isLoggedIn ? 'opacity-50 cursor-not-allowed' : ''}`}
                       >
-                        {/* MENGGUNAKAN isLiked untuk mengisi ikon */}
                         <Heart className={`w-5 h-5 ${isLiked ? 'fill-red-500' : ''}`} /> 
                         <span className="font-semibold">{post.like_count}</span>
                       </button>
@@ -593,10 +523,8 @@ const SocialCommunity = () => {
                       </button>
                     </div>
 
-                    {/* Comments Section */}
                     {selectedPost === post.post_id && (
                       <div className="border-t bg-gray-50">
-                        {/* Comment Input */}
                         <div className="p-4 flex gap-3">
                           <div className="flex-1 flex gap-2">
                             <input
@@ -624,7 +552,6 @@ const SocialCommunity = () => {
                           </div>
                         </div>
 
-                        {/* Comments List */}
                         <div className="px-4 pb-4 space-y-3">
                           {comments[post.post_id]?.map((comment) => {
                             const commentBadge = getLevelBadge(comment.eco_level);
@@ -660,7 +587,6 @@ const SocialCommunity = () => {
         )}
       </div>
 
-      {/* Create Post Modal */}
       {showCreateModal && isLoggedIn && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <motion.div

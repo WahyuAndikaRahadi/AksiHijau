@@ -1,22 +1,21 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Mail, Lock, User, Leaf, Eye, EyeOff } from "lucide-react"; // Tambahkan Eye dan EyeOff
+import { Mail, Lock, User, Leaf, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import Swal from "sweetalert2"; // Tambahkan import SweetAlert2
+import Swal from "sweetalert2";
 
-// Ganti dengan Base URL API Anda yang sebenarnya (misalnya, URL Vercel)
-const API_BASE_URL = "http://localhost:5000/auth"; // Contoh: 'https://aksi-hijau-api.vercel.app/auth'
+const API_BASE_URL = "http://localhost:5000/auth";
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    username: "", // Diubah dari 'name' menjadi 'username' agar sesuai dengan backend
+    username: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // State untuk toggle password visibility
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State untuk toggle confirm password visibility
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +38,6 @@ const Register = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        // Backend Anda mengharapkan 'username', 'email', dan 'password'
         body: JSON.stringify({
           username: formData.username,
           email: formData.email,
@@ -50,7 +48,6 @@ const Register = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        // Jika status kode 4xx atau 5xx
         Swal.fire({
           icon: "error",
           title: "Gagal",
@@ -61,14 +58,13 @@ const Register = () => {
         return;
       }
 
-      // Jika pendaftaran berhasil (status 201)
       Swal.fire({
         icon: "success",
         title: "Berhasil",
         text: "Pendaftaran berhasil! Silakan login.",
         confirmButtonColor: "#16a34a",
       });
-      // Kosongkan form setelah berhasil
+      
       setFormData({
         username: "",
         email: "",
@@ -104,11 +100,10 @@ const Register = () => {
         className="max-w-md w-full"
       >
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          {/* ... (Header dan Logo tetap sama) ... */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <img
-                src="/public/img/logo.png" // Ganti dengan URL/path gambar logo kamu
+                src="/public/img/logo.png"
                 alt="Logo Aksi Hijau"
                 className="w-24 h-24 text-primary group-hover:rotate-12 transition-transform duration-300"
               />
@@ -120,7 +115,7 @@ const Register = () => {
               Buat akun dan mulai aksi nyata untuk bumi
             </p>
           </div>
-          {/* --- Notifikasi Error/Success dihapus karena menggunakan Swal --- */}
+          
           <form onSubmit={handleSubmit} className="space-y-5">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -190,13 +185,11 @@ const Register = () => {
                 Password
               </label>
               <div className="relative">
-                {/* Ikon Kunci di Kiri */}
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
 
                 <input
-                  // Tipe input dinamis
                   type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
@@ -207,7 +200,6 @@ const Register = () => {
                   placeholder="Minimal 6 karakter"
                 />
 
-                {/* Ikon Mata di Kanan (Toggle Button) */}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
@@ -237,13 +229,11 @@ const Register = () => {
                 Konfirmasi Password
               </label>
               <div className="relative">
-                {/* Ikon Kunci di Kiri */}
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
 
                 <input
-                  // Tipe input dinamis
                   type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
                   name="confirmPassword"
@@ -254,7 +244,6 @@ const Register = () => {
                   placeholder="Ulangi password"
                 />
 
-                {/* Ikon Mata di Kanan (Toggle Button) */}
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}

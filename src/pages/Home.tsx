@@ -14,10 +14,6 @@ import {
 } from "lucide-react";
 import React, { useState } from 'react';
 
-// =========================================================================
-// DATA
-// =========================================================================
-
 const testimonials = [
   {
     quote:
@@ -60,7 +56,6 @@ const testimonials = [
 const testimonialsLine1 = testimonials.slice(0, Math.ceil(testimonials.length / 2));
 const testimonialsLine2 = testimonials.slice(Math.ceil(testimonials.length / 2));
 
-
 const faqData = [
   {
     question: "Apa itu Aksi Hijau dan apa misinya?",
@@ -88,11 +83,6 @@ const faqData = [
       "Komunitas Eco Warrior mengadakan berbagai kegiatan, seperti program penanaman pohon, acara 'clean-up' (pembersihan sampah) di area publik dan pantai, workshop daur ulang, serta tantangan pengurangan jejak karbon mingguan yang interaktif. Anda dapat mendaftar dan mendapatkan poin kontribusi dari setiap aktivitas.",
   },
 ];
-
-
-// =========================================================================
-// KOMPONEN PEMBANTU (Helper Components)
-// =========================================================================
 
 const TestimonialTicker = ({ testimonials, direction = "left", duration = 25 }) => {
   const DUPLICATION_FACTOR = 5;
@@ -163,7 +153,6 @@ const TestimonialTicker = ({ testimonials, direction = "left", duration = 25 }) 
     </div>
   );
 };
-
 
 const NewFeatureCard = ({ icon: Icon, title, description, linkTo }) => (
   <motion.div
@@ -245,18 +234,12 @@ const FaqItem = ({ question, answer, isOpen, onClick }) => {
   );
 };
 
-
-// =========================================================================
-// KOMPONEN UTAMA (Home Component)
-// =========================================================================
-
 const Home = () => {
   const [openFaq, setOpenFaq] = useState(null);
 
   const handleFaqClick = (index) => {
     setOpenFaq(openFaq === index ? null : index);
   };
-
 
   const cardVariants = {
     initial: { opacity: 0, scale: 0.8, y: 50 },
@@ -298,11 +281,8 @@ const Home = () => {
     },
   ];
 
-
   return (
-    // PERBAIKAN UTAMA: Tambahkan overflow-x-hidden untuk menghilangkan scroll horizontal
     <div className="overflow-x-hidden">
-      {/* 1. Hero Section */}
       <section className="relative bg-gradient-to-br from-green-50 via-white to-sky-50 py-20 sm:py-32 overflow-hidden px-10">
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
 
@@ -329,7 +309,7 @@ const Home = () => {
               >
                 <Link
                   to="/register"
-                  className="inline-block px-8 py-4 mb-10 bg-primary text-white text-lg font-semibold rounded-lg hover:bg-green-600 transition-all duration-300 hover:shadow-xl hover:scale-105"
+                  className="inline-block relative z-10 px-8 py-4 mb-10 bg-primary text-white text-lg font-semibold rounded-lg hover:bg-green-600 transition-all duration-300 hover:shadow-xl hover:scale-105"
                 >
                   Mulai Sekarang
                 </Link>
@@ -417,26 +397,20 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 2. Filosofi Aksi Hijau */}
       <section className="px-10 py-20 md:my-24 bg-white relative">
-        
-        {/* Dekorasi Pohon Kiri (Filosofi) - FLIPPED */}
-        {/* MENGGUNAN KODE ASLI PENGGUNA UNTUK POHON INI */}
         <div className="absolute top-0 -left-72 bottom-0  w-[650px]  hidden md:block pointer-events-none">
           <img
-            src="./img/pohon.png" // PASTIKAN PATH INI BENAR SESUAI PROJECT ANDA
+            src="./img/pohon.png"
             alt="Ilustrasi Pohon Hijau"
-            className="w-full h-full object-cover transform scale-x-[-1]" // Ditambah opacity-70
+            className="w-full h-full object-cover transform scale-x-[-1]"
           />
         </div>
 
-        {/* Dekorasi Pohon Kanan (Filosofi) */}
-        {/* MENGGUNAKAN KODE ASLI PENGGUNA UNTUK POHON INI */}
         <div className="absolute top-0 -right-72 bottom-0  w-[650px] h-full hidden md:block pointer-events-none">
           <img
-            src="./img/pohon.png" // PASTIKAN PATH INI BENAR SESUAI PROJECT ANDA
+            src="./img/pohon.png"
             alt="Ilustrasi Pohon Hijau"
-            className="w-full h-full object-cover" // Ditambah opacity-70
+            className="w-full h-full object-cover"
           />
         </div>
 
@@ -512,9 +486,6 @@ const Home = () => {
         </div>
       </section>
 
-    
-
-      {/* 3. KENAPA MEMILIH AKSI HIJAU */}
       <section className="mx-10 my-16 px-5 py-16 sm:px-10 sm:py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -543,7 +514,6 @@ const Home = () => {
                     className="p-3 bg-primary/10 rounded-full mr-4 flex-shrink-0"
                   >
                     <DollarSign className="w-6 h-6 text-primary" />
-                    {/* [Gambar: Ikon DollarSign untuk Gratis & Terjangkau] */}
                   </motion.div>
                   <div>
                     <h3 className="text-xl font-bold text-gray-900">
@@ -565,7 +535,6 @@ const Home = () => {
                     className="p-3 bg-primary/10 rounded-full mr-4 flex-shrink-0"
                   >
                     <Users className="w-6 h-6 text-primary" />
-                    {/* [Gambar: Ikon Users untuk Didukung Pakar Lingkungan] */}
                   </motion.div>
                   <div>
                     <h3 className="text-xl font-bold text-gray-900">
@@ -586,7 +555,6 @@ const Home = () => {
                     className="p-3 bg-primary/10 rounded-full mr-4 flex-shrink-0"
                   >
                     <Clock className="w-6 h-6 text-primary" />
-                    {/* [Gambar: Ikon Clock untuk Akses Fleksibel 24/7] */}
                   </motion.div>
                   <div>
                     <h3 className="text-xl font-bold text-gray-900">
@@ -617,22 +585,18 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 4. ECO ASSISTANT BARU (EcoScan) - Teks di Kanan */}
       <motion.section
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.8 }}
-        // DIBEDAKAN: Ubah background section menjadi hijau muda
         className="px-5 py-15 sm:px-10 sm:py-20 bg-green-50" 
       >
-        
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div
             className="rounded-3xl p-8 md:p-12 lg:p-16 lg:my-12"
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-              {/* Visual (Left Column) */}
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
                 whileInView={{ scale: 1, opacity: 1 }}
@@ -651,7 +615,6 @@ const Home = () => {
                 />
               </motion.div>
               
-              {/* Text (Right Column) */}
               <motion.div
                 initial={{ x: 50, opacity: 0 }}
                 whileInView={{ x: 0, opacity: 1 }}
@@ -683,22 +646,18 @@ const Home = () => {
         </div>
       </motion.section>
 
-      {/* 4.5. ECO BOT ASSISTANT BARU - Teks di Kiri */}
       <motion.section
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.8 }}
-          // DIBEDAKAN: Biarkan background section putih (default)
-          className="px-5 py-15 sm:px-10 sm:py-20 bg-sky-50" // Background berbeda untuk kontras
+          className="px-5 py-15 sm:px-10 sm:py-20 bg-sky-50" 
       >
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
               <div className="rounded-3xl p-8 md:p-12 lg:p-16 lg:my-12">
                   
-                  {/* Grid order: Text first, then Visual (Teks di kiri) */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                       
-                      {/* Text (Left Column) */}
                       <motion.div
                           initial={{ x: -50, opacity: 0 }}
                           whileInView={{ x: 0, opacity: 1 }}
@@ -720,7 +679,6 @@ const Home = () => {
                           </Link>
                       </motion.div>
 
-                      {/* Visual (Right Column) */}
                       <motion.div
                           initial={{ scale: 0.8, opacity: 0 }}
                           whileInView={{ scale: 1, opacity: 1 }}
@@ -728,11 +686,9 @@ const Home = () => {
                           transition={{ delay: 0.2, duration: 0.7 }}
                           className="relative w-full aspect-square max-w-sm mx-auto flex items-center justify-center order-first md:order-none"
                       >
-                          {/* Background glow using sky color */}
                           <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/80 to-blue-500/50 rounded-full blur-3xl opacity-70"></div>
                           <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/50 to-blue-300/50 rounded-full opacity-70 scale-110"></div>
                           
-                          {/* Ilustrasi AI Bot */}
                           <img
                               src="/public/img/Robot.png" 
                               alt="AI EcoBot Assistant"
@@ -744,7 +700,6 @@ const Home = () => {
           </div>
       </motion.section>
 
-        {/* 5. FITUR UNGGULAN BARU */}
       <section className="px-10 py-20 bg-primary">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -778,10 +733,7 @@ const Home = () => {
         </div>
       </section>
 
-
-      {/* 6. FAQ Section BARU */}
       <section className="px-5 py-20 bg-gray-50 relative overflow-hidden">
-
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -816,8 +768,6 @@ const Home = () => {
         </div>
       </section>
 
-
-      {/* 7. Testimoni (FULL WIDTH TICKER) */}
       <section className="py-20 bg-white overflow-hidden">
         <div className="mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <motion.div
@@ -850,7 +800,6 @@ const Home = () => {
         />
       </section>
 
-      {/* 8. CTA Akhir BARU */}
       <section className="px-5 py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div

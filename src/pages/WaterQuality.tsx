@@ -27,11 +27,6 @@ import {
   BarChart,
 } from 'lucide-react';
 
-// =============================
-// SECTION 1: KUALITAS AIR
-// (LAYOUT DIPERBAIKI: Gambar di Atas saat Mobile)
-// =============================
-
 const KualitasAirSection: React.FC = () => {
   const [showDetails, setShowDetails] = useState(false);
 
@@ -44,28 +39,22 @@ const KualitasAirSection: React.FC = () => {
         transition={{ duration: 0.6 }}
         className="max-w-7xl mx-auto bg-white border border-cyan-100 rounded-[2.5rem] p-8 lg:p-12 relative shadow-xl overflow-hidden"
       >
-        {/* Dekorasi Latar Belakang */}
         <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-50 rounded-full filter blur-3xl opacity-50 -translate-y-1/2 -translate-x-1/3 pointer-events-none"></div>
         <div className="absolute bottom-0 right-0 w-72 h-72 bg-blue-50 rounded-full filter blur-3xl opacity-50 translate-y-1/3 translate-x-1/3 pointer-events-none"></div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center relative z-10">
           
-          {/* --- KONTEN KIRI (GAMBAR) --- */}
-          {/* PERUBAHAN: order-1 (supaya di atas saat mobile), pt-0 (hapus padding atas) */}
           <div className="relative w-full flex justify-center lg:justify-start pt-0 lg:pt-0 order-1 lg:order-1">
             <div className="relative w-full">
-              {/* Container Gambar */}
               <div className="w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-white group relative z-0">
                 <img
                   src="./img/Water.jpg"
                   alt="Sungai Bersih vs Tercemar"
                   className="w-full h-full object-cover"
                 />
-                {/* Overlay Gradient Halus */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-60"></div>
               </div>
 
-              {/* Floating Card (Status Air) */}
               <div className="absolute -bottom-6 -right-4 md:-bottom-8 md:-right-8 bg-white p-4 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-cyan-50 flex items-center gap-4 z-20 max-w-[260px]">
                 <div className="p-3 bg-blue-100 rounded-xl flex-shrink-0 text-blue-600">
                   <Waves className="w-6 h-6" />
@@ -83,16 +72,12 @@ const KualitasAirSection: React.FC = () => {
             </div>
           </div>
 
-          {/* --- KONTEN KANAN (TEKS) --- */}
-          {/* PERUBAHAN: order-2 (supaya di bawah gambar saat mobile) */}
           <div className="order-2 lg:order-2">
-            {/* Badge Kategori */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cyan-50 border border-cyan-200 text-cyan-700 text-sm font-bold mb-6 shadow-sm backdrop-blur-sm">
               <Droplet className="w-4 h-4" />
               Kualitas Air
             </div>
 
-            {/* Judul Utama */}
             <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
               Air Bersih untuk <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-600 to-blue-600">
@@ -100,12 +85,10 @@ const KualitasAirSection: React.FC = () => {
               </span>
             </h2>
 
-            {/* Deskripsi */}
             <p className="text-gray-600 text-lg mb-10 leading-relaxed">
               Air adalah sumber kehidupan, namun pencemaran industri dan limbah domestik mengancam ketersediaan air bersih. Setiap tetes yang kita selamatkan hari ini adalah investasi bagi generasi mendatang.
             </p>
 
-            {/* Kotak Statistik */}
             <div className="grid grid-cols-2 gap-6 mb-10">
               <div className="bg-cyan-50/50 rounded-2xl p-6 border border-cyan-100">
                 <div className="text-3xl font-bold text-cyan-700 mb-2">70%</div>
@@ -117,7 +100,6 @@ const KualitasAirSection: React.FC = () => {
               </div>
             </div>
 
-            {/* Tombol Aksi */}
             <button
               onClick={() => setShowDetails(!showDetails)}
               className={`
@@ -133,7 +115,6 @@ const KualitasAirSection: React.FC = () => {
           </div>
         </div>
 
-        {/* --- PANEL DETAIL TAMBAHAN (EXPANDABLE) --- */}
         <AnimatePresence>
           {showDetails && (
             <motion.div
@@ -150,7 +131,6 @@ const KualitasAirSection: React.FC = () => {
                 </h3>
 
                 <div className="grid md:grid-cols-2 gap-12 mb-10">
-                  {/* Jenis Pencemar */}
                   <div>
                     <h4 className="flex items-center text-lg font-bold text-red-600 mb-4">
                       <Skull className="w-5 h-5 mr-2" /> Jenis Pencemar Air
@@ -169,9 +149,12 @@ const KualitasAirSection: React.FC = () => {
                         <span>Limpasan pertanian (pupuk kimia, pestisida).</span>
                       </li>
                     </ul>
+                    
+
+[Image of sources of water pollution]
+
                   </div>
 
-                  {/* Dampak Lingkungan */}
                   <div>
                     <h4 className="flex items-center text-lg font-bold text-orange-600 mb-4">
                       <HeartPulse className="w-5 h-5 mr-2" /> Dampak Kesehatan & Ekosistem
@@ -193,27 +176,23 @@ const KualitasAirSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Solusi Berkelanjutan */}
                 <div className="pt-6 border-t border-cyan-100">
                   <h4 className="flex items-center text-lg font-bold text-cyan-700 mb-6">
                     <ShieldCheck className="w-5 h-5 mr-2" /> Solusi Berkelanjutan
                   </h4>
                   <div className="grid md:grid-cols-3 gap-4">
-                    {/* Solusi 1 */}
                     <div className="bg-white p-5 rounded-2xl border border-cyan-100 shadow-sm">
                       <h5 className="font-bold text-cyan-800 mb-2 text-sm">Pengolahan Limbah</h5>
                       <p className="text-xs text-cyan-700/80 leading-relaxed">
                         Dukung instalasi pengolahan air limbah (IPAL) di industri dan rumah tangga.
                       </p>
                     </div>
-                    {/* Solusi 2 */}
                     <div className="bg-white p-5 rounded-2xl border border-cyan-100 shadow-sm">
                       <h5 className="font-bold text-cyan-800 mb-2 text-sm">Hemat Air</h5>
                       <p className="text-xs text-cyan-700/80 leading-relaxed">
                         Gunakan air seperlunya, perbaiki keran bocor, dan gunakan teknologi hemat air.
                       </p>
                     </div>
-                    {/* Solusi 3 */}
                     <div className="bg-white p-5 rounded-2xl border border-cyan-100 shadow-sm">
                       <h5 className="font-bold text-cyan-800 mb-2 text-sm">Kurangi Plastik</h5>
                       <p className="text-xs text-cyan-700/80 leading-relaxed">
@@ -232,25 +211,15 @@ const KualitasAirSection: React.FC = () => {
   );
 };
 
-// ... (SISA KODE WATER FOOTPRINT CALCULATOR TETAP SAMA SEPERTI YANG ANDA BERIKAN) ...
-// (Saya tidak menyertakan ulang kode di bawah ini untuk menghemat tempat, karena Anda meminta jangan ubah fungsi lain)
-// Pastikan menyambungkan kembali dengan kode WaterFootprintCalculatorSection yang lama.
-
-// =============================
-// SECTION 2: WATER FOOTPRINT CALCULATOR
-// =============================
-
-// Konstanta API Gemini
 const MODEL_NAME = "gemini-2.5-flash-lite";
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`;
 
-// GANTI DENGAN KEY ANDA
 const GEMINI_API_KEY = "AIzaSyBU_XwDdo1d10izloI1wGlukAjaXTruMzk"; 
 
 interface VirtualActivity {
   id: number;
   name: string;
-  liters: number; // Langsung liter yang diketik user
+  liters: number;
 }
 
 interface WaterData {
@@ -260,18 +229,15 @@ interface WaterData {
   customVirtualActivities: VirtualActivity[]; 
 }
 
-// Komponen Input Dinamis untuk Jejak Air Virtual
 const DynamicVirtualInput: React.FC<{
   activities: VirtualActivity[];
   setActivities: React.Dispatch<React.SetStateAction<VirtualActivity[]>>;
 }> = ({ activities, setActivities }) => {
   const [newActivityName, setNewActivityName] = useState('');
-  const [newActivityLiters, setNewActivityLiters] = useState(5); // Default 5 liter
+  const [newActivityLiters, setNewActivityLiters] = useState(5);
 
-  // 1. Array aman untuk rendering
   const safeActivities = Array.isArray(activities) ? activities : [];
   
-  // 2. Logika untuk menonaktifkan tombol tambah
   const isAddDisabled = newActivityName.trim().length === 0 || newActivityLiters <= 0;
 
 
@@ -280,13 +246,10 @@ const DynamicVirtualInput: React.FC<{
     const liters = newActivityLiters;
 
     if (name && liters > 0) {
-      // Menggunakan functional update untuk memastikan data lama tidak hilang
       setActivities((prevActivities) => {
         
-        // Pastikan state sebelumnya adalah array
         const listToUpdate = Array.isArray(prevActivities) ? prevActivities : [];
         
-        // Return array BARU yang berisi SEMUA item LAMA ditambah item BARU.
         return [
           ...listToUpdate, 
           {
@@ -297,14 +260,12 @@ const DynamicVirtualInput: React.FC<{
         ];
       });
       
-      // Reset input setelah berhasil
       setNewActivityName('');
       setNewActivityLiters(5);
     }
   };
 
   const updateActivity = (id: number, field: 'name' | 'liters', value: string | number) => {
-    // Tambahkan perlindungan pada 'activities' saat melakukan map
     const updatedActivities = safeActivities.map((activity) =>
         activity.id === id
           ? { ...activity, [field]: field === 'liters' ? parseInt(value as string) || 0 : value }
@@ -314,7 +275,6 @@ const DynamicVirtualInput: React.FC<{
   };
 
   const removeActivity = (id: number) => {
-    // Tambahkan perlindungan pada 'activities' saat melakukan filter
     const filteredActivities = safeActivities.filter((activity) => activity.id !== id);
     setActivities(filteredActivities);
   };
@@ -326,10 +286,8 @@ const DynamicVirtualInput: React.FC<{
         Input Jejak Air Tambahan (Perkiraan Liter)
       </h4>
 
-      {/* Daftar Kegiatan yang Sudah Ada */}
       <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
         <AnimatePresence>
-          {/* Gunakan safeActivities yang dijamin berupa array */}
           {safeActivities.map((activity) => ( 
             <motion.div
               key={activity.id}
@@ -339,7 +297,6 @@ const DynamicVirtualInput: React.FC<{
               transition={{ duration: 0.2 }}
               className="flex items-center gap-2 bg-white rounded-xl p-3 border border-pink-100 shadow-sm"
             >
-              {/* Input Nama Kegiatan */}
               <input
                 type="text"
                 value={activity.name}
@@ -348,7 +305,6 @@ const DynamicVirtualInput: React.FC<{
                 className="w-1/2 p-1.5 text-sm font-medium text-slate-700 bg-transparent focus:ring-0 focus:outline-none"
               />
               
-              {/* Input Liter */}
               <div className="flex items-center w-1/3 border-l border-pink-100 pl-2">
                 <input
                   type="number"
@@ -361,7 +317,6 @@ const DynamicVirtualInput: React.FC<{
                 <span className="text-xs text-slate-400">L</span>
               </div>
 
-              {/* Tombol Hapus */}
               <button
                 onClick={() => removeActivity(activity.id)}
                 className="p-1 text-slate-400 hover:text-red-500 transition-colors flex-shrink-0"
@@ -373,7 +328,6 @@ const DynamicVirtualInput: React.FC<{
         </AnimatePresence>
       </div>
 
-      {/* Input Form Tambah Kegiatan Baru */}
       <div className="mt-4 pt-4 border-t border-pink-100 flex gap-2">
         <input
           type="text"
@@ -389,7 +343,6 @@ const DynamicVirtualInput: React.FC<{
             max="100"
             placeholder="Liter"
             value={newActivityLiters}
-            // Pastikan nilai diubah menjadi integer yang valid, minimal 1
             onChange={(e) => setNewActivityLiters(parseInt(e.target.value) || 0)}
             className="w-full p-2 text-sm text-center bg-transparent focus:ring-0 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
@@ -397,11 +350,11 @@ const DynamicVirtualInput: React.FC<{
         </div>
         <button
           onClick={addActivity}
-          disabled={isAddDisabled} // Terapkan logika nonaktif
+          disabled={isAddDisabled}
           className={`p-2 rounded-xl transition-all flex-shrink-0 ${
             isAddDisabled 
-              ? 'bg-slate-300 text-slate-500 cursor-not-allowed' // Tampilan nonaktif
-              : 'bg-cyan-600 text-white hover:bg-cyan-700' // Tampilan aktif
+              ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+              : 'bg-cyan-600 text-white hover:bg-cyan-700'
           }`}
           title="Tambah Kegiatan"
         >
@@ -412,7 +365,6 @@ const DynamicVirtualInput: React.FC<{
   );
 };
 
-// --- Komponen Input Interaktif yang DIMODIFIKASI ---
 const CustomInputButtons: React.FC<{
   value: number;
   min: number;
@@ -427,13 +379,10 @@ const CustomInputButtons: React.FC<{
     onChange(newValue);
   };
   
-  // Fungsi baru untuk menangani input dari keyboard
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = parseInt(e.target.value);
     
-    // Hanya update jika nilai bukan NaN
     if (!isNaN(rawValue)) {
-      // Pastikan nilai tetap berada di dalam batas min/max
       const newValue = Math.max(min, Math.min(max, rawValue));
       onChange(newValue);
     }
@@ -441,7 +390,6 @@ const CustomInputButtons: React.FC<{
 
   return (
     <div className="flex items-center space-x-2">
-      {/* Tombol -5 (Lompatan Besar) */}
       <button
         onClick={() => handleUpdate(-5)}
         disabled={value <= min}
@@ -454,7 +402,6 @@ const CustomInputButtons: React.FC<{
         -5
       </button>
 
-      {/* Tombol -1 (Lompatan Kecil) */}
       <button
         onClick={() => handleUpdate(-1)}
         disabled={value <= min}
@@ -467,19 +414,16 @@ const CustomInputButtons: React.FC<{
         -1
       </button>
 
-      {/* INPUT ANGKA (Untuk bisa diketik) */}
       <input
         type="number"
         min={min}
         max={max}
         value={value}
         onChange={handleInputChange}
-        // Styling disesuaikan agar terlihat seperti div sebelumnya
         className={`flex-grow text-center text-3xl font-extrabold p-2 bg-slate-50 rounded-xl border border-slate-200 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 ${colorClass.replace('bg-', 'text-').replace('-500', '-700')} [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none`}
         aria-label="Durasi Mandi"
       />
 
-      {/* Tombol +1 (Lompatan Kecil) */}
       <button
         onClick={() => handleUpdate(1)}
         disabled={value >= max}
@@ -492,7 +436,6 @@ const CustomInputButtons: React.FC<{
         +1
       </button>
 
-      {/* Tombol +5 (Lompatan Besar) */}
       <button
         onClick={() => handleUpdate(5)}
         disabled={value >= max}
@@ -508,7 +451,6 @@ const CustomInputButtons: React.FC<{
   );
 };
 
-// --- Komponen Slider Sederhana ---
 const CustomSlider = ({
     value,
     min,
@@ -526,15 +468,12 @@ const CustomSlider = ({
 
     return (
       <div className="relative w-full h-6 flex items-center">
-        {/* Track Background */}
         <div className="absolute w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-          {/* Filled Track */}
           <div
             className={`h-full ${colorClass}`}
             style={{ width: `${percentage}%`, transition: 'width 0.1s ease-out' }}
           />
         </div>
-        {/* Input Range (Invisible but clickable) */}
         <input
           type="range"
           min={min}
@@ -544,7 +483,6 @@ const CustomSlider = ({
           onChange={(e) => onChange(parseInt(e.target.value))}
           className="absolute w-full h-full opacity-0 cursor-pointer z-20"
         />
-        {/* Custom Thumb handle */}
         <div
           className={`absolute h-5 w-5 bg-white border-2 rounded-full shadow-md z-10 pointer-events-none transition-all duration-100 ease-out flex items-center justify-center`}
           style={{ left: `calc(${percentage}% - 10px)` }}
@@ -557,7 +495,6 @@ const CustomSlider = ({
 
 
 const WaterFootprintCalculatorSection: React.FC = () => {
-  // --- State ---
   const [data, setData] = useState<WaterData>({
     showerMinutes: 10,
     laundryLoads: 3,
@@ -576,18 +513,15 @@ const WaterFootprintCalculatorSection: React.FC = () => {
   const [isTipsExpanded, setIsTipsExpanded] = useState(false); 
 
 
-  // --- Konstanta ---
   const LITERS_PER_SHOWER_MINUTE = 12;
   const LITERS_PER_LAUNDRY_LOAD = 50;
   const LITERS_PER_DISH_MINUTE = 9;
 
-  // --- Kalkulasi ---
   const calculateTotal = useCallback(() => {
     const dailyShower = data.showerMinutes * LITERS_PER_SHOWER_MINUTE;
     const dailyLaundry = (data.laundryLoads * LITERS_PER_LAUNDRY_LOAD) / 7;
     const dailyDish = data.dishMinutes * LITERS_PER_DISH_MINUTE;
     
-    // Perlindungan saat melakukan reduce
     const totalCustomVirtual = (Array.isArray(data.customVirtualActivities) ? data.customVirtualActivities : []).reduce(
         (sum, activity) => sum + activity.liters, 0
     ); 
@@ -625,53 +559,39 @@ const WaterFootprintCalculatorSection: React.FC = () => {
     setData(prev => ({ ...prev, [key]: value }));
   };
   
-  // Setter khusus untuk aktivitas virtual
   const setCustomVirtualActivities: React.Dispatch<React.SetStateAction<VirtualActivity[]>> = (updater) => {
       setData(prev => {
           const currentActivities = prev.customVirtualActivities;
           
-          // Jika updater adalah fungsi (functional update)
           if (typeof updater === 'function') {
-              // Panggil updater dengan state lama dan ambil nilai barunya
               const newActivities = updater(currentActivities);
               return { ...prev, customVirtualActivities: Array.isArray(newActivities) ? newActivities : [] };
           } 
-          // Jika updater adalah nilai (value update)
           else {
               return { ...prev, customVirtualActivities: Array.isArray(updater) ? updater : [] };
           }
       });
   };
 
-  // --- Fungsi Panggil Gemini API (Dengan Toggle Logic) ---
   const fetchGeminiTips = async () => {
-    // 1. Jika sedang expanded, tutup (toggle)
     if (isTipsExpanded) {
         setIsTipsExpanded(false);
         return;
     }
 
-    // 2. Jika collapsed, buka.
     setIsTipsExpanded(true); 
 
-    // 3. Hanya fetch jika tips belum ada (geminiTips === null) 
-    //    atau sedang loading karena data input baru
     if (geminiTips && !tipsLoading) {
-      // Jika tips ada dan tidak sedang loading, tampilkan tips yang sudah ada (cached).
       return;
     }
 
-    // Force fetch (old logic)
     setGeminiTips(null);
     setTipsLoading(true);
 
-    // Perlindungan saat memanggil map/reduce untuk API prompt
     const safeVirtualActivities = Array.isArray(data.customVirtualActivities) ? data.customVirtualActivities : [];
   
-    // Format kegiatan virtual untuk prompt Gemini
     const virtualSummary = safeVirtualActivities.map(a => `${a.name} (${a.liters} L)`).join(', ');
     
-    // PROMPT BARU DENGAN INPUT VIRTUAL DINAMIS
     const prompt = `Saya telah menghitung jejak air harian saya. Rinciannya adalah: Mandi (${data.showerMinutes} menit), Laundry (${data.laundryLoads}x/minggu), Cuci Piring (${data.dishMinutes} menit), dan beberapa kegiatan harian/virtual lainnya: ${virtualSummary}. Total jejak air saya adalah ${totalLiters.toLocaleString()} Liter/hari. Berikan 5 tips yang sangat spesifik dan praktis (dalam format list: * [Tip]) dalam Bahasa Indonesia untuk mengurangi konsumsi air di kategori yang saya sebutkan, termasuk tips untuk mengurangi jejak air dari kegiatan virtual/tambahan seperti ${safeVirtualActivities[0]?.name || 'kegiatan virtual'} buat dengan jelas dan lengkap untuk semua kegiatan virtual maupun kegiatan mandi ataupun rumah tangga.`;
 
     const requestBody = {
@@ -688,7 +608,6 @@ const WaterFootprintCalculatorSection: React.FC = () => {
       });
 
       if (!response.ok) {
-        // Coba baca error dari response body jika ada
         const errorBody = await response.json();
         console.error("API Error Body:", errorBody);
         throw new Error(`HTTP error! status: ${response.status} - ${errorBody.error?.message || response.statusText}`);
@@ -710,14 +629,12 @@ const WaterFootprintCalculatorSection: React.FC = () => {
 
   return (
     <section className="min-h-screen w-full bg-[#f8fafc] font-sans selection:bg-cyan-100 text-slate-800 pb-40">
-      {/* Decorative Background Blob */}
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <div className="absolute -top-[20%] -right-[10%] w-[50vw] h-[50vw] bg-cyan-100/40 rounded-full blur-3xl mix-blend-multiply filter opacity-70 animate-blob"></div>
         <div className="absolute top-[20%] -left-[10%] w-[50vw] h-[50vw] bg-blue-100/40 rounded-full blur-3xl mix-blend-multiply filter opacity-70 animate-blob animation-delay-2000"></div>
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-4 pt-12 md:pt-20">
-        {/* Header */}
         <div className="text-center mb-16 space-y-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -748,15 +665,10 @@ const WaterFootprintCalculatorSection: React.FC = () => {
           </motion.p>
         </div>
 
-        {/* ======================================================= */}
-        {/* --- INPUT GRID (Hygiene, Household, Virtual) --- */}
-        {/* ======================================================= */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* --- LEFT COLUMN (7-span): Hygiene & Household --- */}
           <div className="lg:col-span-7 space-y-6">
             
-            {/* Card: Hygiene */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -788,7 +700,6 @@ const WaterFootprintCalculatorSection: React.FC = () => {
               </div>
             </motion.div>
 
-            {/* Card: Household */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -806,7 +717,6 @@ const WaterFootprintCalculatorSection: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Laundry */}
                 <div className="bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
                   <div className="flex justify-between items-end mb-4">
                     <div className="flex flex-col">
@@ -836,7 +746,6 @@ const WaterFootprintCalculatorSection: React.FC = () => {
                   />
                 </div>
 
-                {/* Dishes */}
                 <div className="bg-slate-50/50 rounded-2xl p-5 border border-slate-100">
                   <div className="flex justify-between items-end mb-4">
                     <div className="flex flex-col">
@@ -869,10 +778,9 @@ const WaterFootprintCalculatorSection: React.FC = () => {
             </motion.div>
           </div>
 
-          {/* --- RIGHT COLUMN (5-span): Virtual Consumption --- */}
           <div className="lg:col-span-5 space-y-6">
             <motion.div
-              initial={{ opacity: 0, x: 20 }} // Animasi dari kanan
+              initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
               className="relative overflow-hidden bg-gradient-to-br from-white to-pink-50/50 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/50 shadow-xl shadow-slate-200/50 hover:shadow-2xl hover:shadow-pink-100/50 transition-all duration-300 h-full"
@@ -893,7 +801,6 @@ const WaterFootprintCalculatorSection: React.FC = () => {
                 </div>
               </div>
 
-              {/* Komponen Input Dinamis Ditempatkan di sini */}
               <div className="bg-white/60 rounded-2xl p-5 border border-pink-100/50">
                   <DynamicVirtualInput 
                     activities={data.customVirtualActivities}
@@ -910,9 +817,6 @@ const WaterFootprintCalculatorSection: React.FC = () => {
           </div>
         </div>
 
-        {/* ======================================================= */}
-        {/* --- FULL-WIDTH SECTION: Results and Tips --- */}
-        {/* ======================================================= */}
         <div className="mt-12 pt-8 border-t border-slate-200">
           <h2 className="text-3xl md:text-4xl font-extrabold text-slate-800 mb-8 text-center">
             Ringkasan Jejak Air Harian Anda
@@ -920,23 +824,19 @@ const WaterFootprintCalculatorSection: React.FC = () => {
           
           <div className="max-w-3xl mx-auto">
             
-            {/* Card: Results/Estimation */}
             <motion.div
               layout
               className={`relative overflow-hidden rounded-[2.5rem] bg-gradient-to-b ${statusColor} text-white shadow-2xl shadow-blue-200 transition-all duration-700`}
             >
-              {/* Water Wave Pattern Background */}
               <div className="absolute inset-0 opacity-20">
                 <Waves className="w-full h-full object-cover scale-[5] animate-spin-slow opacity-30" strokeWidth={0.5} />
               </div>
 
-              {/* Glass Card Content */}
               <div className="relative z-10 p-8 flex flex-col items-center justify-center min-h-[500px] bg-white/10 backdrop-blur-sm border-t border-white/20">
                 <h3 className="text-white/80 font-semibold tracking-widest uppercase text-xs mb-8">
                   Estimasi Harian
                 </h3>
 
-                {/* Main Number */}
                 <div className="relative mb-2">
                   <motion.div
                     key={totalLiters}
@@ -951,14 +851,12 @@ const WaterFootprintCalculatorSection: React.FC = () => {
                 </div>
                 <p className="text-white/90 text-sm font-medium mb-8">Liter Air / Hari</p>
 
-                {/* Status Pill */}
                 <div className="bg-white/20 backdrop-blur-md border border-white/30 px-6 py-2 rounded-full mb-10 shadow-lg">
                   <span className="font-bold text-lg flex items-center gap-2">
                     {statusText}
                   </span>
                 </div>
 
-                {/* Breakdown Bar (Mini Chart) */}
                 <div className="w-full space-y-3 mb-8">
                   <p className="text-xs font-semibold uppercase opacity-70 text-center">
                     Sumber Pemborosan
@@ -997,8 +895,8 @@ const WaterFootprintCalculatorSection: React.FC = () => {
                     </span>
                   </div>
                 </div>
+                
 
-                {/* Galon Comparison */}
                 <div className="w-full bg-black/10 rounded-2xl p-4 flex items-center justify-between backdrop-blur-sm">
                   <span className="text-xs font-medium opacity-80">Setara dengan</span>
                   <span className="font-bold text-xl">
@@ -1009,7 +907,6 @@ const WaterFootprintCalculatorSection: React.FC = () => {
               </div>
             </motion.div>
 
-            {/* Tips Section (Gemini AI Integration) */}
             <div className="mt-6"> 
               <button 
                 onClick={fetchGeminiTips}
@@ -1032,14 +929,12 @@ const WaterFootprintCalculatorSection: React.FC = () => {
                   </>
                 ) : (
                   <>
-                     Lihat Tips Hemat Air Personal (Gemini AI)
+                      Lihat Tips Hemat Air Personal (Gemini AI)
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
               </button>
 
-              {/* Gemini Tips Display - TELAH DIUBAH MENJADI TRANSPARAN/GLASS MORPHISM */}
-{/* Bagian Display Tips Gemini */}
               <AnimatePresence>
                 {isTipsExpanded && ( 
                   <motion.div
@@ -1049,7 +944,7 @@ const WaterFootprintCalculatorSection: React.FC = () => {
                     transition={{ duration: 0.4, ease: "easeInOut" }}
                     className="bg-white/80 backdrop-blur-md rounded-2xl shadow-xl border-2 border-cyan-300 overflow-hidden" 
                   >
-                    <div className="p-6 md:p-8"> {/* Padding diperbesar */}
+                    <div className="p-6 md:p-8"> 
                         {tipsLoading ? (
                         <div className="flex flex-col items-center justify-center h-32 text-slate-600">
                             <Loader className="w-8 h-8 animate-spin mb-3 text-cyan-600" />
@@ -1062,15 +957,9 @@ const WaterFootprintCalculatorSection: React.FC = () => {
                                 Analisis Gemini AI
                             </h4>
                             
-                            {/* PERUBAHAN DISINI: 
-                                1. prose-sm diganti prose-lg (Teks jadi besar)
-                                2. text-slate-700 jadi text-slate-800 (Lebih gelap/jelas)
-                                3. leading-relaxed (Jarak antar baris lebih lega)
-                            */}
                             <div className='text-slate-800 prose prose-lg max-w-none leading-relaxed'> 
                                 <ReactMarkdown 
                                   components={{
-                                    // Kustomisasi elemen spesifik agar lebih rapi
                                     ul: ({node, ...props}) => <ul className="list-disc pl-6 space-y-2" {...props} />,
                                     li: ({node, ...props}) => <li className="pl-1" {...props} />,
                                     strong: ({node, ...props}) => <strong className="font-extrabold text-cyan-900" {...props} />
@@ -1090,7 +979,6 @@ const WaterFootprintCalculatorSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Tailwind Style Injection untuk animasi blob */}
       <style>{`
         @keyframes blob {
           0% { transform: translate(0px, 0px) scale(1); }
@@ -1107,7 +995,6 @@ const WaterFootprintCalculatorSection: React.FC = () => {
         .animate-spin-slow {
           animation: spin 15s linear infinite;
         }
-        /* Custom styles for ReactMarkdown inside the dark panel */
         .prose :where(li) {
           margin-top: 0.25em; 
           margin-bottom: 0.25em;
@@ -1120,10 +1007,6 @@ const WaterFootprintCalculatorSection: React.FC = () => {
     </section>
   );
 };
-
-// =============================
-// WRAPPER PAGE: KUALITAS AIR
-// =============================
 
 const KualitasAir: React.FC = () => {
   return (

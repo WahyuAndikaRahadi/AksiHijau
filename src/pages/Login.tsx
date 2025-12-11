@@ -1,11 +1,10 @@
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, Leaf, Eye, EyeOff } from "lucide-react"; // Tambahkan Eye dan EyeOff
+import { Mail, Lock, Leaf, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
-import Swal from "sweetalert2"; // Tambahkan import SweetAlert2
+import Swal from "sweetalert2"; 
 
-// Ganti dengan Base URL API Anda yang sebenarnya (misalnya, URL Vercel)
-const API_BASE_URL = "http://localhost:5000/auth"; // Contoh: 'https://aksi-hijau-api.vercel.app/auth'
+const API_BASE_URL = "http://localhost:5000/auth";
 
 const Login = () => {
   // Hook useNavigate untuk pengalihan
@@ -16,7 +15,7 @@ const Login = () => {
     password: "",
   });
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // State untuk toggle password visibility
+  const [showPassword, setShowPassword] = useState(false); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,14 +47,10 @@ const Login = () => {
         return;
       }
 
-      // --- Logika Login Berhasil dan Pengalihan ---
       const { token, user } = data;
 
-      // 1. Simpan Token
       localStorage.setItem("token", token);
 
-      // 2. SIMPAN DATA USER LENGKAP ke localStorage
-      // Ini penting agar Navbar bisa mengambil 'username'
       localStorage.setItem("currentUser", JSON.stringify(user));
 
       Swal.fire({
@@ -69,13 +64,10 @@ const Login = () => {
 
       console.log("Login Sukses, Token Disimpan:", token);
 
-      // 3. Lakukan pengalihan kondisional setelah Swal
       setTimeout(() => {
         if (user?.is_admin) {
-          // Jika admin, arahkan ke halaman admin
           navigate("/dashboard-admin");
         } else {
-          // Jika user biasa, arahkan ke halaman utama
           navigate("/");
         }
       }, 1500);
@@ -88,7 +80,6 @@ const Login = () => {
         confirmButtonColor: "#16a34a",
       });
     } finally {
-      // Set loading menjadi false (meskipun navigasi sudah terjadi)
       setLoading(false);
     }
   };
@@ -109,11 +100,10 @@ const Login = () => {
         className="max-w-md w-full"
       >
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          {/* Header dan Logo */}
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <img
-                src="/public/img/logo.png" // Ganti dengan URL/path gambar logo kamu
+                src="/public/img/logo.png" 
                 alt="Logo Aksi Hijau"
                 className="w-24 h-24 text-primary group-hover:rotate-12 transition-transform duration-300"
               />
@@ -123,7 +113,6 @@ const Login = () => {
             </h2>
             <p className="text-gray-600">Masuk ke akun Aksi Hijau Anda</p>
           </div>
-          {/* --- Notifikasi Error/Success dihapus karena menggunakan Swal --- */}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <motion.div
@@ -166,13 +155,11 @@ const Login = () => {
                 Password
               </label>
               <div className="relative">
-                {/* Ikon Kunci di Kiri */}
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
 
                 <input
-                  // Tipe input dinamis
                   type={showPassword ? "text" : "password"}
                   id="password"
                   name="password"
@@ -183,7 +170,6 @@ const Login = () => {
                   placeholder="••••••••"
                 />
 
-                {/* Ikon Mata di Kanan (Toggle Button) */}
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
