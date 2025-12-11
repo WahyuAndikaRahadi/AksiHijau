@@ -19,11 +19,9 @@ import BlogList from './pages/BlogList';
 import BlogPost from './pages/BlogPost';
 import EcoBot from './pages/EcoBot';
 import Profile from './pages/Profile';
-// Import komponen loading dan 404
 import FirstLoadAnimation from './components/FirstLoadAnimation'; // 👈 Import FirstLoadAnimation
 import NotFound from './pages/NotFound';
 
-// --- ScrollToTop Component ---
 const ScrollToTop = () => {
   const { pathname } = useLocation();
 
@@ -37,10 +35,8 @@ const ScrollToTop = () => {
   return null;
 };
 
-// --- AppContent Component (Komponen Utama Aplikasi setelah Loading) ---
 const AppContent = () => {
   const location = useLocation();
-  // Perbarui kondisi hide: sembunyikan jika path adalah '/ai' ATAU '/cam'
   const hideNavAndFooter = location.pathname === '/ai' || location.pathname === '/cam'; 
 
   return (
@@ -67,7 +63,6 @@ const AppContent = () => {
           <Route path="/blog" element={<BlogList />} />
           <Route path="/blog/:slug" element={<BlogPost />} /> 
           
-          {/* Rute Not Found (404) */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
@@ -76,32 +71,24 @@ const AppContent = () => {
   );
 };
 
-// --- Main App Component ---
 function App() {
-  // 1. State untuk mengontrol status loading
   const [isLoading, setIsLoading] = useState(true);
 
-  // 2. Efek untuk menghilangkan loading setelah durasi tertentu
   useEffect(() => {
-    // Atur timer selama 5000ms (5 detik) sesuai permintaan Anda.
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 5000); 
 
-    // Cleanup: Membersihkan timer jika komponen di-unmount
     return () => clearTimeout(timer);
-  }, []); // Array dependensi kosong: hanya dijalankan sekali saat komponen di-mount
+  }, []);
 
   return (
     <Router>
       <ScrollToTop />
       
-      {/* 3. Conditional Rendering */}
       {isLoading ? (
-        // Tampilkan animasi loading saat isLoading = true
         <FirstLoadAnimation /> 
       ) : (
-        // Tampilkan konten utama aplikasi saat isLoading = false
         <AppContent />
       )}
     </Router>
