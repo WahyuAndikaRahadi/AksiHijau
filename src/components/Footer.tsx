@@ -106,7 +106,7 @@ const Footer = () => {
               ].map((social, index) => (
                 <motion.a
                   key={index}
-                  href="#"
+                  href="https://github.com/WahyuAndikaRahadi/AksiHijau"
                   className="text-white bg-green-700 p-2 rounded-full shadow-lg"
                   aria-label={social.label}
                   variants={socialIconVariants}
