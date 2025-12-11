@@ -1,4 +1,4 @@
-import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Github } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -16,7 +16,6 @@ const footerNavSections = [
   {
     title: "Artikel & Komunitas", 
     links: [
-
       { path: "/news", label: "News & Update" },
       { path: "/blog", label: "Blog & Artikel" },
       { path: "/community-events", label: "Events Komunitas" },
@@ -35,6 +34,8 @@ const footerNavSections = [
 ];
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -101,14 +102,11 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               {[
-                { Icon: Facebook, label: "Facebook" },
-                { Icon: Twitter, label: "Twitter" },
-                { Icon: Instagram, label: "Instagram" },
-                { Icon: Linkedin, label: "LinkedIn" },
+                { Icon: Github, label: "Github" },
               ].map((social, index) => (
                 <motion.a
                   key={index}
-                  href="#"
+                  href="https://github.com/WahyuAndikaRahadi/AksiHijau"
                   className="text-white bg-green-700 p-2 rounded-full shadow-lg"
                   aria-label={social.label}
                   variants={socialIconVariants}
@@ -152,7 +150,7 @@ const Footer = () => {
           variants={itemVariants}
         >
           <p className="text-green-900 font-semibold">
-            © 2025 Aksi Hijau. All Rights Reserved.
+            © {currentYear} Aksi Hijau. All Rights Reserved.
           </p>
         </motion.div>
       </div>
