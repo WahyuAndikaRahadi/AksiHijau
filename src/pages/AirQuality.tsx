@@ -514,7 +514,7 @@ const AirQualityBanner = () => {
 }
 
 const AirQuality = () => {
-    const OPENWEATHER_API_KEY = "f2c01965f5cc81db1486d398e1cdcf81";
+    const OPENWEATHER_API_KEY = import.meta.env.VITE_OPENWEATHER_API;
     
     const fallbackLocation = { lat: -6.2088, lon: 106.8456, name: 'Jakarta Industrial Estate' };
     const mapRef = useRef(null);

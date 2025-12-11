@@ -214,7 +214,7 @@ const KualitasAirSection: React.FC = () => {
 const MODEL_NAME = "gemini-2.5-flash-lite";
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent`;
 
-const GEMINI_API_KEY = "AIzaSyBU_XwDdo1d10izloI1wGlukAjaXTruMzk"; 
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_2; 
 
 interface VirtualActivity {
   id: number;
