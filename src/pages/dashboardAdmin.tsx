@@ -15,7 +15,7 @@ import {
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Swal from "sweetalert2";
 
-const API_URL = "http://localhost:5000";
+const API_URL = "/api";
 
 interface Event {
   event_id: number;
