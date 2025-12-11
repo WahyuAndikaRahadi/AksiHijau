@@ -18,41 +18,40 @@ const testimonials = [
   {
     quote:
       "Sejak bergabung, saya lebih teredukasi tentang cara hidup berkelanjutan. Program penanaman pohonnya luar biasa!",
-    name: "Rina S.",
+    name: "Ari Muslim N. P.",
     title: "Anggota Komunitas",
   },
   {
     quote:
       "Aksi Hijau membuat aksi lingkungan menjadi mudah dan menyenangkan. Dampak nyata dari kegiatan kami terasa sekali.",
-    name: "Bima T.",
+    name: "Muhammad Wafa A.",
     title: "Relawan Aktif",
   },
   {
     quote:
       "Aplikasi ini inspiratif! Saya termotivasi untuk mengurangi jejak karbon saya berkat tantangan mingguan.",
-    name: "Dewi P.",
+    name: "Agung Iswanto",
     title: "Eco Hero",
   },
   {
     quote:
       "EcoScan sangat membantu memilah sampah. Saya tidak ragu lagi mau buang sampah ke mana!",
-    name: "Joko A.",
+    name: "Irham Thoriq",
     title: "Eco Warrior",
   },
   {
     quote:
       "Konten edukasi di sini sederhana dan mudah dicerna. Sangat cocok untuk pemula seperti saya.",
-    name: "Lina M.",
+    name: "Ikhsan Wahyudi",
     title: "Eco Friend",
   },
   {
     quote:
       "Komunitasnya suportif sekali! Saya jadi termotivasi untuk konsisten menjaga lingkungan.",
-    name: "Sinta N.",
+    name: "Rangga Awan",
     title: "Anggota Komunitas",
   },
 ];
-
 const testimonialsLine1 = testimonials.slice(0, Math.ceil(testimonials.length / 2));
 const testimonialsLine2 = testimonials.slice(Math.ceil(testimonials.length / 2));
 

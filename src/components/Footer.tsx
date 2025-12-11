@@ -2,7 +2,6 @@ import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-// Definisi Tautan Footer (Sama seperti versi terakhir, hanya penempatan judul yang disesuaikan)
 const footerNavSections = [
   {
     title: "Fitur Kami",
@@ -15,18 +14,17 @@ const footerNavSections = [
     ],
   },
   {
-    title: "Artikel & Komunitas", // Digabungkan
+    title: "Artikel & Komunitas", 
     links: [
-      // Artikel
+
       { path: "/news", label: "News & Update" },
       { path: "/blog", label: "Blog & Artikel" },
-      // Komunitas
       { path: "/community-events", label: "Events Komunitas" },
       { path: "/community-social", label: "Komunitas Sosial" },
     ],
   },
   {
-    title: "Info & Akun", // Kolom terpisah untuk Login/Register
+    title: "Info & Akun", 
     links: [
       { path: "/login", label: "Login" },
       { path: "/register", label: "Daftar Akun" },
@@ -70,7 +68,6 @@ const Footer = () => {
 
   return (
     <motion.footer
-      // pb-40 untuk mobile, md:pb-60 untuk desktop
       className="bg-gradient-to-b from-green-50 to-green-100 border-t-4 border-green-700 overflow-hidden pb-8 md:pb-60 relative"
       initial="hidden"
       whileInView="visible"
@@ -78,13 +75,10 @@ const Footer = () => {
       variants={containerVariants}
     >
       <div className="container mx-auto px-4 sm:px-9 lg:px-8 py-8 md:py-16 relative z-20">
-        {/* PERUBAHAN UTAMA DI SINI: Mengubah grid menjadi 4 kolom di layar MD ke atas. 
-            Setiap kolom akan mengambil 1 bagian (1/4 lebar), termasuk kolom Logo. */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
           
-          {/* 🌿 Kolom Logo & Deskripsi (Sekarang hanya mengambil 1 kolom di desktop) */}
           <motion.div
-            className="col-span-1" // Dihapus md:col-span-2 agar hanya mengambil 1 kolom
+            className="col-span-1" 
             variants={itemVariants}
           >
             <div className="flex items-center space-x-3 mb-4">
@@ -92,7 +86,7 @@ const Footer = () => {
                 transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
               >
                 <img
-                  src="/public/img/logo.png" // Ganti dengan URL/path gambar logo kamu
+                  src="/public/img/logo.png"
                   alt="Logo Aksi Hijau"
                   className="w-12 h-12 text-primary group-hover:rotate-12 transition-transform duration-300"
                 />
@@ -132,8 +126,6 @@ const Footer = () => {
             </div>
           </motion.div>
 
-          {/* 🔗 Kolom Tautan Dinamis (Fitur, Artikel & Komunitas, Akun) */}
-          {/* Kolom-kolom ini akan otomatis menempati 3 kolom sisanya secara sejajar */}
           {footerNavSections.map((section, sectionIndex) => (
             <motion.div key={sectionIndex} variants={itemVariants}>
               <h3 className="text-xl font-extrabold text-green-800 mb-6 border-b-2 border-green-300 pb-2">
@@ -155,7 +147,6 @@ const Footer = () => {
           ))}
         </div>
 
-        {/* Bagian Hak Cipta */}
         <motion.div
           className="mt-8 pt-6   text-center border-t-2 border-green-300 md:mt-12 md:pt-8"
           variants={itemVariants}
@@ -166,7 +157,6 @@ const Footer = () => {
         </motion.div>
       </div>
 
-      {/* Gambar Dekorasi */}
       <div className="absolute md:mt-24 bottom-0 left-0 w-full pointer-events-none z-10">
         <img
           src="/img/footer.png"
