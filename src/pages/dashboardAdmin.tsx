@@ -16,7 +16,7 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import Swal from 'sweetalert2';
 
 // Config
-const API_URL = "http://localhost:5000";
+const API_URL = "https://aksihijauedu.vercel.app/";
 
 // Types
 interface Event { event_id: number; title: string; description: string; event_date: string; location: string; creator_name: string; status: string; upvote_count: number; }
