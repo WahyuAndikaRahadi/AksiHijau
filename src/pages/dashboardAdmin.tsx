@@ -15,10 +15,8 @@ import {
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Swal from 'sweetalert2';
 
-// Config
-const API_URL = "/api";
+const API_URL = "http://localhost:5000";
 
-// Types
 interface Event { event_id: number; title: string; description: string; event_date: string; location: string; creator_name: string; status: string; upvote_count: number; }
 interface Post { post_id: number; content: string; image_url?: string; username: string; status: string; like_count: number; comment_count: number; }
 interface User { user_id: number; username: string; email: string; eco_level: number; is_admin: boolean; post_count: number; event_count: number; created_at: string; }
@@ -236,7 +234,6 @@ const AdminDashboard = () => {
       loadInitialData();
     } catch (err: any) {
       console.error(err);
-      // 💡 Notifikasi Error
       Swal.fire('Error', err.message || "Gagal memberikan badge", 'error');
     }
   };
@@ -257,7 +254,7 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
               { label: "Total Users", value: stats.totalUsers, icon: Users, color: "from-blue-500 to-blue-600" },
               { label: "Pending Events", value: stats.totalEventsPending, icon: Clock, color: "from-orange-500 to-orange-600" },
@@ -280,7 +277,7 @@ const AdminDashboard = () => {
 
       <nav className="bg-white border-b sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-1">
+          <div className="flex overflow-x-auto whitespace-nowrap">
             {([
               { key: "events_pending", icon: Clock, label: "Pending Events", count: pendingEvents.length },
               { key: "events_all", icon: Calendar, label: "All Events", count: hasLoadedAllEvents ? allEvents.length : '...' },
@@ -290,7 +287,7 @@ const AdminDashboard = () => {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key as TabType)}
-                className={`px-6 py-4 font-semibold transition-all flex items-center gap-2 ${
+                className={`px-4 sm:px-6 py-4 font-semibold transition-all flex items-center gap-2 flex-shrink-0 ${
                   activeTab === tab.key
                     ? "text-green-600 border-b-2 border-green-600"
                     : "text-gray-600 hover:text-gray-900"
@@ -362,27 +359,26 @@ const AdminDashboard = () => {
                         isDeleting={deletingId === post.post_id} 
                       />
                     ))
-                  )}
-                </div>
+                   )} </div>
               </Section>
             )}
 
             {activeTab === "users" && (
               <Section title={`User Management (${users.length})`}>
-                 <div className="bg-white rounded-xl shadow-md overflow-hidden">
-                  <table className="w-full">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">User</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Level</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Stats</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Joined</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y">
-                      {users.map(user => (
-                        <motion.tr key={user.user_id} className="hover:bg-gray-50" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                 <div className="bg-white rounded-xl shadow-md overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 min-w-[150px]">User</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 min-w-[100px]">Level</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 min-w-[150px]">Stats</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 min-w-[100px]">Joined</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900 min-w-[120px]">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {users.map(user => (
+                      <motion.tr key={user.user_id} className="hover:bg-gray-50" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                           <td className="px-6 py-4">
                             <div>
                               <div className="font-semibold text-gray-900">
@@ -393,7 +389,7 @@ const AdminDashboard = () => {
                           </td>
                           <td className="px-6 py-4">
                             <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
-                              <TrendingUp className="w-4 h-4" /> Level {user.eco_level}
+                                <TrendingUp className="w-4 h-4" /> Level {user.eco_level}
                             </span>
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-600">{user.post_count} posts · {user.event_count} events</td>
@@ -401,9 +397,9 @@ const AdminDashboard = () => {
                           <td className="px-6 py-4">
                             <button
                               onClick={() => { setSelectedUser(user.user_id); setShowBadgeModal(true); }}
-                              className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition font-semibold"
+                              className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition font-semibold w-full sm:w-auto"
                             >
-                              Award Badge
+                                Award Badge
                             </button>
                           </td>
                         </motion.tr>
@@ -467,8 +463,8 @@ const EmptyState: React.FC<{ message: string }> = ({ message }) => (
 
 const EventCard: React.FC<{ event: Event; onModerate: (status: "ACCEPTED" | "REJECTED") => void; onDelete: () => void; formatDate: (d: string) => string; showStatus?: boolean; isDeleting: boolean }> = ({ event, onModerate, onDelete, formatDate, showStatus = false, isDeleting }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`bg-white rounded-xl shadow-md p-6 relative ${isDeleting ? 'opacity-70' : ''}`}>
-    <div className="flex items-start justify-between gap-4">
-      <div className="flex-1">
+    <div className="flex flex-col md:flex-row items-start md:justify-between gap-4">
+      <div className="flex-1 w-full">
         <h3 className="text-lg font-bold text-gray-900 mb-2">{event.title}</h3>
         <p className="text-gray-600 mb-3 line-clamp-2">{event.description}</p>
         <div className="flex flex-wrap gap-4 text-sm text-gray-500">
@@ -487,25 +483,26 @@ const EventCard: React.FC<{ event: Event; onModerate: (status: "ACCEPTED" | "REJ
           )}
         </div>
       </div>
-      <div className="flex gap-2 items-start">
+      <div className="flex flex-col sm:flex-row md:flex-col gap-2 flex-shrink-0 w-full md:w-auto mt-4 md:mt-0">
         {event.status === 'PENDING' && (
           <>
-            <button onClick={() => onModerate("ACCEPTED")} disabled={isDeleting} className={`flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-semibold ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
+            <button onClick={() => onModerate("ACCEPTED")} disabled={isDeleting} className={`flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-semibold w-full ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
               <CheckCircle className="w-4 h-4" /> Accept
             </button>
-            <button onClick={() => onModerate("REJECTED")} disabled={isDeleting} className={`flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-semibold ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
+            <button onClick={() => onModerate("REJECTED")} disabled={isDeleting} className={`flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 text-sm font-semibold w-full ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
               <XCircle className="w-4 h-4" /> Reject
             </button>
           </>
         )}
         
         {event.status !== 'PENDING' && (
-            <button onClick={onDelete} disabled={isDeleting} className={`flex items-center gap-2 px-4 py-2 bg-gray-200 text-red-600 rounded-lg hover:bg-gray-300 text-sm font-semibold transition-colors flex-shrink-0 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
+            <button onClick={onDelete} disabled={isDeleting} className={`flex items-center justify-center gap-2 px-4 py-2 bg-gray-200 text-red-600 rounded-lg hover:bg-gray-300 text-sm font-semibold transition-colors flex-shrink-0 w-full md:w-auto ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
                 {isDeleting ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600" />
                 ) : (
                 <Trash2 className="w-4 h-4" />
                 )}
+                {isDeleting ? 'Menghapus...' : 'Hapus'}
             </button>
         )}
       </div>
@@ -515,11 +512,11 @@ const EventCard: React.FC<{ event: Event; onModerate: (status: "ACCEPTED" | "REJ
 
 const PostCard: React.FC<{ post: Post; onDelete: () => void; showStatus?: boolean; isDeleting: boolean }> = ({ post, onDelete, isDeleting }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`bg-white rounded-xl shadow-md p-6 relative ${isDeleting ? 'opacity-70' : ''}`}>
-    <div className="flex items-start gap-4">
+    <div className="flex flex-col sm:flex-row items-start gap-4">
       <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
         {post.username[0]?.toUpperCase() || 'U'}
       </div>
-      <div className="flex-1">
+      <div className="flex-1 w-full mt-2 sm:mt-0">
         <div className="font-semibold text-gray-900 mb-2">{post.username}</div>
         <p className="text-gray-800 whitespace-pre-wrap mb-3">{post.content}</p>
         {post.image_url && (
@@ -530,7 +527,7 @@ const PostCard: React.FC<{ post: Post; onDelete: () => void; showStatus?: boolea
           <span><MessageSquare className="w-4 h-4 inline-block mr-1" /> {post.comment_count} comments</span>
         </div>
       </div>
-      <button onClick={onDelete} disabled={isDeleting} className={`flex items-center gap-2 px-4 py-2 bg-gray-200 text-red-600 rounded-lg hover:bg-gray-300 text-sm font-semibold transition-colors flex-shrink-0 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
+      <button onClick={onDelete} disabled={isDeleting} className={`w-full sm:w-auto flex items-center justify-center sm:justify-start gap-2 px-4 py-2 bg-gray-200 text-red-600 rounded-lg hover:bg-gray-300 text-sm font-semibold transition-colors flex-shrink-0 mt-4 sm:mt-0 ${isDeleting ? 'opacity-50 cursor-not-allowed' : ''}`}>
         {isDeleting ? (
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600" />
         ) : (
