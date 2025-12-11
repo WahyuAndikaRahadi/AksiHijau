@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
-const API_BASE_URL = 'https://aksihijauedu.vercel.app/'; 
+const API_BASE_URL = '/api'; 
 
 interface Badge {
   badge_id: number;

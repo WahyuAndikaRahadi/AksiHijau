@@ -3,7 +3,7 @@ import { Calendar, MapPin, Users, TrendingUp, Plus, Clock, Search, Filter } from
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 
-const API_URL = 'https://aksihijauedu.vercel.app/';
+const API_URL = '/api';
 
 interface Event {
   event_id: number;

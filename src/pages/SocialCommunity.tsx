@@ -3,7 +3,7 @@ import { Heart, MessageCircle, Send, Image as ImageIcon, Leaf, Award, XCircle } 
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2'; 
 
-const API_URL = 'https://aksihijauedu.vercel.app/'; 
+const API_URL = '/api'; 
 
 interface Post {
   post_id: number;

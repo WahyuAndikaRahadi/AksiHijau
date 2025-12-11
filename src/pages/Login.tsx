@@ -4,7 +4,7 @@ import { Mail, Lock, Leaf, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import Swal from "sweetalert2"; 
 
-const API_BASE_URL = "https://aksihijauedu.vercel.app//auth";
+const API_BASE_URL = "/api/auth";
 
 const Login = () => {
   // Hook useNavigate untuk pengalihan
