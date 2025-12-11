@@ -19,7 +19,7 @@ import BlogList from './pages/BlogList';
 import BlogPost from './pages/BlogPost';
 import EcoBot from './pages/EcoBot';
 import Profile from './pages/Profile';
-import FirstLoadAnimation from './components/FirstLoadAnimation'; // 👈 Import FirstLoadAnimation
+import FirstLoadAnimation from './components/FirstLoadAnimation';
 import NotFound from './pages/NotFound';
 
 const ScrollToTop = () => {
