@@ -134,7 +134,7 @@ const FirstLoadAnimation = () => {
       className="fixed inset-0 flex flex-col items-center justify-center bg-green-50 z-[9999] first-load-animation-container gap-8"
     >
       <img
-        src="/public/img/logo.png"
+        src="/img/logo.png"
         alt="Logo Aksi Hijau"
         className="w-24 h-24 mb-5 text-primary group-hover:rotate-12 transition-transform duration-300 leaf-logo"
       />

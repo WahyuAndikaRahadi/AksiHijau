@@ -86,7 +86,7 @@ const Footer = () => {
                 transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
               >
                 <img
-                  src="/public/img/logo.png"
+                  src="/img/logo.png"
                   alt="Logo Aksi Hijau"
                   className="w-12 h-12 text-primary group-hover:rotate-12 transition-transform duration-300"
                 />

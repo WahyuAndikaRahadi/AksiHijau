@@ -334,14 +334,14 @@ const Home = () => {
                   }}
                 >
                   <img
-                    src="/public/img/Green Earth.png"
+                    src="/img/Green Earth.png"
                     alt="Ilustrasi Bumi atau Lingkungan"
                     className="w-full h-full object-contain drop-shadow-2xl"
                   />
                 </motion.div>
 
                 <motion.img
-                  src="/public/img/wind-power.png"
+                  src="/img/wind-power.png"
                   alt="Small decorative dot"
                   className="bg-white p-2 shadow-lg absolute w-12 h-12 rounded-full top-[8%] left-[8%] -translate-x-1/2 -translate-y-1/2 object-cover"
                   animate={{ y: [0, -10, 0] }}
@@ -353,7 +353,7 @@ const Home = () => {
                 />
 
                 <motion.img
-                  src="/public/img/forest.png"
+                  src="/img/forest.png"
                   alt="Small decorative dot"
                   className="bg-white p-2 shadow-lg absolute w-12 h-12 rounded-full top-[8%] right-[8%] translate-x-1/2 -translate-y-1/2 object-cover"
                   animate={{ y: [0, -10, 0] }}
@@ -366,7 +366,7 @@ const Home = () => {
                 />
 
                 <motion.img
-                  src="/public/img/wind.png"
+                  src="/img/wind.png"
                   alt="Small decorative dot"
                   className="bg-white p-2 shadow-lg absolute w-12 h-12 rounded-full bottom-[8%] left-[8%] -translate-x-1/2 translate-y-1/2 object-cover"
                   animate={{ y: [0, 10, 0] }}
@@ -379,7 +379,7 @@ const Home = () => {
                 />
 
                 <motion.img
-                  src="/public/img/solar-panels.png"
+                  src="/img/solar-panels.png"
                   alt="Small decorative dot"
                   className="bg-white p-2 shadow-lg absolute w-12 h-12 rounded-full bottom-[8%] right-[8%] translate-x-1/2 translate-y-1/2 object-cover"
                   animate={{ y: [0, 10, 0] }}
@@ -575,7 +575,7 @@ const Home = () => {
               className="relative w-full h-full min-h-[400px] bg-white rounded-2xl overflow-hidden shadow-xl"
             >
               <img
-                src="/public/img/IlustrasiPembersihan.jpg"
+                src="/img/IlustrasiPembersihan.jpg"
                 alt="Ilustrasi Komunitas Lingkungan"
                 className="w-full h-full object-cover object-center rounded-2xl"
               />
@@ -608,7 +608,7 @@ const Home = () => {
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/50 to-green-300/50 rounded-full opacity-70 scale-110"></div>
 
                 <img
-                  src="/public/img/qr-scanner.png"
+                  src="/img/qr-scanner.png"
                   alt="AI Eco Assistant"
                   className="relative z-10 w-3/4 h-3/4 object-contain drop-shadow-2xl animate-[bounce_3s_infinite]"
                 />
@@ -689,7 +689,7 @@ const Home = () => {
                           <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/50 to-blue-300/50 rounded-full opacity-70 scale-110"></div>
                           
                           <img
-                              src="/public/img/Robot.png" 
+                              src="/img/Robot.png" 
                               alt="AI EcoBot Assistant"
                               className="relative z-10 w-3/4 h-3/4 object-contain drop-shadow-2xl animate-[bounce_3s_infinite]"
                           />

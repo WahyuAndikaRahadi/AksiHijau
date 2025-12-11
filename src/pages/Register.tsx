@@ -103,7 +103,7 @@ const Register = () => {
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <img
-                src="/public/img/logo.png"
+                src="/img/logo.png"
                 alt="Logo Aksi Hijau"
                 className="w-24 h-24 text-primary group-hover:rotate-12 transition-transform duration-300"
               />

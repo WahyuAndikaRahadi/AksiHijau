@@ -316,7 +316,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-2 group">
             <img
-              src="/public/img/logo.png"
+              src="/img/logo.png"
               alt="Logo Aksi Hijau"
               className="w-12 h-12 text-primary"
             />

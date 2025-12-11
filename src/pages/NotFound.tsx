@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Home, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const CUSTOM_IMAGE_URL = '/public/img/404.png'; 
+const CUSTOM_IMAGE_URL = '/img/404.png'; 
 
 const NotFound: React.FC = () => {
     const bgColor = "bg-emerald-50"; 

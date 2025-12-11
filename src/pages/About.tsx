@@ -852,7 +852,7 @@ const About = () => {
 
                 <div className="relative z-10 text-center">
                   <img
-                    src="/public/img/premium-vector.png"
+                    src="/img/premium-vector.png"
                     alt="Ilustrasi Gotong Royong Lingkungan"
                     className="w-full h-full object-cover rounded-xl z-20 transition-opacity duration-300 mix-blend-multiply lg:-mt-40"
                     onError={(e: any) => {
