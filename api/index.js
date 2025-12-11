@@ -13,7 +13,7 @@ const { Pool } = pg;
 const app = express();
 
 const pool = new Pool({
-    connectionString: import.meta.env.VITE_NEON_DB,
+    connectionString: process.env.DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
     }
