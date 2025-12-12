@@ -221,7 +221,7 @@ const About = () => {
       },
       title: {
         display: true,
-        text: 'Total Produksi Sampah di Indonesia (2019–2024)',
+        text: 'Total Produksi Sampah di Indonesia (2020–2024)',
         font: { size: 18, weight: 'bold' as const },
         color: '#111827',
         padding: { bottom: 20 },
