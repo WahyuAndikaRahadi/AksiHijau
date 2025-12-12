@@ -28,7 +28,7 @@ const WasteDetection: React.FC = () => {
   const webcamRef = useRef<Webcam>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_2;
+  const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_3;
 
   useEffect(() => {
     console.log('✅ Gemini API is ready for analysis.');
