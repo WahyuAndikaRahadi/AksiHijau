@@ -12,7 +12,7 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 
 const testimonials = [
   {
@@ -52,8 +52,13 @@ const testimonials = [
     title: "Anggota Komunitas",
   },
 ];
-const testimonialsLine1 = testimonials.slice(0, Math.ceil(testimonials.length / 2));
-const testimonialsLine2 = testimonials.slice(Math.ceil(testimonials.length / 2));
+const testimonialsLine1 = testimonials.slice(
+  0,
+  Math.ceil(testimonials.length / 2)
+);
+const testimonialsLine2 = testimonials.slice(
+  Math.ceil(testimonials.length / 2)
+);
 
 const faqData = [
   {
@@ -72,18 +77,24 @@ const faqData = [
       "Ya, sebagian besar fitur inti Aksi Hijau, termasuk EcoScan, Konsultasi AI, dan semua konten edukasi, 100% gratis untuk diakses oleh semua pengguna. Kami percaya bahwa edukasi lingkungan harus dapat diakses tanpa hambatan finansial.",
   },
   {
-    question: "Bagaimana Aksi Hijau memastikan keakuratan informasi lingkungan?",
+    question:
+      "Bagaimana Aksi Hijau memastikan keakuratan informasi lingkungan?",
     answer:
       "Informasi dan panduan di Aksi Hijau disusun dan diverifikasi oleh tim ahli lingkungan dan mitra nirlaba terpercaya. Kami secara rutin memperbarui data kami berdasarkan penelitian ilmiah terbaru dan regulasi lingkungan setempat.",
   },
   {
-    question: "Apa saja jenis kegiatan yang bisa saya ikuti di Komunitas Eco Warrior?",
+    question:
+      "Apa saja jenis kegiatan yang bisa saya ikuti di Komunitas Eco Warrior?",
     answer:
       "Komunitas Eco Warrior mengadakan berbagai kegiatan, seperti program penanaman pohon, acara 'clean-up' (pembersihan sampah) di area publik dan pantai, workshop daur ulang, serta tantangan pengurangan jejak karbon mingguan yang interaktif. Anda dapat mendaftar dan mendapatkan poin kontribusi dari setiap aktivitas.",
   },
 ];
 
-const TestimonialTicker = ({ testimonials, direction = "left", duration = 25 }) => {
+const TestimonialTicker = ({
+  testimonials,
+  direction = "left",
+  duration = 25,
+}) => {
   const DUPLICATION_FACTOR = 5;
   const duplicatedTestimonials = [];
   for (let i = 0; i < DUPLICATION_FACTOR; i++) {
@@ -129,15 +140,21 @@ const TestimonialTicker = ({ testimonials, direction = "left", duration = 25 }) 
                   {testimonial.name.charAt(0)}
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900 text-lg">{testimonial.name}</p>
+                  <p className="font-semibold text-gray-900 text-lg">
+                    {testimonial.name}
+                  </p>
                   <p className="text-sm text-gray-500">{testimonial.title}</p>
                 </div>
               </div>
 
               <div className="flex text-yellow-400 mb-4">
                 {[...Array(5)].map((_, i) => (
-                  <svg key={i} className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 .587l3.668 7.425 8.204 1.192-5.933 5.792 1.402 8.169L12 18.896l-7.339 3.856 1.402-8.169-5.933-5.792 8.204-1.192L12 .587z"/>
+                  <svg
+                    key={i}
+                    className="w-5 h-5 fill-current"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 .587l3.668 7.425 8.204 1.192-5.933 5.792 1.402 8.169L12 18.896l-7.339 3.856 1.402-8.169-5.933-5.792 8.204-1.192L12 .587z" />
                   </svg>
                 ))}
               </div>
@@ -181,7 +198,12 @@ const NewFeatureCard = ({ icon: Icon, title, description, linkTo }) => (
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M14 5l7 7m0 0l-7 7m7-7H3"
+        ></path>
       </svg>
     </Link>
   </motion.div>
@@ -194,27 +216,37 @@ const FaqItem = ({ question, answer, isOpen, onClick }) => {
       animate={{
         backgroundColor: isOpen ? "#f0fdf4" : "#ffffff",
         borderColor: isOpen ? "#34d399" : "#34d399",
-        boxShadow: isOpen ? "0 4px 6px -1px rgba(0, 0, 0, 0.1)" : "none"
+        boxShadow: isOpen ? "0 4px 6px -1px rgba(0, 0, 0, 0.1)" : "none",
       }}
       className="border border-gray-200 rounded-xl p-5 mb-4 transition-all duration-300 cursor-pointer"
       onClick={onClick}
     >
       <header className="flex justify-between items-center">
-        <h3 className={`text-xl font-semibold ${isOpen ? 'text-primary' : 'text-gray-900'}`}>
+        <h3
+          className={`text-xl font-semibold ${
+            isOpen ? "text-primary" : "text-gray-900"
+          }`}
+        >
           {question}
         </h3>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.3 }}
-          className={`p-1 rounded-full ${isOpen ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'} transition-colors duration-300`}
+          className={`p-1 rounded-full ${
+            isOpen ? "bg-primary text-white" : "bg-gray-100 text-gray-600"
+          } transition-colors duration-300`}
         >
           <motion.div
-              key={isOpen ? "minus" : "plus"}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.3 }}
+            key={isOpen ? "minus" : "plus"}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
           >
-              {isOpen ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+            {isOpen ? (
+              <Minus className="w-5 h-5" />
+            ) : (
+              <Plus className="w-5 h-5" />
+            )}
           </motion.div>
         </motion.div>
       </header>
@@ -225,9 +257,7 @@ const FaqItem = ({ question, answer, isOpen, onClick }) => {
         transition={{ duration: 0.4, ease: "easeInOut" }}
         className="overflow-hidden"
       >
-        <p className="pt-4 text-gray-700 leading-relaxed pr-8">
-          {answer}
-        </p>
+        <p className="pt-4 text-gray-700 leading-relaxed pr-8">{answer}</p>
       </motion.div>
     </motion.div>
   );
@@ -235,6 +265,15 @@ const FaqItem = ({ question, answer, isOpen, onClick }) => {
 
 const Home = () => {
   const [openFaq, setOpenFaq] = useState(null);
+
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return !!localStorage.getItem("token"); // Pastikan namanya "token" sesuai di Application tab
+  });
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    console.log("Token ditemukan:", token); // Cek di F12 Console;
+    setIsAuthenticated(!!token);
+  }, []);
 
   const handleFaqClick = (index) => {
     setOpenFaq(openFaq === index ? null : index);
@@ -263,19 +302,22 @@ const Home = () => {
     {
       icon: Bot,
       title: "Konsultasi AI Interaktif",
-      description: "Dapatkan jawaban cerdas dan teredukasi tentang cara hidup berkelanjutan dan langkah-langkah ramah lingkungan.",
+      description:
+        "Dapatkan jawaban cerdas dan teredukasi tentang cara hidup berkelanjutan dan langkah-langkah ramah lingkungan.",
       link: "/ai",
     },
     {
       icon: Camera,
       title: "EcoScan: Deteksi Sampah Cerdas",
-      description: "Identifikasi jenis sampah dan dapatkan panduan pengolahan yang tepat secara instan hanya dengan memfoto.",
+      description:
+        "Identifikasi jenis sampah dan dapatkan panduan pengolahan yang tepat secara instan hanya dengan memfoto.",
       link: "/cam",
     },
     {
       icon: Users,
       title: "Komunitas Eco Warrior",
-      description: "Terhubung dengan ribuan relawan. Ikuti acara penanaman pohon, clean-up, dan kumpulkan poin kontribusi.",
+      description:
+        "Terhubung dengan ribuan relawan. Ikuti acara penanaman pohon, clean-up, dan kumpulkan poin kontribusi.",
       link: "/community-social",
     },
   ];
@@ -307,10 +349,10 @@ const Home = () => {
                 transition={{ delay: 0.4, duration: 0.8 }}
               >
                 <Link
-                  to="/register"
+                  to={isAuthenticated ? "/community-events" : "/register"}
                   className="inline-block relative z-10 px-8 py-4 mb-10 bg-primary text-white text-lg font-semibold rounded-lg hover:bg-green-600 transition-all duration-300 hover:shadow-xl hover:scale-105"
                 >
-                  Mulai Sekarang
+                  {isAuthenticated ? "Mulai Beraksi" : "Mulai Sekarang"}
                 </Link>
               </motion.div>
             </motion.div>
@@ -589,12 +631,10 @@ const Home = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.8 }}
-        className="px-5 py-15 sm:px-10 sm:py-20 bg-green-50" 
+        className="px-5 py-15 sm:px-10 sm:py-20 bg-green-50"
       >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div
-            className="rounded-3xl p-8 md:p-12 lg:p-16 lg:my-12"
-          >
+          <div className="rounded-3xl p-8 md:p-12 lg:p-16 lg:my-12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
@@ -613,7 +653,7 @@ const Home = () => {
                   className="relative z-10 w-3/4 h-3/4 object-contain drop-shadow-2xl animate-[bounce_3s_infinite]"
                 />
               </motion.div>
-              
+
               <motion.div
                 initial={{ x: 50, opacity: 0 }}
                 whileInView={{ x: 0, opacity: 1 }}
@@ -646,57 +686,59 @@ const Home = () => {
       </motion.section>
 
       <motion.section
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.8 }}
-          className="px-5 py-15 sm:px-10 sm:py-20 bg-sky-50" 
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.8 }}
+        className="px-5 py-15 sm:px-10 sm:py-20 bg-sky-50"
       >
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-              <div className="rounded-3xl p-8 md:p-12 lg:p-16 lg:my-12">
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                      
-                      <motion.div
-                          initial={{ x: -50, opacity: 0 }}
-                          whileInView={{ x: 0, opacity: 1 }}
-                          viewport={{ once: true, amount: 0.5 }}
-                          transition={{ delay: 0.4, duration: 0.7 }}
-                          className="md:pr-8"
-                      >
-                          <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4 mt-5">
-                              <span className="text-sky-500">Eco</span>Bot
-                          </h2>
-                          <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                              EcoBot adalah asisten virtual berbasis AI yang siap memberikan panduan dan jawaban teredukasi mengenai segala aspek kehidupan berkelanjutan. Dapatkan tips praktis, data lingkungan terbaru, hingga langkah-langkah mengurangi jejak karbon secara instan, 24 jam sehari.
-                          </p>
-                          <Link
-                              to="/ai"
-                              className="inline-block px-8 py-4 bg-sky-500 text-white text-lg font-semibold rounded-full shadow-lg hover:bg-sky-600 transition-all duration-300 hover:shadow-xl hover:scale-[1.03]"
-                          >
-                              Mulai Chat
-                          </Link>
-                      </motion.div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl p-8 md:p-12 lg:p-16 lg:my-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <motion.div
+                initial={{ x: -50, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ delay: 0.4, duration: 0.7 }}
+                className="md:pr-8"
+              >
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4 mt-5">
+                  <span className="text-sky-500">Eco</span>Bot
+                </h2>
+                <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                  EcoBot adalah asisten virtual berbasis AI yang siap memberikan
+                  panduan dan jawaban teredukasi mengenai segala aspek kehidupan
+                  berkelanjutan. Dapatkan tips praktis, data lingkungan terbaru,
+                  hingga langkah-langkah mengurangi jejak karbon secara instan,
+                  24 jam sehari.
+                </p>
+                <Link
+                  to="/ai"
+                  className="inline-block px-8 py-4 bg-sky-500 text-white text-lg font-semibold rounded-full shadow-lg hover:bg-sky-600 transition-all duration-300 hover:shadow-xl hover:scale-[1.03]"
+                >
+                  Mulai Chat
+                </Link>
+              </motion.div>
 
-                      <motion.div
-                          initial={{ scale: 0.8, opacity: 0 }}
-                          whileInView={{ scale: 1, opacity: 1 }}
-                          viewport={{ once: true, amount: 0.5 }}
-                          transition={{ delay: 0.2, duration: 0.7 }}
-                          className="relative w-full aspect-square max-w-sm mx-auto flex items-center justify-center order-first md:order-none"
-                      >
-                          <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/80 to-blue-500/50 rounded-full blur-3xl opacity-70"></div>
-                          <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/50 to-blue-300/50 rounded-full opacity-70 scale-110"></div>
-                          
-                          <img
-                              src="/img/Robot.png" 
-                              alt="AI EcoBot Assistant"
-                              className="relative z-10 w-3/4 h-3/4 object-contain drop-shadow-2xl animate-[bounce_3s_infinite]"
-                          />
-                      </motion.div>
-                  </div>
-              </div>
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ delay: 0.2, duration: 0.7 }}
+                className="relative w-full aspect-square max-w-sm mx-auto flex items-center justify-center order-first md:order-none"
+              >
+                <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/80 to-blue-500/50 rounded-full blur-3xl opacity-70"></div>
+                <div className="absolute inset-0 bg-gradient-to-tr from-sky-500/50 to-blue-300/50 rounded-full opacity-70 scale-110"></div>
+
+                <img
+                  src="/img/Robot.png"
+                  alt="AI EcoBot Assistant"
+                  className="relative z-10 w-3/4 h-3/4 object-contain drop-shadow-2xl animate-[bounce_3s_infinite]"
+                />
+              </motion.div>
+            </div>
           </div>
+        </div>
       </motion.section>
 
       <section className="px-10 py-20 bg-primary">
@@ -714,7 +756,8 @@ const Home = () => {
             </h2>
             <p className="text-lg text-green-100 max-w-3xl mx-auto">
               Aksi Hijau menyediakan berbagai fitur edukatif dan dukungan pintar
-              untuk menemani perjalanan lingkungan yang aman, nyaman, dan penuh informasi.
+              untuk menemani perjalanan lingkungan yang aman, nyaman, dan penuh
+              informasi.
             </p>
           </motion.div>
 
@@ -812,7 +855,9 @@ const Home = () => {
               Edukasi Lingkungan Premium, Gratis untuk Semua!
             </h2>
             <p className="text-lg text-green-100 mb-10 max-w-4xl mx-auto">
-              Setiap individu berhak mendapatkan edukasi lingkungan terbaik. Aksi Hijau hadir dengan fitur pintar dan informasi lengkap yang bisa diakses gratis, kapan saja.
+              Setiap individu berhak mendapatkan edukasi lingkungan terbaik.
+              Aksi Hijau hadir dengan fitur pintar dan informasi lengkap yang
+              bisa diakses gratis, kapan saja.
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">

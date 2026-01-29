@@ -748,16 +748,11 @@ const About = () => {
                   </div>
 
                   {index !== processSteps.length - 1 && (
-                    <div className="hidden lg:flex absolute top-1/2 -right-6 xl:-right-8 transform -translate-y-1/2 items-center justify-center z-0">
-                      <ArrowRight className="w-8 h-8 text-gray-300" />
+                    <div className="hidden lg:flex absolute top-1/2 -right-6 xl:-right-8 transform -translate-y-1/2 items-center justify-center z-0">     
                     </div>
                   )}
 
-                  <div className="lg:hidden flex justify-center mt-4 opacity-30">
-                    {index !== processSteps.length - 1 && (
-                      <ChevronRight className="w-6 h-6 rotate-90" />
-                    )}
-                  </div>
+
                 </motion.div>
               ))}
             </div>
