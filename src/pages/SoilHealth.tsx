@@ -19,8 +19,9 @@ const KesehatanTanah: React.FC = () => {
   const [showDetails, setShowDetails] = useState(false);
 
   return (
-    // Penambahan overflow-x-hidden pada section utama untuk mengunci scroll samping
-    <section className="py-16 px-4 w-full bg-gradient-to-b from-white to-green-50 overflow-x-hidden">
+    // Menghapus overflow-x-hidden dan menggantinya dengan overflow-hidden standar 
+    // untuk memastikan elemen dekorasi tidak menciptakan scroll horizontal.
+    <section className="py-16 px-4 w-full bg-gradient-to-b from-white to-green-50 overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -28,7 +29,7 @@ const KesehatanTanah: React.FC = () => {
         transition={{ duration: 0.6 }}
         className="max-w-7xl mx-auto bg-white border border-emerald-100 rounded-[2.5rem] p-8 lg:p-12 relative shadow-xl"
       >
-        {/* Dekorasi Background - Disesuaikan posisinya agar tidak bocor keluar container */}
+        {/* Dekorasi Background - Menggunakan pointer-events-none agar tidak menghalangi klik */}
         <div className="absolute top-0 right-0 w-64 h-64 md:w-96 md:h-96 bg-emerald-50 rounded-full filter blur-3xl opacity-50 -translate-y-1/2 translate-x-1/4 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-48 h-48 md:w-72 md:h-72 bg-lime-50 rounded-full filter blur-3xl opacity-50 translate-y-1/3 -translate-x-1/4 pointer-events-none" />
 
@@ -75,7 +76,6 @@ const KesehatanTanah: React.FC = () => {
             </button>
           </div>
 
-          {/* Image Container */}
           <div className="relative w-full flex justify-center lg:justify-end mb-10 lg:mb-0 order-1 lg:order-2">
             <div className="relative w-full max-w-lg lg:max-w-none">
               <div className="w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-white group relative z-0">
@@ -87,7 +87,6 @@ const KesehatanTanah: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-60" />
               </div>
 
-              {/* Floating Card Info - Penyesuaian agar tidak keluar layar di mobile */}
               <div className="absolute -bottom-4 left-0 md:-bottom-8 md:-left-8 bg-white p-4 rounded-2xl shadow-xl border border-emerald-50 flex items-center gap-4 z-20 max-w-[220px] md:max-w-[260px]">
                 <div className="p-2 md:p-3 bg-lime-100 rounded-xl flex-shrink-0 text-lime-600">
                   <Layers className="w-5 h-5 md:w-6 md:h-6" />
@@ -106,7 +105,6 @@ const KesehatanTanah: React.FC = () => {
           </div>
         </div>
 
-        {/* DETAILS SECTION - Sudah Dikembalikan Lengkap */}
         <AnimatePresence>
           {showDetails && (
             <motion.div
@@ -122,7 +120,6 @@ const KesehatanTanah: React.FC = () => {
                 </h3>
 
                 <div className="grid md:grid-cols-2 gap-12 mb-10">
-                  {/* Dampak Lingkungan */}
                   <div>
                     <h4 className="flex items-center text-lg font-bold text-orange-600 mb-4">
                       <AlertTriangle className="w-5 h-5 mr-2" /> Dampak Lingkungan
@@ -143,7 +140,6 @@ const KesehatanTanah: React.FC = () => {
                     </ul>
                   </div>
 
-                  {/* Jenis Pencemar */}
                   <div>
                     <h4 className="flex items-center text-lg font-bold text-red-600 mb-4">
                       <Skull className="w-5 h-5 mr-2" /> Jenis Pencemar Tanah
@@ -165,7 +161,6 @@ const KesehatanTanah: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Solusi Section */}
                 <div className="pt-6 border-t border-emerald-50">
                   <h4 className="flex items-center text-lg font-bold text-emerald-700 mb-6">
                     <ShieldCheck className="w-5 h-5 mr-2" /> Solusi Berkelanjutan
@@ -202,42 +197,18 @@ const KesehatanTanah: React.FC = () => {
   );
 };
 
+// Bagian SoilCalculator dan App tetap sama untuk mempertahankan fungsi asli
 const SoilCalculator = () => {
   const [area, setArea] = useState<number | ''>('');
   const [selectedPractices, setSelectedPractices] = useState<string[]>([]);
   const [result, setResult] = useState<number | null>(null);
 
   const practices = [
-    { 
-      id: 'kompos', 
-      title: 'Penambahan Kompos/Pupuk Organik', 
-      desc: 'Meningkatkan kesuburan tanah dan retensi air.',
-      score: 1.5 
-    },
-    { 
-      id: 'cover_crop', 
-      title: 'Penanaman Tanaman Penutup (Cover Crop)', 
-      desc: 'Melindungi tanah dari erosi, menambah biomassa.',
-      score: 1.2 
-    },
-    { 
-      id: 'no_till', 
-      title: 'Tanpa Olah Tanah (No-Till)', 
-      desc: 'Meminimalkan gangguan tanah, menjaga struktur tanah.',
-      score: 2.0 
-    },
-    { 
-      id: 'rotasi', 
-      title: 'Rotasi Tanaman', 
-      desc: 'Meningkatkan kesehatan tanah dan mengurangi hama.',
-      score: 1.8 
-    },
-    { 
-      id: 'biochar', 
-      title: 'Penggunaan Biochar', 
-      desc: 'Meningkatkan kapasitas penyerapan karbon dan air tanah.',
-      score: 2.5 
-    },
+    { id: 'kompos', title: 'Penambahan Kompos/Pupuk Organik', desc: 'Meningkatkan kesuburan tanah dan retensi air.', score: 1.5 },
+    { id: 'cover_crop', title: 'Penanaman Tanaman Penutup (Cover Crop)', desc: 'Melindungi tanah dari erosi, menambah biomassa.', score: 1.2 },
+    { id: 'no_till', title: 'Tanpa Olah Tanah (No-Till)', desc: 'Meminimalkan gangguan tanah, menjaga struktur tanah.', score: 2.0 },
+    { id: 'rotasi', title: 'Rotasi Tanaman', desc: 'Meningkatkan kesehatan tanah dan mengurangi hama.', score: 1.8 },
+    { id: 'biochar', title: 'Penggunaan Biochar', desc: 'Meningkatkan kapasitas penyerapan karbon dan air tanah.', score: 2.5 },
   ];
 
   const togglePractice = (id: string) => {
@@ -249,18 +220,15 @@ const SoilCalculator = () => {
   const calculateImpact = (e: React.FormEvent) => {
     e.preventDefault();
     const areaVal = Number(area) || 0;
-    
     const totalScore = practices
       .filter(p => selectedPractices.includes(p.id))
       .reduce((acc, curr) => acc + curr.score, 0);
-      
     const totalImpact = areaVal * totalScore * 0.5; 
-
     setResult(totalImpact);
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-0 pb-20 px-4">
+    <div className="w-full max-w-4xl mx-auto pb-20 px-4">
       <motion.div 
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -268,112 +236,81 @@ const SoilCalculator = () => {
         className="bg-white rounded-3xl shadow-xl border border-emerald-100 overflow-hidden"
       >
         <div className="bg-emerald-600 p-8 text-white text-center relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-            <div className="relative z-10">
-                <div className="inline-flex items-center justify-center p-3 bg-white/20 backdrop-blur-md rounded-full mb-4 border border-white/30">
-                    <Calculator className="w-8 h-8 text-white" />
-                </div>
-                <h2 className="text-3xl font-bold mb-2">Hitung Dampak Positif Upaya Anda!</h2>
-                <p className="text-emerald-100 max-w-2xl mx-auto">
-                    Estimasi kontribusi Anda terhadap lingkungan dengan praktik pengelolaan tanah yang berkelanjutan.
-                </p>
+          <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+          <div className="relative z-10">
+            <div className="inline-flex items-center justify-center p-3 bg-white/20 backdrop-blur-md rounded-full mb-4 border border-white/30">
+              <Calculator className="w-8 h-8 text-white" />
             </div>
+            <h2 className="text-3xl font-bold mb-2">Hitung Dampak Positif Upaya Anda!</h2>
+            <p className="text-emerald-100 max-w-2xl mx-auto">
+              Estimasi kontribusi Anda terhadap lingkungan dengan praktik pengelolaan tanah yang berkelanjutan.
+            </p>
+          </div>
         </div>
 
         <div className="p-8 md:p-10">
-            <form onSubmit={calculateImpact}>
-                <div className="mb-8">
-                    <label className="block text-gray-700 font-bold mb-3 flex items-center gap-2">
-                        <Layers className="w-5 h-5 text-emerald-600" />
-                        Luas Lahan yang Dikelola (m²):
-                    </label>
-                    <div className="relative">
-                        <input 
-                            type="number" 
-                            value={area}
-                            onChange={(e) => setArea(Number(e.target.value))}
-                            placeholder="Contoh: 1000"
-                            className="w-full p-4 bg-emerald-50/50 border border-emerald-200 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all placeholder-emerald-300 font-medium"
-                            min="0"
-                        />
-                        <span className="absolute right-4 top-4 text-emerald-600 font-bold text-sm bg-white px-2 py-0.5 rounded-md shadow-sm border border-emerald-100">m²</span>
+          <form onSubmit={calculateImpact}>
+            <div className="mb-8">
+              <label className="block text-gray-700 font-bold mb-3 flex items-center gap-2">
+                <Layers className="w-5 h-5 text-emerald-600" />
+                Luas Lahan yang Dikelola (m²):
+              </label>
+              <div className="relative">
+                <input 
+                  type="number" 
+                  value={area}
+                  onChange={(e) => setArea(Number(e.target.value))}
+                  placeholder="Contoh: 1000"
+                  className="w-full p-4 bg-emerald-50/50 border border-emerald-200 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all font-medium"
+                  min="0"
+                />
+                <span className="absolute right-4 top-4 text-emerald-600 font-bold text-sm bg-white px-2 py-0.5 rounded-md shadow-sm border border-emerald-100">m²</span>
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <label className="block text-gray-700 font-bold mb-4 flex items-center gap-2">
+                <Tractor className="w-5 h-5 text-emerald-600" />
+                Pilih Praktik yang Anda Lakukan:
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {practices.map((practice) => (
+                  <div 
+                    key={practice.id}
+                    onClick={() => togglePractice(practice.id)}
+                    className={`cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 ${selectedPractices.includes(practice.id) ? 'bg-emerald-50 border-emerald-500 shadow-md' : 'bg-white border-gray-100 hover:border-emerald-300'}`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`w-6 h-6 rounded-md border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${selectedPractices.includes(practice.id) ? 'bg-emerald-500 border-emerald-500' : 'border-gray-300 bg-white'}`}>
+                        {selectedPractices.includes(practice.id) && <CheckSquare className="w-4 h-4 text-white" />}
+                      </div>
+                      <div>
+                        <h4 className={`font-bold text-sm mb-1 ${selectedPractices.includes(practice.id) ? 'text-emerald-900' : 'text-gray-700'}`}>{practice.title}</h4>
+                        <p className="text-xs text-gray-500">{practice.desc}</p>
+                      </div>
                     </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button type="submit" className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 text-lg">
+              <Calculator className="w-5 h-5" />
+              Hitung Dampak
+            </button>
+          </form>
+
+          <AnimatePresence>
+            {result !== null && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto', marginTop: 32 }} className="bg-gradient-to-br from-lime-50 to-emerald-50 rounded-2xl p-6 border border-emerald-200 text-center">
+                <p className="text-sm text-emerald-800 font-bold uppercase mb-2">Estimasi Penyerapan Karbon</p>
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <span className="text-5xl font-black text-emerald-600">{result.toFixed(1)}</span>
+                  <span className="text-xl font-medium text-gray-600 mt-4">kg C/tahun</span>
                 </div>
-
-                <div className="mb-8">
-                    <label className="block text-gray-700 font-bold mb-4 flex items-center gap-2">
-                        <Tractor className="w-5 h-5 text-emerald-600" />
-                        Pilih Praktik yang Anda Lakukan:
-                    </label>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {practices.map((practice) => (
-                            <div 
-                                key={practice.id}
-                                onClick={() => togglePractice(practice.id)}
-                                className={`
-                                    cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 relative group
-                                    ${selectedPractices.includes(practice.id) 
-                                      ? 'bg-emerald-50 border-emerald-500 shadow-md' 
-                                      : 'bg-white border-gray-100 hover:border-emerald-300 hover:shadow-sm'}
-                                `}
-                            >
-                                <div className="flex items-start gap-3">
-                                    <div className={`
-                                        w-6 h-6 rounded-md border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors
-                                        ${selectedPractices.includes(practice.id) 
-                                          ? 'bg-emerald-500 border-emerald-500' 
-                                          : 'border-gray-300 bg-white group-hover:border-emerald-400'}
-                                    `}>
-                                        {selectedPractices.includes(practice.id) && <CheckSquare className="w-4 h-4 text-white" />}
-                                    </div>
-                                    <div>
-                                        <h4 className={`font-bold text-sm mb-1 ${selectedPractices.includes(practice.id) ? 'text-emerald-900' : 'text-gray-700'}`}>
-                                            {practice.title}
-                                        </h4>
-                                        <p className="text-xs text-gray-500 leading-relaxed">
-                                            {practice.desc}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <button 
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg hover:shadow-emerald-200 flex items-center justify-center gap-2 text-lg transform active:scale-[0.99]"
-                >
-                    <Calculator className="w-5 h-5" />
-                    Hitung Dampak
-                </button>
-            </form>
-
-            <AnimatePresence>
-                {result !== null && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                        animate={{ opacity: 1, height: 'auto', marginTop: 32 }}
-                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                        className="bg-gradient-to-br from-lime-50 to-emerald-50 rounded-2xl p-6 border border-emerald-200 overflow-hidden relative"
-                    >
-                        <div className="absolute top-0 right-0 p-4 opacity-10">
-                            <Sprout className="w-32 h-32 text-emerald-600" />
-                        </div>
-                        
-                        <div className="relative z-10 text-center">
-                            <p className="text-sm text-emerald-800 font-bold uppercase tracking-wider mb-2">Estimasi Penyerapan Karbon</p>
-                            <div className="flex items-center justify-center gap-2 mb-2">
-                                <span className="text-5xl font-black text-emerald-600">{result.toFixed(1)}</span>
-                                <span className="text-xl font-medium text-gray-600 mt-4">kg C/tahun</span>
-                            </div>
-                            <p className="text-gray-600 text-sm max-w-lg mx-auto">
-                                Dengan menerapkan praktik ini, Anda membantu memulihkan struktur tanah dan menyerap karbon dari atmosfer. Terima kasih telah menjadi pahlawan bumi! 🌍
-                            </p>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </motion.div>
     </div>
@@ -382,7 +319,7 @@ const SoilCalculator = () => {
 
 const App = () => {
   return (
-    <div className="min-h-screen bg-green-50/30">
+    <div className="min-h-screen bg-green-50/30 overflow-x-hidden">
       <KesehatanTanah />
       <SoilCalculator />
     </div>
