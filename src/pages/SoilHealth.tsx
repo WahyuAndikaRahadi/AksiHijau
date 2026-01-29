@@ -19,8 +19,8 @@ const KesehatanTanah: React.FC = () => {
   const [showDetails, setShowDetails] = useState(false);
 
   return (
-    // Tambahkan overflow-hidden di sini untuk mengunci scroll samping
-    <section className="py-16 px-4 w-full bg-gradient-to-b from-white to-green-50 overflow-hidden">
+    // Penambahan overflow-x-hidden pada section utama untuk mengunci scroll samping
+    <section className="py-16 px-4 w-full bg-gradient-to-b from-white to-green-50 overflow-x-hidden">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -28,7 +28,7 @@ const KesehatanTanah: React.FC = () => {
         transition={{ duration: 0.6 }}
         className="max-w-7xl mx-auto bg-white border border-emerald-100 rounded-[2.5rem] p-8 lg:p-12 relative shadow-xl"
       >
-        {/* Dekorasi Background - Diatur agar tidak 'bocor' keluar */}
+        {/* Dekorasi Background - Disesuaikan posisinya agar tidak bocor keluar container */}
         <div className="absolute top-0 right-0 w-64 h-64 md:w-96 md:h-96 bg-emerald-50 rounded-full filter blur-3xl opacity-50 -translate-y-1/2 translate-x-1/4 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-48 h-48 md:w-72 md:h-72 bg-lime-50 rounded-full filter blur-3xl opacity-50 translate-y-1/3 -translate-x-1/4 pointer-events-none" />
 
@@ -75,6 +75,7 @@ const KesehatanTanah: React.FC = () => {
             </button>
           </div>
 
+          {/* Image Container */}
           <div className="relative w-full flex justify-center lg:justify-end mb-10 lg:mb-0 order-1 lg:order-2">
             <div className="relative w-full max-w-lg lg:max-w-none">
               <div className="w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border-4 border-white group relative z-0">
@@ -86,7 +87,7 @@ const KesehatanTanah: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-60" />
               </div>
 
-              {/* Card kecil info kandungan organik - Disesuaikan agar tidak terlalu keluar layar di mobile */}
+              {/* Floating Card Info - Penyesuaian agar tidak keluar layar di mobile */}
               <div className="absolute -bottom-4 left-0 md:-bottom-8 md:-left-8 bg-white p-4 rounded-2xl shadow-xl border border-emerald-50 flex items-center gap-4 z-20 max-w-[220px] md:max-w-[260px]">
                 <div className="p-2 md:p-3 bg-lime-100 rounded-xl flex-shrink-0 text-lime-600">
                   <Layers className="w-5 h-5 md:w-6 md:h-6" />
@@ -101,15 +102,11 @@ const KesehatanTanah: React.FC = () => {
                   </div>
                 </div>
               </div>
-
-              <div className="absolute -top-4 -right-4 p-3 bg-white rounded-full shadow-lg text-emerald-500 z-10 hidden md:block">
-                <Leaf className="w-6 h-6 md:w-8 md:h-8" />
-              </div>
             </div>
           </div>
         </div>
 
-        {/* Details Section tetap sama fungsinya */}
+        {/* DETAILS SECTION - Sudah Dikembalikan Lengkap */}
         <AnimatePresence>
           {showDetails && (
             <motion.div
@@ -120,13 +117,81 @@ const KesehatanTanah: React.FC = () => {
               className="overflow-hidden"
             >
               <div className="bg-white border border-emerald-100 rounded-3xl p-6 md:p-8 shadow-inner">
-                 {/* ... isi detail sama seperti sebelumnya ... */}
-                 <h3 className="text-2xl font-bold text-emerald-900 mb-6 pb-4 border-b border-emerald-100">
+                <h3 className="text-2xl font-bold text-emerald-900 mb-6 pb-4 border-b border-emerald-100">
                   Dampak Kerusakan Tanah
                 </h3>
-                <div className="grid md:grid-cols-2 gap-8 md:gap-12">
-                   {/* Konten detail anda tetap di sini */}
-                   {/* ... */}
+
+                <div className="grid md:grid-cols-2 gap-12 mb-10">
+                  {/* Dampak Lingkungan */}
+                  <div>
+                    <h4 className="flex items-center text-lg font-bold text-orange-600 mb-4">
+                      <AlertTriangle className="w-5 h-5 mr-2" /> Dampak Lingkungan
+                    </h4>
+                    <ul className="space-y-3">
+                      <li className="flex items-start gap-3 text-gray-600 text-sm md:text-base">
+                        <span className="text-orange-400 mt-1.5 text-[8px]">●</span>
+                        <span>Penurunan kesuburan tanah hingga 40% akibat erosi dan pencemaran kimia.</span>
+                      </li>
+                      <li className="flex items-start gap-3 text-gray-600 text-sm md:text-base">
+                        <span className="text-orange-400 mt-1.5 text-[8px]">●</span>
+                        <span>Kontaminasi rantai makanan oleh mikroplastik yang terurai di dalam tanah.</span>
+                      </li>
+                      <li className="flex items-start gap-3 text-gray-600 text-sm md:text-base">
+                        <span className="text-orange-400 mt-1.5 text-[8px]">●</span>
+                        <span>Gangguan ekosistem alami dan hilangnya biodiversitas mikroorganisme tanah.</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Jenis Pencemar */}
+                  <div>
+                    <h4 className="flex items-center text-lg font-bold text-red-600 mb-4">
+                      <Skull className="w-5 h-5 mr-2" /> Jenis Pencemar Tanah
+                    </h4>
+                    <ul className="space-y-3">
+                      <li className="flex items-start gap-3 text-gray-600 text-sm md:text-base">
+                        <span className="text-red-400 mt-1.5 text-[8px]">●</span>
+                        <span>Sampah plastik (kantong, kemasan, mikroplastik) yang sulit terurai.</span>
+                      </li>
+                      <li className="flex items-start gap-3 text-gray-600 text-sm md:text-base">
+                        <span className="text-red-400 mt-1.5 text-[8px]">●</span>
+                        <span>Limbah elektronik yang mengandung logam berat berbahaya.</span>
+                      </li>
+                      <li className="flex items-start gap-3 text-gray-600 text-sm md:text-base">
+                        <span className="text-red-400 mt-1.5 text-[8px]">●</span>
+                        <span>Bahan kimia pertanian (pestisida, herbisida) yang berlebihan.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Solusi Section */}
+                <div className="pt-6 border-t border-emerald-50">
+                  <h4 className="flex items-center text-lg font-bold text-emerald-700 mb-6">
+                    <ShieldCheck className="w-5 h-5 mr-2" /> Solusi Berkelanjutan
+                  </h4>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
+                      <h5 className="font-bold text-emerald-800 mb-2 text-sm">Pengelolaan Sampah</h5>
+                      <p className="text-xs text-emerald-700/80 leading-relaxed">
+                        Terapkan sistem 3R (Reduce, Reuse, Recycle) dan dukung bank sampah lokal.
+                      </p>
+                    </div>
+
+                    <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
+                      <h5 className="font-bold text-emerald-800 mb-2 text-sm">Pertanian Organik</h5>
+                      <p className="text-xs text-emerald-700/80 leading-relaxed">
+                        Gunakan kompos alami dan pestisida ramah lingkungan untuk menjaga nutrisi tanah.
+                      </p>
+                    </div>
+
+                    <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
+                      <h5 className="font-bold text-emerald-800 mb-2 text-sm">Bioremediasi</h5>
+                      <p className="text-xs text-emerald-700/80 leading-relaxed">
+                        Penggunaan mikroorganisme khusus untuk membersihkan tanah dari polutan.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>
