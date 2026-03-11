@@ -21,6 +21,7 @@ import EcoBot from './pages/EcoBot';
 import Profile from './pages/Profile';
 import FirstLoadAnimation from './components/FirstLoadAnimation';
 import NotFound from './pages/NotFound';
+import Game from './pages/Game';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -37,7 +38,7 @@ const ScrollToTop = () => {
 
 const AppContent = () => {
   const location = useLocation();
-  const hideNavAndFooter = location.pathname === '/ai' || location.pathname === '/cam'; 
+  const hideNavAndFooter = location.pathname === '/ai' || location.pathname === '/cam' || location.pathname === '/game'; 
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -55,6 +56,7 @@ const AppContent = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/cam" element={<WasteDetection />} />
           <Route path="/ai" element={<EcoBot />} />
+          <Route path="/game" element={<Game />} />
           <Route path="/community-events" element={<CommunityEvents />} />
           <Route path="/community-social" element={<SocialCommunity />} />
           <Route path="/dashboard-admin" element={<AdminDashboard />} />

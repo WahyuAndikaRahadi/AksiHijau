@@ -741,6 +741,54 @@ const Home = () => {
         </div>
       </motion.section>
 
+      <motion.section
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.8 }}
+        className="px-5 py-15 sm:px-10 sm:py-20 bg-amber-50"
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl p-8 md:p-12 lg:p-16 lg:my-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                whileInView={{ scale: 1, opacity: 1 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ delay: 0.2, duration: 0.7 }}
+                className="relative w-full aspect-square max-w-sm mx-auto flex items-center justify-center"
+              >
+                <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/80 to-orange-500/50 rounded-full blur-3xl opacity-70"></div>
+                <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/50 to-yellow-300/50 rounded-full opacity-70 scale-110"></div>
+                
+                <div className="relative z-10 text-[100px] sm:text-[150px] drop-shadow-2xl animate-[bounce_3s_infinite]">🦸‍♂️♻️</div>
+              </motion.div>
+
+              <motion.div
+                initial={{ x: 50, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ delay: 0.4, duration: 0.7 }}
+                className="md:pl-8"
+              >
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4 mt-5">
+                  <span className="text-amber-500">Eco</span>Catch Game
+                </h2>
+                <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                  Belajar memilah sampah sambil bermain! Di game edukasi ini, kamu bertugas menangkap sampah yang berserakan dan membiarkan barang berharga tetap aman. Permainan ini juga memiliki fitur cuaca interaktif berdasarkan waktu dan kondisi sungguhan di luar ruangan. Bisakah kamu mengumpulkan 300 poin?
+                </p>
+                <Link
+                  to="/game"
+                  className="inline-block px-8 py-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-lg font-semibold rounded-full shadow-lg hover:from-amber-600 hover:to-orange-600 transition-all duration-300 hover:shadow-xl hover:scale-[1.03]"
+                >
+                  Main Sekarang
+                </Link>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </motion.section>
+
       <section className="px-10 py-20 bg-primary">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
