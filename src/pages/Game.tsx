@@ -336,7 +336,12 @@ const Game: React.FC = () => {
   const spawnItem = useCallback(() => {
     const now = Date.now();
     const currentPhase = phaseRef.current;
-    const spawnInterval = BASE_SPAWN_INTERVAL * Math.pow(1 - SPAWN_DECREASE_PER_PHASE, currentPhase - 1);
+    let spawnInterval = BASE_SPAWN_INTERVAL * Math.pow(1 - SPAWN_DECREASE_PER_PHASE, currentPhase - 1);
+    
+    // Slower spawn on short mobile screens to prevent lag/clustering
+    if (window.innerHeight < 500) {
+      spawnInterval *= 1.8;
+    }
     
     if (now - lastSpawnTimeRef.current < spawnInterval) return;
     lastSpawnTimeRef.current = now;
@@ -401,10 +406,12 @@ const Game: React.FC = () => {
       for (const item of prevItems) {
         const newY = item.y + item.speed * 0.16;
         
-        // Collision zone: player sits at bottom ~82-88% height region
-        if (newY >= 72 && newY <= 84) {
+        
+        // Collision zone: player sits at bottom. Widen hitbox and raise Y threshold for easier catch
+        if (newY >= 65 && newY <= 85) {
           const itemCenterX = item.x + (item.width / 10);
-          if (itemCenterX >= currentPlayerX && itemCenterX <= currentPlayerX + PLAYER_WIDTH_PCT) {
+          // Add a generous tolerance of 5% on each side of the bin
+          if (itemCenterX >= currentPlayerX - 5 && itemCenterX <= currentPlayerX + PLAYER_WIDTH_PCT + 5) {
             // Caught!
             if (item.category === currentBinRef.current) {
               // CORRECT catch
