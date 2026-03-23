@@ -860,6 +860,79 @@ app.delete('/admin/posts/:postId', authenticateToken, adminOnly, async (req, res
     }
 });
 
+// ─── Game Leaderboard & Highscore ────────────────────────────────
+
+// GET /game/leaderboard — Public, top 20 scores
+app.get('/game/leaderboard', async (req, res) => {
+    console.log('GET /game/leaderboard hit!');
+    try {
+        const result = await pool.query(
+            `SELECT gs.score, gs.phase, gs.played_at, u.username
+             FROM game_scores gs
+             JOIN users u ON gs.user_id = u.user_id
+             ORDER BY gs.score DESC
+             LIMIT 20`
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching leaderboard:', err);
+        res.status(500).json({ error: 'Internal server error', details: err.message });
+    }
+});
+
+// POST /game/score — Auth required, upsert only if new score is higher
+app.post('/game/score', authenticateToken, async (req, res) => {
+    console.log(`POST /game/score hit! User: ${req.user.user_id}`);
+    const { score, phase } = req.body;
+
+    if (typeof score !== 'number' || score < 0 || typeof phase !== 'number' || phase < 1) {
+        return res.status(400).json({ error: 'Score dan phase harus berupa angka valid' });
+    }
+
+    try {
+        const result = await pool.query(
+            `INSERT INTO game_scores (user_id, score, phase, played_at)
+             VALUES ($1, $2, $3, NOW())
+             ON CONFLICT (user_id) DO UPDATE
+               SET score = EXCLUDED.score,
+                   phase = EXCLUDED.phase,
+                   played_at = NOW()
+             WHERE game_scores.score < EXCLUDED.score
+             RETURNING score_id, score, phase`,
+            [req.user.user_id, score, phase]
+        );
+
+        if (result.rowCount === 0) {
+            return res.json({ updated: false, message: 'Skor tidak diperbarui (skor lama lebih tinggi)' });
+        }
+
+        res.json({ updated: true, message: 'Highscore baru!', data: result.rows[0] });
+    } catch (err) {
+        console.error('Error saving score:', err);
+        res.status(500).json({ error: 'Internal server error', details: err.message });
+    }
+});
+
+// GET /game/my-score — Auth required, returns user's personal best
+app.get('/game/my-score', authenticateToken, async (req, res) => {
+    console.log(`GET /game/my-score hit! User: ${req.user.user_id}`);
+    try {
+        const result = await pool.query(
+            `SELECT score, phase, played_at FROM game_scores WHERE user_id = $1`,
+            [req.user.user_id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.json({ score: 0, phase: 0, played_at: null });
+        }
+
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error('Error fetching user score:', err);
+        res.status(500).json({ error: 'Internal server error', details: err.message });
+    }
+});
+
 app.use((req, res, next) => {
     console.warn(`404 Not Found: ${req.method} ${req.url}`);
     res.status(404).json({ error: '404: Route not found' });

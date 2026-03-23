@@ -7,6 +7,13 @@ type BinCategory = "organik" | "anorganik" | "b3";
 type GameState = "intro" | "start" | "playing" | "intermission" | "gameover";
 type WeatherMode = "hot" | "rain";
 
+interface LeaderboardEntry {
+  username: string;
+  score: number;
+  phase: number;
+  played_at: string;
+}
+
 interface TrashItem {
   id: number;
   category: BinCategory;
@@ -87,6 +94,7 @@ const SPEED_INCREASE_PER_PHASE = 0.05;
 const SPAWN_DECREASE_PER_PHASE = 0.08;
 
 const OPENWEATHER_API_KEY = import.meta.env.VITE_OPENWEATHER_API;
+const API_BASE = import.meta.env.PROD ? '/api' : 'http://localhost:5000';
 
 // ─── Pixel Font CSS ─────────────────────────────────────────────
 const PIXEL_FONT = "'Press Start 2P', monospace";
@@ -109,6 +117,10 @@ const Game: React.FC = () => {
   const [shakeScreen, setShakeScreen] = useState(false);
   const [rainDrops, setRainDrops] = useState<RainDrop[]>([]);
   const [isPortrait, setIsPortrait] = useState(false);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
+  const [personalBest, setPersonalBest] = useState(0);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [scoreSaved, setScoreSaved] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<number>();
@@ -140,6 +152,66 @@ const Game: React.FC = () => {
       window.removeEventListener("orientationchange", checkOrientation);
     };
   }, []);
+
+  // ─── Fetch Leaderboard & Personal Best ──────────────────────────
+  const fetchLeaderboard = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_BASE}/game/leaderboard`);
+      if (res.ok) {
+        const data = await res.json();
+        setLeaderboard(data);
+      }
+    } catch (err) {
+      console.error('Leaderboard fetch error:', err);
+    }
+  }, []);
+
+  const fetchPersonalBest = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    try {
+      const res = await fetch(`${API_BASE}/game/my-score`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPersonalBest(data.score || 0);
+      }
+    } catch (err) {
+      console.error('Personal best fetch error:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchLeaderboard();
+    fetchPersonalBest();
+  }, [fetchLeaderboard, fetchPersonalBest]);
+
+  // ─── Save Highscore ────────────────────────────────────────────
+  const saveHighscore = useCallback(async (finalScore: number, finalPhase: number) => {
+    const token = localStorage.getItem('token');
+    if (!token || finalScore <= personalBest) return;
+    try {
+      const res = await fetch(`${API_BASE}/game/score`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ score: finalScore, phase: finalPhase }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.updated) {
+          setPersonalBest(finalScore);
+          setScoreSaved(true);
+          fetchLeaderboard();
+        }
+      }
+    } catch (err) {
+      console.error('Score save error:', err);
+    }
+  }, [personalBest, fetchLeaderboard]);
 
   // ─── Generate rain drops ───────────────────────────────────────
   useEffect(() => {
@@ -253,6 +325,10 @@ const Game: React.FC = () => {
     
     if (newPenalties >= MAX_PENALTIES) {
       setGameState("gameover");
+      // Save highscore when game ends
+      const finalScore = scoreRef.current;
+      const finalPhase = phaseRef.current;
+      setTimeout(() => saveHighscore(finalScore, finalPhase), 100);
     }
   }, [weatherMode, triggerShake, showFeedback]);
 
@@ -399,6 +475,7 @@ const Game: React.FC = () => {
     currentBinRef.current = randomBin;
     itemIdRef.current = 0;
     lastSpawnTimeRef.current = Date.now();
+    setScoreSaved(false);
     setGameState("playing");
   }, []);
 
@@ -744,6 +821,101 @@ const Game: React.FC = () => {
               ))}
             </div>
 
+            {/* Leaderboard Toggle Button */}
+            <button
+              onClick={() => setShowLeaderboard(prev => !prev)}
+              className="absolute bottom-6 left-6 bg-black/50 hover:bg-black/70 border-2 border-yellow-400/50 px-3 py-2 transition-all z-20"
+              style={{ fontFamily: PIXEL_FONT }}
+            >
+              <span className="text-[7px] md:text-[9px] text-yellow-300">
+                {showLeaderboard ? '✕ TUTUP' : '🏆 LEADERBOARD'}
+              </span>
+            </button>
+
+            {/* Leaderboard Panel */}
+            {showLeaderboard && (
+              <div
+                className="absolute inset-0 z-30 flex items-center justify-center pointer-events-auto bg-black/60"
+                onClick={() => setShowLeaderboard(false)}
+              >
+                <div
+                  className="bg-[#1a1a2e] border-4 border-yellow-500/60 p-4 md:p-6 max-w-[92vw] md:max-w-md w-full animate-pixelSlideIn"
+                  style={{ fontFamily: PIXEL_FONT, imageRendering: "pixelated" }}
+                  onClick={e => e.stopPropagation()}
+                >
+                  <h3
+                    className="text-[10px] md:text-sm text-yellow-300 mb-4 uppercase tracking-wider text-center"
+                    style={{ textShadow: "2px 2px 0 #000" }}
+                  >
+                    🏆 Leaderboard
+                  </h3>
+
+                  {/* Personal Best */}
+                  {localStorage.getItem('token') && (
+                    <div className="bg-green-900/30 border border-green-700/50 p-2 mb-3 text-center">
+                      <span className="text-[6px] md:text-[8px] text-green-300">
+                        Skor Terbaikmu: <span className="text-white">{personalBest}</span>
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Table */}
+                  <div className="bg-black/40 border-2 border-white/10 max-h-[40vh] overflow-y-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-white/10">
+                          <th className="text-[5px] md:text-[7px] text-white/40 py-2 px-2 text-left">#</th>
+                          <th className="text-[5px] md:text-[7px] text-white/40 py-2 px-2 text-left">PEMAIN</th>
+                          <th className="text-[5px] md:text-[7px] text-white/40 py-2 px-2 text-right">SKOR</th>
+                          <th className="text-[5px] md:text-[7px] text-white/40 py-2 px-2 text-right">FASE</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {leaderboard.length === 0 ? (
+                          <tr>
+                            <td colSpan={4} className="text-[6px] md:text-[8px] text-white/30 py-4 text-center">
+                              Belum ada skor
+                            </td>
+                          </tr>
+                        ) : (
+                          leaderboard.map((entry, i) => (
+                            <tr
+                              key={i}
+                              className={`border-b border-white/5 ${
+                                i === 0 ? 'bg-yellow-900/20' : i === 1 ? 'bg-gray-600/10' : i === 2 ? 'bg-amber-900/10' : ''
+                              }`}
+                            >
+                              <td className="text-[6px] md:text-[8px] py-1.5 px-2">
+                                <span className={i === 0 ? 'text-yellow-400' : i === 1 ? 'text-gray-300' : i === 2 ? 'text-amber-500' : 'text-white/40'}>
+                                  {i + 1}
+                                </span>
+                              </td>
+                              <td className="text-[6px] md:text-[8px] text-white py-1.5 px-2 truncate max-w-[120px]">
+                                {entry.username}
+                              </td>
+                              <td className="text-[6px] md:text-[8px] text-green-300 py-1.5 px-2 text-right">
+                                {entry.score}
+                              </td>
+                              <td className="text-[6px] md:text-[8px] text-yellow-300 py-1.5 px-2 text-right">
+                                {entry.phase}
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Guest hint */}
+                  {!localStorage.getItem('token') && (
+                    <p className="text-[5px] md:text-[7px] text-white/30 mt-3 text-center">
+                      Login untuk menyimpan skor kamu ke leaderboard!
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Weather indicator */}
             <div
               className="absolute bottom-6 right-6 bg-black/50 border-2 border-white/20 px-3 py-2"
@@ -913,11 +1085,34 @@ const Game: React.FC = () => {
               <p className="text-sm md:text-lg text-yellow-300 mt-1">{phase}</p>
             </div>
 
-            <p className="text-[6px] md:text-[7px] text-white/40 mb-5">
+            <p className="text-[6px] md:text-[7px] text-white/40 mb-3">
               {weatherMode === "hot"
                 ? "Tumpukan sampah telah memenuhi lingkungan..."
                 : "Banjir telah merendam area permainan..."}
             </p>
+
+            {/* Personal Best & New Highscore */}
+            {localStorage.getItem('token') ? (
+              <div className="mb-4">
+                {scoreSaved ? (
+                  <div className="bg-green-900/30 border border-green-700/50 p-2">
+                    <p className="text-[6px] md:text-[8px] text-green-300">🎉 Highscore Baru Tersimpan!</p>
+                  </div>
+                ) : score <= personalBest && personalBest > 0 ? (
+                  <div className="bg-black/40 border border-white/10 p-2">
+                    <p className="text-[6px] md:text-[8px] text-white/40">
+                      Skor Terbaik: <span className="text-yellow-300">{personalBest}</span>
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <div className="bg-blue-900/20 border border-blue-700/30 p-2 mb-4">
+                <p className="text-[5px] md:text-[7px] text-blue-300">
+                  Login untuk menyimpan skor ke leaderboard!
+                </p>
+              </div>
+            )}
 
             <button
               onClick={startGame}
