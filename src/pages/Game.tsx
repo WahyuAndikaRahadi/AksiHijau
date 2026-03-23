@@ -131,6 +131,7 @@ const Game: React.FC = () => {
   const itemIdRef = useRef(0);
   const currentBinRef = useRef<BinCategory>("organik");
   const playerXRef = useRef(41);
+  const activeItemsCountRef = useRef(0);
 
   // Sync refs
   useEffect(() => { scoreRef.current = score; }, [score]);
@@ -334,6 +335,10 @@ const Game: React.FC = () => {
 
   // ─── Spawn items ──────────────────────────────────────────────
   const spawnItem = useCallback(() => {
+    // Hard limit on active items to prevent lag/clustering, especially on mobile
+    const maxActiveItems = window.innerHeight < 500 ? 4 : 15;
+    if (activeItemsCountRef.current >= maxActiveItems) return;
+
     const now = Date.now();
     const currentPhase = phaseRef.current;
     let spawnInterval = BASE_SPAWN_INTERVAL * Math.pow(1 - SPAWN_DECREASE_PER_PHASE, currentPhase - 1);
@@ -448,6 +453,7 @@ const Game: React.FC = () => {
         nextItems.push({ ...item, y: newY });
       }
       
+      activeItemsCountRef.current = nextItems.length;
       return nextItems;
     });
 
@@ -482,6 +488,7 @@ const Game: React.FC = () => {
     penaltiesRef.current = 0;
     currentBinRef.current = randomBin;
     itemIdRef.current = 0;
+    activeItemsCountRef.current = 0;
     lastSpawnTimeRef.current = Date.now();
     setScoreSaved(false);
     setGameState("playing");
@@ -507,6 +514,7 @@ const Game: React.FC = () => {
     }
     
     setItems([]);
+    activeItemsCountRef.current = 0;
     lastSpawnTimeRef.current = Date.now();
     setGameState("playing");
   }, [currentBin, weatherMode]);
