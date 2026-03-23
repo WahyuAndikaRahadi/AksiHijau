@@ -27,7 +27,7 @@ const TRASH_SYMBOLS = ["🥤", "📦", "📰", "🥫", "🔋", "🐟", "🛍️"
 const GOOD_SYMBOLS = ["📱", "🧸", "👕", "📖", "🏀", "🪴", "⌚"];
 
 const OPENWEATHER_API_KEY = import.meta.env.VITE_OPENWEATHER_API;
-
+  
 const Game = () => {
   const [gameState, setGameState] = useState<"intro" | "start" | "playing" | "gameover" | "win">("intro");
   const [score, setScore] = useState(0);
