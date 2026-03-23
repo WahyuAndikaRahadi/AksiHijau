@@ -356,7 +356,8 @@ const Game: React.FC = () => {
     const categoryItems = CATEGORY_ITEMS[chosenCategory];
     chosenItem = categoryItems[Math.floor(Math.random() * categoryItems.length)];
 
-    const speed = BASE_SPEED * Math.pow(1 + SPEED_INCREASE_PER_PHASE, currentPhase - 1);
+    const speedMultiplier = window.innerHeight < 500 ? 0.6 : 1.0;
+    const speed = BASE_SPEED * Math.pow(1 + SPEED_INCREASE_PER_PHASE, currentPhase - 1) * speedMultiplier;
     const variation = 0.7 + Math.random() * 0.6;
     
     const newItem: TrashItem = {
@@ -511,7 +512,7 @@ const Game: React.FC = () => {
   return (
     <div
       ref={containerRef}
-      className={`w-full h-screen overflow-hidden relative select-none ${shakeScreen ? "animate-shake" : ""}`}
+      className={`w-full h-screen overflow-hidden relative select-none animate-fadeIn ${shakeScreen ? "animate-shake" : ""}`}
       onMouseMove={handlePointerMove}
       onTouchMove={handlePointerMove}
       style={{ imageRendering: "auto" }}
@@ -839,7 +840,7 @@ const Game: React.FC = () => {
                 onClick={() => setShowLeaderboard(false)}
               >
                 <div
-                  className="bg-[#1a1a2e] border-4 border-yellow-500/60 p-4 md:p-6 max-w-[92vw] md:max-w-md w-full animate-pixelSlideIn"
+                  className="bg-[#1a1a2e] border-4 border-yellow-500/60 p-3 md:p-6 max-h-[90vh] overflow-y-auto max-w-[92vw] md:max-w-md w-full animate-pixelSlideIn"
                   style={{ fontFamily: PIXEL_FONT, imageRendering: "pixelated" }}
                   onClick={e => e.stopPropagation()}
                 >
@@ -932,7 +933,7 @@ const Game: React.FC = () => {
         {/* ── TUTORIAL / START SCREEN ── */}
         {gameState === "start" && (
           <div
-            className="bg-[#1a1a2e] border-4 border-[#16213e] p-5 sm:p-7 md:p-10 max-w-[92vw] md:max-w-lg w-full text-center pointer-events-auto"
+            className="bg-[#1a1a2e] border-4 border-[#16213e] p-3 sm:p-5 md:p-10 max-h-[90vh] overflow-y-auto max-w-[92vw] md:max-w-lg w-full text-center pointer-events-auto shadow-2xl"
             style={{ fontFamily: PIXEL_FONT, imageRendering: "pixelated" }}
           >
             <h2
@@ -1002,7 +1003,7 @@ const Game: React.FC = () => {
         {/* ── INTERMISSION (Phase Transition) ── */}
         {gameState === "intermission" && (
           <div
-            className="bg-[#1a1a2e] border-4 p-5 sm:p-7 md:p-10 max-w-[90vw] md:max-w-md w-full text-center pointer-events-auto animate-pixelSlideIn"
+            className="bg-[#1a1a2e] border-4 p-3 sm:p-5 md:p-10 max-h-[90vh] overflow-y-auto max-w-[90vw] md:max-w-md w-full text-center pointer-events-auto animate-pixelSlideIn shadow-2xl"
             style={{
               fontFamily: PIXEL_FONT,
               borderColor: BIN_COLORS[currentBin],
@@ -1064,7 +1065,7 @@ const Game: React.FC = () => {
         {/* ── GAME OVER SCREEN ── */}
         {gameState === "gameover" && (
           <div
-            className="bg-[#1a1a2e] border-4 border-red-600 p-5 sm:p-7 md:p-10 max-w-[90vw] md:max-w-sm w-full text-center pointer-events-auto animate-pixelSlideIn"
+            className="bg-[#1a1a2e] border-4 border-red-600 p-3 sm:p-5 md:p-10 max-h-[90vh] overflow-y-auto max-w-[90vw] md:max-w-sm w-full text-center pointer-events-auto animate-pixelSlideIn shadow-2xl"
             style={{ fontFamily: PIXEL_FONT, imageRendering: "pixelated" }}
           >
             {/* Skull / Game Over visual */}
@@ -1224,6 +1225,14 @@ const Game: React.FC = () => {
         }
         .animate-spin-slow {
           animation: spin-slow 2s linear infinite;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.8s ease-out forwards;
         }
       `}</style>
     </div>

@@ -760,8 +760,11 @@ const Home = () => {
               >
                 <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/80 to-orange-500/50 rounded-full blur-3xl opacity-70"></div>
                 <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/50 to-yellow-300/50 rounded-full opacity-70 scale-110"></div>
-                
-                <div className="relative z-10 text-[100px] sm:text-[150px] drop-shadow-2xl animate-[bounce_3s_infinite]">🦸‍♂️♻️</div>
+                <img
+                  src="/img/greenTong.png"
+                  alt="Eco Games"
+                  className="relative z-10 w-3/4 h-3/4 object-contain drop-shadow-2xl transition-transform duration-500 hover:scale-110"
+                />
               </motion.div>
 
               <motion.div
@@ -772,7 +775,7 @@ const Home = () => {
                 className="md:pl-8"
               >
                 <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4 mt-5">
-                  <span className="text-amber-500">Eco</span>Catch Game
+                  <span className="text-amber-500">Eco</span> Games
                 </h2>
                 <p className="text-lg text-gray-600 mb-8 leading-relaxed">
                   Belajar memilah sampah sambil bermain! Di game edukasi ini, kamu bertugas menangkap sampah yang berserakan dan membiarkan barang berharga tetap aman. Permainan ini juga memiliki fitur cuaca interaktif berdasarkan waktu dan kondisi sungguhan di luar ruangan. Bisakah kamu mengumpulkan 300 poin?
