@@ -336,7 +336,7 @@ const Game: React.FC = () => {
   // ─── Spawn items ──────────────────────────────────────────────
   const spawnItem = useCallback(() => {
     // Hard limit on active items to prevent lag/clustering, especially on mobile
-    const maxActiveItems = window.innerHeight < 500 ? 4 : 15;
+    const maxActiveItems = window.innerHeight < 500 ? 2 : 15;
     if (activeItemsCountRef.current >= maxActiveItems) return;
 
     const now = Date.now();
@@ -366,7 +366,7 @@ const Game: React.FC = () => {
     const categoryItems = CATEGORY_ITEMS[chosenCategory];
     chosenItem = categoryItems[Math.floor(Math.random() * categoryItems.length)];
 
-    const speedMultiplier = window.innerHeight < 500 ? 0.6 : 1.0;
+    const speedMultiplier = window.innerHeight < 500 ? 1.5 : 1.0;
     const speed = BASE_SPEED * Math.pow(1 + SPEED_INCREASE_PER_PHASE, currentPhase - 1) * speedMultiplier;
     const variation = 0.7 + Math.random() * 0.6;
     
@@ -412,11 +412,11 @@ const Game: React.FC = () => {
         const newY = item.y + item.speed * 0.16;
         
         
-        // Collision zone: player sits at bottom. Widen hitbox and raise Y threshold for easier catch
+        // Collision zone: player sits at bottom. Strict hitbox and raised Y threshold for visual catch
         if (newY >= 65 && newY <= 85) {
           const itemCenterX = item.x + (item.width / 10);
-          // Add a generous tolerance of 5% on each side of the bin
-          if (itemCenterX >= currentPlayerX - 5 && itemCenterX <= currentPlayerX + PLAYER_WIDTH_PCT + 5) {
+          // Strict hitbox: no tolerance, must be perfectly within the bin width
+          if (itemCenterX >= currentPlayerX && itemCenterX <= currentPlayerX + PLAYER_WIDTH_PCT) {
             // Caught!
             if (item.category === currentBinRef.current) {
               // CORRECT catch
@@ -574,13 +574,29 @@ const Game: React.FC = () => {
       )}
 
       {/* ── Back Button ── */}
-      <Link
-        to="/"
-        className="absolute top-3 left-3 z-[60] bg-black/50 hover:bg-black/70 p-2.5 text-white transition-all border-2 border-white/30"
-        style={{ imageRendering: "pixelated" }}
-      >
-        <ArrowLeft className="w-5 h-5" />
-      </Link>
+      {gameState === "intro" ? (
+        <Link
+          to="/"
+          className="absolute top-3 left-3 z-[60] bg-black/50 hover:bg-black/70 p-2.5 text-white transition-all border-2 border-white/30"
+          style={{ imageRendering: "pixelated" }}
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </Link>
+      ) : (
+        <button
+          onClick={() => {
+            if (gameState === "playing") {
+              setItems([]);
+              activeItemsCountRef.current = 0;
+            }
+            setGameState("intro");
+          }}
+          className="absolute top-3 left-3 z-[60] bg-black/50 hover:bg-black/70 p-2.5 text-white transition-all border-2 border-white/30"
+          style={{ imageRendering: "pixelated" }}
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+      )}
 
       {/* ── HUD (during gameplay) ── */}
       {gameState === "playing" && (
@@ -723,23 +739,24 @@ const Game: React.FC = () => {
         </div>
       )}
 
-      {/* ── Trash Pile (hot weather penalty visual) ── */}
+      {/* ── Trash Piles (hot weather penalty visual) ── */}
       {weatherMode === "hot" && trashPileLevel > 0 && gameState === "playing" && (
-        <div
-          className="absolute bottom-0 left-0 right-0 z-[15] pointer-events-none flex justify-center"
-          style={{
-            opacity: Math.min(0.4 + trashPileLevel * 0.15, 1),
-            transform: `scale(${0.4 + trashPileLevel * 0.15}) translateY(${40 - trashPileLevel * 8}%)`,
-            transformOrigin: "bottom center",
-            transition: "all 0.5s ease",
-          }}
-        >
-          <img
-            src="/img/InGame/tumpukansampah.png"
-            alt="Tumpukan Sampah"
-            className="w-[80%] max-w-[500px] h-auto"
-            style={{ imageRendering: "pixelated" }}
-          />
+        <div className="absolute inset-0 z-[15] pointer-events-none w-full h-full overflow-hidden">
+          {Array.from({ length: trashPileLevel }).map((_, i) => (
+            <img
+              key={i}
+              src="/img/InGame/tumpukansampah.png"
+              alt="Tumpukan Sampah"
+              className="absolute drop-shadow-[0_4px_8px_rgba(0,0,0,0.6)]"
+              style={{
+                left: `${10 + i * 18}%`, // Separate positions across the screen bottom
+                bottom: `${(i % 2) * 5 - 2}%`, // Slightly stagger the heights up/down
+                width: "40px",
+                imageRendering: "pixelated",
+                transform: `rotate(${(i % 2 === 0 ? 1 : -1) * 12}deg)`
+              }}
+            />
+          ))}
         </div>
       )}
 
