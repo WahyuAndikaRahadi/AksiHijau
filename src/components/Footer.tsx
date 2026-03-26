@@ -1,4 +1,3 @@
-import { Github } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -59,13 +58,7 @@ const Footer = () => {
     },
   };
 
-  const socialIconVariants = {
-    hover: {
-      scale: 1.2,
-      rotate: 10,
-      transition: { type: "spring", stiffness: 400, damping: 10 },
-    },
-  };
+
 
   return (
     <motion.footer
@@ -100,28 +93,7 @@ const Footer = () => {
               Gerakan digital untuk edukasi perubahan iklim dan aksi nyata
               menyelamatkan bumi.
             </p>
-            <div className="flex space-x-4">
-              {[
-                { Icon: Github, label: "Github" },
-              ].map((social, index) => (
-                <motion.a
-                  key={index}
-                  href="https://github.com/WahyuAndikaRahadi/AksiHijau"
-                  className="text-white bg-green-700 p-2 rounded-full shadow-lg"
-                  aria-label={social.label}
-                  variants={socialIconVariants}
-                  whileHover="hover"
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{
-                    scale: 1,
-                    opacity: 1,
-                    transition: { delay: 0.8 + index * 0.1 },
-                  }}
-                >
-                  <social.Icon className="w-6 h-6" />
-                </motion.a>
-              ))}
-            </div>
+
           </motion.div>
 
           {footerNavSections.map((section, sectionIndex) => (
