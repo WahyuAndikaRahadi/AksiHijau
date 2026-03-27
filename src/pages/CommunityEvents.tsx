@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Calendar, MapPin, Users, TrendingUp, Plus, Clock, Search, Filter } from 'lucide-react';
+import { Calendar, MapPin, Users, TrendingUp, Plus, Clock, Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 
@@ -188,10 +188,16 @@ const CommunityEvents = () => {
     });
   };
 
-  const filteredEvents = events.filter(event =>
-    event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    event.location.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredEvents = events.filter(event => {
+    const eventDate = new Date(event.event_date);
+    const now = new Date();
+    const isPast = eventDate < now;
+    
+    if (isPast) return false;
+
+    return event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+           event.location.toLowerCase().includes(searchQuery.toLowerCase())
+  });
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -223,6 +229,9 @@ const CommunityEvents = () => {
     return events.filter(event => {
       const eventDate = new Date(event.event_date);
       if(isNaN(eventDate.getTime())) return false; 
+      
+      const isPast = eventDate < new Date();
+      if (isPast) return false;
         
       return (
         eventDate.getDate() === day &&
